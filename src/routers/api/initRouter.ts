@@ -6,4 +6,4 @@ initRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   res.json({ name: "와우" });
 });
 
-export default initRouter;
+export { initRouter };
