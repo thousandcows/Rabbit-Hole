@@ -25,52 +25,52 @@ userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) 
   }
 });
 
-userRouter.get('/id', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const _id = req.currentUserId;
-    const userData = await userService.getUserById(_id);
+// userRouter.get('/id', async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const _id = req.currentUserId;
+//     const userData = await userService.getUserById(_id);
 
-    res.status(200).json(userData);
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(200).json(userData);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-userRouter.get('/email', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const githubEmail = req.currentUserEmail;
-    const userData = await userService.getUserByEmail(githubEmail);
+// userRouter.get('/email', async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const githubEmail = req.currentUserEmail;
+//     const userData = await userService.getUserByEmail(githubEmail);
 
-    res.status(200).json(userData);
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(200).json(userData);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
+// userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
 
-  try {
-    const githubEmail = req.currentUserEmail;
-    const update = req.body;
+//   try {
+//     const githubEmail = req.currentUserEmail;
+//     const update = req.body;
 
-    // 사용자 정보를 업데이트함.
-    const updatedUser = await userService.setUser(githubEmail, update);
+//     // 사용자 정보를 업데이트함.
+//     const updatedUser = await userService.setUser(githubEmail, update);
 
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(200).json(updatedUser);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-userRouter.delete('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const githubEmail = req.currentUserEmail;
-    const deleteResult = await userService.deleteUser(githubEmail);
+// userRouter.delete('/', async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const githubEmail = req.currentUserEmail;
+//     const deleteResult = await userService.deleteUser(githubEmail);
 
-    res.status(200).json(deleteResult);
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(200).json(deleteResult);
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 export { userRouter };
