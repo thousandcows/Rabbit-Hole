@@ -19,9 +19,20 @@
             "tsx": "never"
         }
     ],
-    "import/prefer-default-export":"off"
-
+    "import/prefer-default-export":"off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"]
   },
+  "overrides": [
+    {
+      "files": [
+          "*.ts"
+      ],
+      "rules": { // Here it worked
+          "@typescript-eslint/dot-notation": "error",
+          "no-shadow": "off"
+      }
+}],
   "settings": {
     "import/resolver": {
       "typescript": {}

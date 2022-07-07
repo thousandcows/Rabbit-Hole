@@ -1,60 +1,76 @@
-import { Router } from 'express';
-import axios from 'axios';
-import jwt from 'jsonwebtoken';
-import { userService } from '../services/user-service';
+import { Router, Request, Response, NextFunction } from 'express';
+import { userService } from '../../services';
 
-const authRouter = Router();
+const userRouter = Router();
 
-const findOrCreateUser = async (profile: any) => {
-  const user = await userService.getUser(profile.id, true);
-
-  if (user) {
-    return user;
-  }
-  const withdrawal = await userService.getWithdrawal(profile.id);
-  if (withdrawal) {
-    throw new Error('탈퇴한 회원입니다.');
-  }
-  const created = await userService.addAuthUser(profile);
-
-  return created;
-};
-
-authRouter.get('/:code', async (req, res, next) => {
-  const { code } = req.params;
+userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { data } = await axios.get(`https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
-    const user = await axios.get('https://api.github.com/user', {
-      headers: {
-        Accept: 'application/json',
-        Authorization: `token ${data.access_token}`,
-      },
-    });
-    const userInfo = {
-      id: user.data.id,
-      displayName: user.data.name,
-      username: user.data.login,
-      profileUrl: user.data.html_url,
-      avatar: user.data.avatar_url,
-      blog: user.data.blog,
-    };
-    const createdUser = await findOrCreateUser(userInfo);
-    const token = jwt.sign(
-      { id: createdUser._id, name: createdUser.username },
-      process.env.JWT_SECRET_KEY,
-
-      {
-        expiresIn: process.env.ACCESSTOKEN_EXPIRE,
-      },
-    );
-    res.status(200).json({ token, username: createdUser.username, userId: createdUser._id });
+    const userInfo = req.body;
+    // 위 데이터를 사용자 db에 추가하기
+    const newUser = await userService.addUser(userInfo);
+    res.status(201).json(newUser);
   } catch (error) {
     next(error);
   }
 });
 
-export default authRouter;
+userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // 전체 사용자 목록을 얻음
+    const users = await userService.getUsers();
+
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userRouter.get('/id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const _id = req.currentUserId;
+    const userData = await userService.getUserById(_id);
+
+    res.status(200).json(userData);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userRouter.get('/email', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const githubEmail = req.currentUserEmail;
+    const userData = await userService.getUserByEmail(githubEmail);
+
+    res.status(200).json(userData);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
+
+  try {
+    const githubEmail = req.currentUserEmail;
+    const update = req.body;
+
+    // 사용자 정보를 업데이트함.
+    const updatedUser = await userService.setUser(githubEmail, update);
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userRouter.delete('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const githubEmail = req.currentUserEmail;
+    const deleteResult = await userService.deleteUser(githubEmail);
+
+    res.status(200).json(deleteResult);
+  } catch (error) {
+    next(error);
+  }
+});
+
+export { userRouter };

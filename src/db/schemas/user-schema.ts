@@ -17,7 +17,7 @@ const UserSchema = new Schema(
     position: {
       type: String,
       required: false,
-      default: '공통',
+      default: '',
     },
     authImage: {
       type: String,
@@ -42,10 +42,12 @@ const UserSchema = new Schema(
     },
     carrots: {
       type: Number,
+      required: false,
       default: 100,
     },
     role: {
       type: String,
+      required: false,
       default: 'guest',
     },
     articles: [

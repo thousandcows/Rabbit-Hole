@@ -1,26 +1,25 @@
+/* eslint-disable class-methods-use-this */
 import { Types } from 'mongoose';
 import { User } from '..';
 
-interface UserInfo {
+export interface UserInfo {
     name: string;
     track: string;
     trackCardinalNumber: number;
-    position: string;
+    position?: string;
     authImage: string;
-    blogAddress: string;
+    blogAddress?: string;
     githubEmail: string;
     githubProfileUrl: string;
     githubAvatar: string;
-    carrots: number;
-    role: string;
-    articles: { articleId: string; }[];
+    articles?: { articleId: string; }[];
   }
 
-  interface UserData extends UserInfo {
+export interface UserData extends UserInfo {
     _id: Types.ObjectId;
   }
 export class UserModel {
-  static async findByEmail(githubEmail: string): Promise<UserData> {
+  async findByEmail(githubEmail: string): Promise<UserData> {
     const user = await User.findOne({ githubEmail });
     if (!user) {
       const error = new Error('해당 email의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
@@ -30,7 +29,7 @@ export class UserModel {
     return user;
   }
 
-  static async findById(_id: string): Promise<UserData> {
+  async findById(_id: string): Promise<UserData> {
     const user = await User.findOne({ _id });
     if (!user) {
       const error = new Error('해당 id의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
@@ -40,13 +39,13 @@ export class UserModel {
     return user;
   }
 
-  static async findAll(): Promise<UserData[]> {
+  async findAll(): Promise<UserData[]> {
     const users = await User.find({});
 
     return users;
   }
 
-  static async addUser(userInfo: UserInfo): Promise<UserData> {
+  async create(userInfo: UserInfo): Promise<UserData> {
     const { githubEmail } = userInfo;
 
     const user = await User.findOne({ githubEmail });
@@ -67,7 +66,7 @@ export class UserModel {
     return createdNewUser;
   }
 
-  static async update(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
+  async update(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
     const filter = { githubEmail };
     const option = { returnOriginal: false };
 
@@ -82,7 +81,7 @@ export class UserModel {
     return updatedUser;
   }
 
-  static async deleteByEmail(githubEmail: string): Promise<UserData> {
+  async deleteByEmail(githubEmail: string): Promise<UserData> {
     const deletedUser = await User.findOneAndDelete({ githubEmail });
     if (!deletedUser) {
       const error = new Error(`${githubEmail} 사용자의 삭제에 실패하였습니다`);
