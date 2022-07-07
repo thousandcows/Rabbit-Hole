@@ -2,9 +2,9 @@
   "name": "rabbit-hole-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
-    "start": "nodemon --watch src --exec 'ts-node' src/server.ts",
+    "start": "nodemon --watch src --exec ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\""
   },
