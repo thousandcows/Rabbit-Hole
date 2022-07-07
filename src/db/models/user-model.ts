@@ -1,5 +1,5 @@
-import { model } from 'mongoose';
-import { UserSchema } from '../schemas/user-schema';
+import { Types } from 'mongoose';
+import { User } from '..';
 
 interface UserInfo {
     name: string;
@@ -13,41 +13,82 @@ interface UserInfo {
     githubAvatar: string;
     carrots: number;
     role: string;
+    articles: { articleId: string; }[];
   }
 
-const User = model('users', UserSchema);
-
+  interface UserData extends UserInfo {
+    _id: Types.ObjectId;
+  }
 export class UserModel {
-  static async findByEmail(githubEmail: string) {
+  static async findByEmail(githubEmail: string): Promise<UserData> {
     const user = await User.findOne({ githubEmail });
+    if (!user) {
+      const error = new Error('해당 email의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
+      error.name = 'NotFound';
+      throw error;
+    }
     return user;
   }
 
-  static async findById(_id: string) {
+  static async findById(_id: string): Promise<UserData> {
     const user = await User.findOne({ _id });
+    if (!user) {
+      const error = new Error('해당 id의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
+      error.name = 'NotFound';
+      throw error;
+    }
     return user;
   }
 
-  static async findAll() {
+  static async findAll(): Promise<UserData[]> {
     const users = await User.find({});
+
     return users;
   }
 
-  static async create(userInfo: UserInfo) {
+  static async addUser(userInfo: UserInfo): Promise<UserData> {
+    const { githubEmail } = userInfo;
+
+    const user = await User.findOne({ githubEmail });
+    if (user) {
+      const error = new Error('이 이름은 현재 사용중입니다. 다른 이름을 입력해 주세요.');
+      error.name = 'Conflict';
+      throw error;
+    }
+
     const createdNewUser = await User.create(userInfo);
+
+    if (!createdNewUser) {
+      const error = new Error('회원가입에 실패하였습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+
     return createdNewUser;
   }
 
-  static async update(githubEmail: string, update: Partial<UserInfo>) {
+  static async update(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
     const filter = { githubEmail };
     const option = { returnOriginal: false };
 
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
+
+    if (!updatedUser) {
+      const error = new Error('업데이트에 실패하였습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+
     return updatedUser;
   }
 
-  static async deleteByEmail(githubEmail: string) {
+  static async deleteByEmail(githubEmail: string): Promise<UserData> {
     const deletedUser = await User.findOneAndDelete({ githubEmail });
+    if (!deletedUser) {
+      const error = new Error(`${githubEmail} 사용자의 삭제에 실패하였습니다`);
+      error.name = 'NotFound';
+      throw error;
+    }
     return deletedUser;
   }
 }

@@ -16,6 +16,8 @@ const UserSchema = new Schema(
     },
     position: {
       type: String,
+      required: false,
+      default: '공통',
     },
     authImage: {
       type: String,
@@ -23,6 +25,8 @@ const UserSchema = new Schema(
     },
     blogAddress: {
       type: String,
+      required: false,
+      default: '',
     },
     githubEmail: {
       type: String,
@@ -44,6 +48,20 @@ const UserSchema = new Schema(
       type: String,
       default: 'guest',
     },
+    articles: [
+      new Schema(
+        {
+          articleId: {
+            type: String,
+            required: true,
+          },
+        },
+        {
+          _id: false,
+        },
+      ),
+    ],
+
   },
   {
     collection: 'users',
