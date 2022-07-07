@@ -15,6 +15,11 @@ app.use(express.urlencoded({ extended: false }));
 
 const { PORT } = process.env;
 
+app.get('/', (req: any, res: any) => {
+  // eslint-disable-next-line no-path-concat, prefer-template
+  res.sendFile(__dirname + '/index.html');
+});
+
 app.use('/api', apiRouter);
 
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
