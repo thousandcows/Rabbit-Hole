@@ -21,6 +21,8 @@ const ChatSchema = new Schema(
     },
     image: {
       type: String,
+      required: false,
+      default: 'no image',
     },
   },
   {
