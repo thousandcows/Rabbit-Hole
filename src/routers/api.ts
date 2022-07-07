@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { initRouter } from "./api/";
+import { Router } from 'express';
+import { initRouter } from './api/index';
 
 const apiRouter = Router();
 
-apiRouter.use("/", initRouter);
+apiRouter.use('/', initRouter);
 
 export { apiRouter };
