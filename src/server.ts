@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
 import { apiRouter, authRouter } from './routers';
+import { errorHandler } from './middlewares/error-handler';
 
 const app = express();
 app.use(cors());
@@ -17,6 +18,9 @@ const { PORT } = process.env;
 
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
+
+app.use(errorHandler);
+
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 
 // socket
