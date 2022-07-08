@@ -78,7 +78,7 @@ class UserService {
     return users;
   }
 
-  async getUserByEmail(githubEmail: string): Promise<UserData> {
+  async getUserByEmail(githubEmail: string): Promise<UserData | null> {
     const user = await this.userModel.findByEmail(githubEmail);
     return user;
   }
