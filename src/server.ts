@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
-import { apiRouter } from './routers/api';
+import { apiRouter, authRouter } from './routers';
+import { errorHandler } from './middlewares';
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 const { PORT } = process.env;
 
 app.use('/api', apiRouter);
+app.use('/auth', authRouter);
+
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 
