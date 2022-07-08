@@ -23,7 +23,7 @@ const { PORT } = process.env;
 
 app.get('/', (req: any, res: any) => {
   // eslint-disable-next-line no-path-concat, prefer-template
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/chatting-test.html');
 });
 // 기능 구현 완료 후 routing 작업 예정
 // s3에 파일 이미지 업로드
