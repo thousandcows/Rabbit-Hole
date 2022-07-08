@@ -12,6 +12,8 @@ export interface UserInfo {
     githubEmail: string;
     githubProfileUrl: string;
     githubAvatar: string;
+    carrots?: number;
+    role?: string;
     articles?: { articleId: string; }[];
   }
 
@@ -46,15 +48,6 @@ export class UserModel {
   }
 
   async create(userInfo: UserInfo): Promise<UserData> {
-    const { githubEmail } = userInfo;
-
-    const user = await User.findOne({ githubEmail });
-    if (user) {
-      const error = new Error('이 이름은 현재 사용중입니다. 다른 이름을 입력해 주세요.');
-      error.name = 'Conflict';
-      throw error;
-    }
-
     const createdNewUser = await User.create(userInfo);
 
     if (!createdNewUser) {
