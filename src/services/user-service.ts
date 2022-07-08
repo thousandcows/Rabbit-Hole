@@ -5,8 +5,8 @@ import {
 class UserService {
   userModel: UserModel;
 
-  constructor(userModel: UserModel) {
-    this.userModel = userModel;
+  constructor(userModelArg: UserModel) {
+    this.userModel = userModelArg;
   }
 
   async addUser(userInfo: UserInfo): Promise<UserData> {

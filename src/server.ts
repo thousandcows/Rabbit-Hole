@@ -3,7 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
 import { apiRouter, authRouter } from './routers';
-import { errorHandler } from './middlewares/error-handler';
+import { errorHandler } from './middlewares';
 
 const app = express();
 app.use(cors());

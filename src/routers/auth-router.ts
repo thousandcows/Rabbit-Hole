@@ -1,4 +1,6 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import {
+  NextFunction, Request, Response, Router,
+} from 'express';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { userService } from '../services';
@@ -29,7 +31,7 @@ authRouter.get('/github', async (req: Request, res: Response, next: NextFunction
     const userInfo = {
       githubEmail: userEmail.data[0].email,
       githubProfileUrl: user.data.html_url,
-      githubAvatar: user.data.avatar_url
+      githubAvatar: user.data.avatar_url,
     };
     res.status(200).json(userInfo);
   } catch (error) {
