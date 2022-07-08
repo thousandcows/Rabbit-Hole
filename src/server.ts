@@ -2,11 +2,15 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
-import { apiRouter } from './routers/api';
+import { apiRouter, authRouter } from './routers';
+import { errorHandler } from './middlewares';
+
 const fs = require('fs');
 const util = require('util');
+
 const unlinkFile = util.promisify(fs.unlink);
 const multer = require('multer');
+
 const upload = multer({ dest: 'uploads/' });
 const { uploadFile, downloadFile } = require('./s3');
 
@@ -34,15 +38,15 @@ app.post('/images', upload.single('image'), async (req: Request, res: Response) 
   const fileType = file?.mimetype.split('/')[0];
   if (fileType !== 'image') {
     const error = new Error('올바른 이미지 형식이 아닙니다');
-      error.name = 'NotAcceptable';
-      throw error;
-  };
+    error.name = 'NotAcceptable';
+    throw error;
+  }
   // 이미지 크기 확인
   if (file && file.size >= 1024 * 1024) {
     const error = new Error('파일 크기는 10MB 이하여야 합니다');
     error.name = 'NotAcceptable';
     throw error;
-  };
+  }
   // 이미지 크기 조정 (구현 예정)
   // 이미지 s3에 업로드
   const result = await uploadFile(file);
@@ -56,6 +60,9 @@ app.get('/images/:key', async (req: Request, res: Response) => {
 });
 
 app.use('/api', apiRouter);
+app.use('/auth', authRouter);
+
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 

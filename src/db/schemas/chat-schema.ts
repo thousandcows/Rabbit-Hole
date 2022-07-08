@@ -31,4 +31,4 @@ const ChatSchema = new Schema(
   },
 );
 
-export default ChatSchema;
+export { ChatSchema };

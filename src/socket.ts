@@ -26,7 +26,7 @@ function webSocket(server: http.Server) {
       // 다른 접속자 화면에 메시지 송출
       socket.broadcast.emit('chat message', `${data.name}: ${data.msg}`);
       const chatInfo = {
-        roomType: 'main', 
+        roomType: 'main',
         username: `${data.name}`,
         message: `${data.msg}`,
         time: new Date().getHours().toString(),

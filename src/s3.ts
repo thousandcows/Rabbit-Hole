@@ -20,10 +20,10 @@ function uploadFile(file: any): Promise<any> {
   const uploadParams = {
     Bucket: bucketName,
     Body: fileStream,
-    Key: file.filename
-  }
+    Key: file.filename,
+  };
   return s3.upload(uploadParams).promise();
-};
+}
 
 exports.uploadFile = uploadFile;
 
@@ -31,10 +31,10 @@ exports.uploadFile = uploadFile;
 function downloadFile(fileKey: any) {
   const downloadParams = {
     Key: fileKey,
-    Bucket: bucketName
+    Bucket: bucketName,
   };
 
-  return s3.getObject(downloadParams).createReadStream()
-};
+  return s3.getObject(downloadParams).createReadStream();
+}
 
 exports.downloadFile = downloadFile;
