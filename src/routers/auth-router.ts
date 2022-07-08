@@ -26,7 +26,6 @@ authRouter.get('/github', async (req: Request, res: Response, next: NextFunction
         Authorization: `token ${data.access_token}`,
       },
     });
-
     const userInfo = {
       githubEmail: userEmail.data[0].email,
       githubProfileUrl: user.data.html_url,
