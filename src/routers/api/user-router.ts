@@ -2,7 +2,7 @@ import {
   Router, Request, Response, NextFunction,
 } from 'express';
 import { userService } from '../../services';
-// import { contentTypeChecker } from '../../utils/content-type-checker';
+import { contentTypeChecker } from '../../utils/content-type-checker';
 
 const userRouter = Router();
 
@@ -24,7 +24,7 @@ userRouter.get('/my', async (req:Request, res:Response, next:NextFunction) => {
 userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userInfo = req.body;
-    // contentTypeChecker(userInfo);
+    contentTypeChecker(userInfo);
     // 위 데이터를 사용자 db에 추가하기
     const newUser = await userService.addUser(userInfo);
     res.status(201).json(newUser);

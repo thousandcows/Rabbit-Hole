@@ -37,9 +37,9 @@ authRouter.get('/github', async (req: Request, res: Response, next: NextFunction
     if (userData) {
       const userToken = await userService.getUserToken(userInfo.githubEmail);
       res.status(200).json(userToken);
+    } else {
+      res.status(200).json(userInfo);
     }
-
-    res.status(200).json(userInfo);
   } catch (error) {
     next(error);
   }
