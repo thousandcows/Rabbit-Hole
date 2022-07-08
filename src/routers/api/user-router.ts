@@ -5,7 +5,22 @@ import { userService } from '../../services';
 
 const userRouter = Router();
 
-userRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/my', async (req:Request, res:Response, next:NextFunction) => {
+  try {
+    const githubEmail = req.currentGithubEmail;
+    if (!githubEmail) {
+      const error = new Error('로그인 후 확인 가능합니다.');
+      error.name = 'Unauthorized';
+      throw error;
+    }
+    const myInfo = await userService.getUserByEmail(githubEmail);
+    res.status(200).json(myInfo);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userInfo = req.body;
     // 위 데이터를 사용자 db에 추가하기
