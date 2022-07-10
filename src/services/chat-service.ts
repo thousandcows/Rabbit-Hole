@@ -25,14 +25,7 @@ class ChatService {
 
   // 1. 새 메시지 추가
   async addChat(chat: ChatInfo): Promise<ChatData> {
-    console.log('reached addChat method');
-    console.log('chat: ', chat);
     const result = await chatModel.addChat(chat);
-    if (!result) {
-      const error = new Error('서버와의 연결이 원활하지 않습니다.');
-      error.name = 'InternalServerError';
-      throw error;
-    }
     return result;
   }
 
