@@ -5,7 +5,7 @@ import { chatService } from './services/chat-service';
 function webSocket(server: http.Server) {
   const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:4000',
+      origin: process.env.TEST_URL,
       methods: ['GET', 'POST'],
     },
   });
