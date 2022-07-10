@@ -1,3 +1,4 @@
+import { Username } from 'aws-sdk/clients/appstream';
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
@@ -16,6 +17,11 @@ interface ChatInfo {
   image: string,
 }
 
+// interface clientList {
+//   name: string,
+//   id: string,
+// }
+
 function webSocket(server: http.Server) {
   const io = new Server(server, {
     cors: {
@@ -23,21 +29,25 @@ function webSocket(server: http.Server) {
       methods: ['GET', 'POST'],
     },
   });
+  // const connectedClientList = []; // 추후 수정
   // socket 연결 중
   io.sockets.on('connect', (socket: any) => {
     // 새 접속자 입장
     socket.on('newUser', async (newUser: string) => {
+      // 새 접속자 리스트에 추가
+      // connectedClientList.push(newUser); // 추후 수정
       // user에게 채팅방에 입장했음을 알림
       socket.emit('updateForNewUser', `${newUser}(나)님이 입장했습니다.`);
       // 전체 접속자에게 user가 채팅방에 입장했음을 알림
       socket.broadcast.emit('updateForEveryone', `${newUser}가 도착했습니다.`);
+      // 최근 20개 채팅 내역을 불러옴
       const chatList = await chatService.findAllChats();
       for (let i = 0; i < 20; i += 1) {
         const newChat = chatList[i];
         if (newChat.image === 'no image') {
-          socket.emit('chat message', `${newChat.username}: ${newChat.message}`);
+          socket.emit('chat-load', newChat);
         } else {
-          socket.emit('image-uploaded', `${newChat.username}: ${newChat.image}`);
+          socket.emit('image-load', newChat);
         }
       }
     });
@@ -47,11 +57,13 @@ function webSocket(server: http.Server) {
       socket.emit('chat message', `나: ${data.msg}`);
       // 다른 접속자 화면에 메시지 송출
       socket.broadcast.emit('chat message', `${data.name}: ${data.msg}`);
+      const hour = new Date().getHours().toString();
+      const min = new Date().getMinutes.toString();
       const chatInfo: ChatInfo = {
         roomType: 'main',
         username: `${data.name}`,
         message: `${data.msg}`,
-        time: new Date().getHours().toString(),
+        time: hour + min,
         image: 'no image',
       };
       chatService.addChat(chatInfo);
@@ -91,16 +103,13 @@ function webSocket(server: http.Server) {
       // 이미지 로컬 저장 후
       await writer.on('finish', async () => {
         // 이미지 채팅창 송출
-        socket.emit('image-uploaded', {
-          name: message.name,
-        });
-        socket.broadcast.emit('image-uploaded', {
-          name: message.name,
-        });
+        socket.emit('image-uploaded', message);
+        socket.broadcast.emit('image-uploaded', message);
         // 이미지 s3에 업로드
         const fileToUpload = {
           path: __dirname + '/uploads/' + message.name,
-          filename: message.name
+          filename: message.name,
+          type: message.type,
         }
         const uploadResult = await uploadFile(fileToUpload);
         // 이미지 객체 url DB에 저장
@@ -119,7 +128,7 @@ function webSocket(server: http.Server) {
   });
   // socket 연결 종료
   io.sockets.on('disconnect', () => {
-    console.log('연결이 종료되었습니다.');
+    // const idx = connectedClientList.findIndex(); // 유저 정보 어떻게 가져올지 보고 결정
   });
 }
 
