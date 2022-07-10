@@ -40,9 +40,7 @@ class ChatService {
   async findAllChats(): Promise<ChatData[]> {
     const chatList = await this.chatModel.findAllChats();
     if (!chatList) {
-      const error = new Error('채팅 내역을 불러올 수 없습니다.');
-      error.name = 'NotFound';
-      throw error;
+      return [];
     }
     return chatList;
   }
