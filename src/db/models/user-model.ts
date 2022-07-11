@@ -14,7 +14,6 @@ export interface UserInfo {
     githubAvatar: string;
     carrots?: number;
     role?: string;
-    articles?: { articleId: string; }[];
   }
 
 export interface UserData extends UserInfo {
