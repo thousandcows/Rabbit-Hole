@@ -1,10 +1,12 @@
+import { Types } from 'mongoose';
+
 /* eslint-disable no-unused-vars */
 export {};
 
 declare global {
   namespace Express {
     interface Request {
-      currentGithubEmail?: string;
+      currentUserId?: Types.ObjectId;
     }
   }
 }

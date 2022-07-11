@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
+import { userService } from '../services';
 
 async function loginRequired(req: Request, res: Response, next: NextFunction) {
   // request 헤더로부터 authorization bearer 토큰을 받음.
@@ -35,7 +37,14 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
         Authorization: `token ${userToken}`,
       },
     });
-    req.currentGithubEmail = userEmail.data[0].email;
+    const user = await userService.getUserByEmail(userEmail.data[0].email);
+    if (!user) {
+      const error = Error('등록된 회원이 아닙니다.');
+      error.name = 'Unauthorized';
+      throw error;
+    }
+    req.currentUserId = user._id;
+
     next();
   } catch (error) {
     res.status(401).json({

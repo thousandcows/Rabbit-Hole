@@ -23,11 +23,13 @@ export class CommentModel {
     return comments;
   }
 
+  // 특정 유저가 작성한 댓글 가져오기
   async findByAuthorId(AuthorId: string): Promise<CommentData | null> {
     const user = await Comment.findOne({ AuthorId });
     return user;
   }
 
+  // 댓글 작성
   async create(commentInfo: CommentInfo): Promise<CommentData> {
     const createdNewComment = await Comment.create(commentInfo);
 
@@ -40,8 +42,9 @@ export class CommentModel {
     return createdNewComment;
   }
 
-  async update(articleId: string, update: Partial<CommentInfo>): Promise<CommentData> {
-    const filter = { articleId };
+  // 댓글 수정, 채택
+  async update(commentId: string, update: Partial<CommentInfo>): Promise<CommentData> {
+    const filter = { commentId };
     const option = { returnOriginal: false };
 
     const updatedComment = await Comment.findOneAndUpdate(filter, update, option);
@@ -55,6 +58,7 @@ export class CommentModel {
     return updatedComment;
   }
 
+  // 게시글 삭제할때 댓글도 같이 삭제
   async deleteByArticleId(articleId: string): Promise<CommentData[]> {
     const deletedComments = await Comment.find({ articleId });
     await Comment.deleteMany({ articleId });
@@ -66,6 +70,7 @@ export class CommentModel {
     return deletedComments;
   }
 
+  // 댓글 하나 삭제
   async deleteByCommentId(_id: string): Promise<CommentData> {
     const deletedComment = await Comment.findOneAndDelete({ _id });
     if (!deletedComment) {
