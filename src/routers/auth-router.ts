@@ -13,6 +13,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const { code } = req.query;
     const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
 
+    // 깃허브 토큰 데이터
     const { data } = await axios.get(accessTokenUrl, {
       headers: {
         Accept: 'application/json',
@@ -42,7 +43,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
       githubProfileUrl: user.data.html_url,
       githubAvatar: user.data.avatar_url,
     };
-    console.log(userInfo);
+
     // 이미 가입된 회원인지 확인
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {

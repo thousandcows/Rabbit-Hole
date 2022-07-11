@@ -2,6 +2,7 @@
 import {
   UserModel, userModel, UserInfo, UserData,
 } from '../db/models/user-model';
+import { validation } from '../utils/validation';
 
 class UserService {
   userModel: UserModel;
@@ -11,21 +12,9 @@ class UserService {
   }
 
   async addUser(userInfo: UserInfo): Promise<UserData> {
-    const {
-      name, track, trackCardinalNumber, authImage, githubEmail, githubProfileUrl, githubAvatar,
-    } = userInfo;
+    const { githubEmail } = userInfo;
 
-    if (!name
-       || !track
-       || !trackCardinalNumber
-       || !authImage
-       || !githubEmail
-       || !githubProfileUrl
-       || !githubAvatar) {
-      const error = new Error('필수 정보를 전부 입력해 주세요.');
-      error.name = 'NotFound';
-      throw error;
-    }
+    validation.addUser(userInfo);
 
     const user = await this.userModel.findByEmail(githubEmail);
     if (user) {
