@@ -11,11 +11,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
   try {
     // 요청 코드
     const { code } = req.query;
-    console.log(code);
-    // const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}`;
-    const githubapp = 'Iv1.207cf524bbc6a417';
-    const githubappscrect = 'bffa3706df26b0ed9bd5cc460119e79c950fd4fb';
-    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${githubapp}&client_secret=${githubappscrect}&code=${code}`;
+    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}`;
 
     const { data } = await axios.get(accessTokenUrl, {
       headers: {
@@ -68,9 +64,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
 authRouter.get('/github/login', async (req: Request, res: Response, next: NextFunction) => {
   // const { code } = req.query;
   try {
-    // const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
-    const githubapp = 'Iv1.207cf524bbc6a417';
-    const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${githubapp}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
+    const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
     res.redirect(accessTokenUrl);
   } catch (error) {
     next(error);
