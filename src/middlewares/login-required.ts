@@ -29,13 +29,7 @@ function loginRequired(req: Request, res: Response, next: NextFunction) {
 
   // 해당 token 이 정상적인 token인지 확인
   try {
-    const secretKey = process.env.JWT_SECRET_KEY || 'secret-key';
-    const jwtDecoded = jwt.verify(userToken, secretKey);
-
-    const { githubEmail } = jwtDecoded as any;
-
-    // 라우터에서 req.currentUserId를 통해 유저의 id에 접근 가능하게 됨
-    req.currentGithubEmail = githubEmail;
+    const hello = 'hello';
 
     next();
   } catch (error) {
