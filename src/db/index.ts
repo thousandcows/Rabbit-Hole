@@ -1,6 +1,5 @@
 import mongoose, { model } from 'mongoose';
-import { ChatSchema } from './schemas/chat-schema';
-import { UserSchema } from './schemas/user-schema';
+import { ChatSchema, CommentSchema, UserSchema } from './schemas';
 
 const DB_URL = process.env.MONGODB_URL
   || 'MongoDB 서버 주소가 설정되지 않았습니다.\n./db/index.ts 파일을 확인해 주세요. \n.env 파일도 필요합니다.\n';
@@ -13,3 +12,4 @@ db.on('error', (error) => console.error(`\nMongoDB 연결에 실패하였습니�
 
 export const Chat = model('chats', ChatSchema);
 export const User = model('users', UserSchema);
+export const Comment = model('comments', CommentSchema);

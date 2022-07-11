@@ -22,11 +22,7 @@ export interface UserData extends UserInfo {
 export class UserModel {
   async findByEmail(githubEmail: string): Promise<UserData | null> {
     const user = await User.findOne({ githubEmail });
-    // if (!user) {
-    //   const error = new Error('해당 email의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
-    //   error.name = 'NotFound';
-    //   throw error;
-    // }
+
     return user;
   }
 
