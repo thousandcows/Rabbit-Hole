@@ -25,7 +25,7 @@ class ChatService {
 
   // 1. 새 메시지 추가
   async addChat(chat: ChatInfo): Promise<ChatData> {
-    const result = await chatModel.addChat(chat);
+    const result = await this.chatModel.addChat(chat);
     return result;
   }
 
