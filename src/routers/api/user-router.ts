@@ -1,12 +1,13 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
+import { loginRequired } from '../../middlewares/login-required';
 import { userService } from '../../services';
 import { contentTypeChecker } from '../../utils/content-type-checker';
 
 const userRouter = Router();
 
-userRouter.get('/mypage', async (req:Request, res:Response, next:NextFunction) => {
+userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
   try {
     const githubEmail = req.currentGithubEmail;
     if (!githubEmail) {
@@ -44,7 +45,7 @@ userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) 
   }
 });
 
-userRouter.get('/:githubEmail', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { githubEmail } = req.params;
 
@@ -56,7 +57,7 @@ userRouter.get('/:githubEmail', async (req: Request, res: Response, next: NextFu
   }
 });
 
-userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // const githubEmail = req.currentGithubEmail;
     const githubEmail = 'chss3339@gmail.com';
@@ -76,7 +77,7 @@ userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-userRouter.delete('/', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const githubEmail = req.currentGithubEmail;
     if (!githubEmail) {
