@@ -1,14 +1,15 @@
-import { Username } from 'aws-sdk/clients/appstream';
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
 
 const fs = require('fs');
 const util = require('util');
+
 const unlinkFile = util.promisify(fs.unlink);
 const path = require('path');
 const sharp = require('sharp');
 const { uploadFile } = require('./s3');
+
 interface ChatInfo {
   roomType: string,
   username: string,
@@ -17,10 +18,9 @@ interface ChatInfo {
   image: string,
 }
 
-// interface clientList {
-//   name: string,
-//   id: string,
-// }
+interface clientList {
+  [key: string]: string,
+}
 
 function webSocket(server: http.Server) {
   const io = new Server(server, {
@@ -29,17 +29,32 @@ function webSocket(server: http.Server) {
       methods: ['GET', 'POST'],
     },
   });
-  // const connectedClientList = []; // 추후 수정
+  const connectedClientList: clientList = {};
   // socket 연결 중
   io.sockets.on('connect', (socket: any) => {
     // 새 접속자 입장
-    socket.on('newUser', async (newUser: string) => {
+    socket.on('newUser', async (newUser: string) => { // 접속자 정보 어떻게 받을지 논의
       // 새 접속자 리스트에 추가
-      // connectedClientList.push(newUser); // 추후 수정
+      const { clientsCount } = io.sockets.server.engine;
+      // 현재 시간
+      const today = new Date(); // 현재 시간
+      const hours = today.getHours(); // 시
+      const minutes = today.getMinutes(); // 분
+      const now = `${hours}:${minutes}`;
       // user에게 채팅방에 입장했음을 알림
-      socket.emit('updateForNewUser', `${newUser}(나)님이 입장했습니다.`);
+      socket.emit('updateForNewUser', {
+        message: `${newUser}(나)님이 입장했습니다.`,
+        clientList: connectedClientList,
+        clientsCount,
+        time: now,
+      });
       // 전체 접속자에게 user가 채팅방에 입장했음을 알림
-      socket.broadcast.emit('updateForEveryone', `${newUser}가 도착했습니다.`);
+      socket.broadcast.emit('updateForEveryone', {
+        message: `${newUser}가 도착했습니다.`,
+        clientList: connectedClientList,
+        clientsCount,
+        time: now,
+      });
       // 최근 20개 채팅 내역을 불러옴
       const chatList = await chatService.findAllChats();
       for (let i = 0; i < 20; i += 1) {
@@ -91,11 +106,11 @@ function webSocket(server: http.Server) {
           width: Math.trunc(data.width * 0.75),
           height: Math.trunc(data.height * 0.75),
           fit: sharp.fit.inside,
-          withoutEnlargement: true
+          withoutEnlargement: true,
         })
         .toBuffer();
       // 이미지 로컬에 임시 저장
-      const writer = await fs.createWriteStream(path.resolve(__dirname + '/uploads/' + message.name), {
+      const writer = await fs.createWriteStream(path.resolve(`${__dirname}/uploads/${message.name}`), {
         encoding: 'base64',
       });
       await writer.write(newFile);
@@ -107,10 +122,10 @@ function webSocket(server: http.Server) {
         socket.broadcast.emit('image-uploaded', message);
         // 이미지 s3에 업로드
         const fileToUpload = {
-          path: __dirname + '/uploads/' + message.name,
+          path: `${__dirname}/uploads/${message.name}`,
           filename: message.name,
           type: message.type,
-        }
+        };
         const uploadResult = await uploadFile(fileToUpload);
         // 이미지 객체 url DB에 저장
         const chatInfo: ChatInfo = {
@@ -125,10 +140,24 @@ function webSocket(server: http.Server) {
         await unlinkFile(fileToUpload.path);
       });
     });
-  });
-  // socket 연결 종료
-  io.sockets.on('disconnect', () => {
-    // const idx = connectedClientList.findIndex(); // 유저 정보 어떻게 가져올지 보고 결정
+    // socket 연결 종료
+    io.sockets.on('disconnect', () => {
+    // 접속자 목록에서 삭제
+      delete connectedClientList.username;
+      // 전체 접속자에게 알림
+      const { clientsCount } = io.sockets.server.engine;
+      // 현재 시간
+      const today = new Date(); // 현재 시간
+      const hours = today.getHours(); // 시
+      const minutes = today.getMinutes(); // 분
+      const now = `${hours}:${minutes}`;
+      socket.broadcast.emit('updateForEveryone', {
+        message: '가 퇴장했습니다.',
+        clientList: connectedClientList,
+        clientsCount,
+        time: now,
+      });
+    });
   });
 }
 
