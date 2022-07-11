@@ -18,9 +18,6 @@ function errorHandler(error: Error, req: Request, res: Response) {
     case 'Conflict':
       res.status(409);
       break;
-    case 'InternalServerError':
-      res.status(500);
-      break;
     default:
       res.status(400);
   }
