@@ -1,1 +1,1 @@
-export * from './initRouter';
+export * from './user-router';
