@@ -1,4 +1,5 @@
 /* eslint-disable class-methods-use-this */
+import { Types } from 'mongoose';
 import { CommentInfo } from '../db/models/comment-model';
 import { UserInfo } from '../db/models/user-model';
 
@@ -26,6 +27,14 @@ class Validation {
     if (!content) {
       const error = new Error('댓글 내용을 입력해 주세요.');
       error.name = 'NotFound';
+      throw error;
+    }
+  }
+
+  isLogin(userId: Types.ObjectId | undefined): void {
+    if (!userId) {
+      const error = new Error('로그인 후 확인 가능합니다.');
+      error.name = 'Unauthorized';
       throw error;
     }
   }

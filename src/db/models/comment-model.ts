@@ -43,7 +43,7 @@ export class CommentModel {
   }
 
   // 댓글 수정, 채택
-  async update(commentId: Types.ObjectId, update: Partial<CommentInfo>): Promise<CommentData> {
+  async update(commentId: string, update: Partial<CommentInfo>): Promise<CommentData> {
     const filter = { _id: commentId };
     const option = { returnOriginal: false };
 
@@ -71,7 +71,7 @@ export class CommentModel {
   }
 
   // 댓글 하나 삭제
-  async deleteByCommentId(commentId: Types.ObjectId): Promise<CommentData> {
+  async deleteByCommentId(commentId: string): Promise<CommentData> {
     const deletedComment = await Comment.findOneAndDelete({ _id: commentId });
     if (!deletedComment) {
       const error = new Error('댓글을 삭제하지 못했습니다.');
