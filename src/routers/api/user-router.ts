@@ -59,8 +59,7 @@ userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Respons
 
 userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // const githubEmail = req.currentGithubEmail;
-    const githubEmail = 'chss3339@gmail.com';
+    const githubEmail = req.currentGithubEmail;
     if (!githubEmail) {
       const error = new Error('로그인 후 개인정보 변경이 가능합니다.');
       error.name = 'Unauthorized';
