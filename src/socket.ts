@@ -72,13 +72,16 @@ function webSocket(server: http.Server) {
       socket.emit('chat message', `나: ${data.msg}`);
       // 다른 접속자 화면에 메시지 송출
       socket.broadcast.emit('chat message', `${data.name}: ${data.msg}`);
-      const hour = new Date().getHours().toString();
-      const min = new Date().getMinutes.toString();
+      // 현재 시간
+      const today = new Date(); // 현재 시간
+      const hours = today.getHours(); // 시
+      const minutes = today.getMinutes(); // 분
+      const now = `${hours}:${minutes}`;
       const chatInfo: ChatInfo = {
         roomType: 'main',
         username: `${data.name}`,
         message: `${data.msg}`,
-        time: hour + min,
+        time: now,
         image: 'no image',
       };
       chatService.addChat(chatInfo);
