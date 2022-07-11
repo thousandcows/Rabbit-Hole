@@ -31,12 +31,13 @@ class Validation {
     }
   }
 
-  isLogin(userId: Types.ObjectId | undefined): void {
-    if (!userId) {
+  isLogin(userId: Types.ObjectId | undefined): Types.ObjectId {
+    if (typeof userId === 'undefined') {
       const error = new Error('로그인 후 확인 가능합니다.');
       error.name = 'Unauthorized';
       throw error;
     }
+    return userId;
   }
 }
 

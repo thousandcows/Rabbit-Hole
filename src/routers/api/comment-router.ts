@@ -14,8 +14,7 @@ commentRouter.post('/', loginRequired, async (req:Request, res:Response, next:Ne
     const commentInfo = req.body;
     contentTypeChecker(commentInfo);
 
-    const userId = req.currentUserId;
-    validation.isLogin(userId);
+    const userId = validation.isLogin(req.currentUserId);
 
     const newComment = await commentService.addComment(commentInfo);
     res.status(201).json(newComment);

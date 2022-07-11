@@ -4,17 +4,13 @@ import {
 import { loginRequired } from '../../middlewares/login-required';
 import { userService } from '../../services';
 import { contentTypeChecker } from '../../utils/content-type-checker';
+import { validation } from '../../utils/validation';
 
 const userRouter = Router();
 
 userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
   try {
-    const userId = req.currentUserId;
-    if (!userId) {
-      const error = new Error('로그인 후 확인 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
+    const userId = validation.isLogin(req.currentUserId);
     const myInfo = await userService.getUserById(userId);
     res.status(200).json(myInfo);
   } catch (error) {
