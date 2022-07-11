@@ -48,7 +48,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인
-      const loginFrontUrl = `http://localhost:3000/github/register?token=${accessToken}`;
+      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&githubProfileUrl=${userData.githubProfileUrl}&githubEmail=${userData.githubEmail}&githubAvatar=${userData.githubAvatar}`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
