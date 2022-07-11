@@ -18,7 +18,6 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
         Accept: 'application/json',
       },
     });
-    console.log(data);
     // 깃허브 토큰
     const accessToken = data.access_token;
 
@@ -43,7 +42,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
       githubProfileUrl: user.data.html_url,
       githubAvatar: user.data.avatar_url,
     };
-    console.log(userInfo);
+
     // 이미 가입된 회원인지 확인
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
