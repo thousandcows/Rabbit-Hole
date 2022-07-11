@@ -13,7 +13,6 @@ export interface UserInfo {
     githubProfileUrl: string;
     githubAvatar: string;
     carrots?: number;
-    refreshToken: string;
     role?: string;
   }
 

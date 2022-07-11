@@ -50,11 +50,6 @@ const UserSchema = new Schema(
       required: false,
       default: 'guest',
     },
-    refreshToken: {
-      type: String,
-      required: true,
-    },
-
   },
   {
     collection: 'users',
