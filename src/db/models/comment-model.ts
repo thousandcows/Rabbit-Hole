@@ -24,8 +24,8 @@ export class CommentModel {
   }
 
   // 특정 유저가 작성한 댓글 가져오기
-  async findByAuthorId(AuthorId: string): Promise<CommentData | null> {
-    const user = await Comment.findOne({ AuthorId });
+  async findByAuthorId(authorId: string): Promise<CommentData | null> {
+    const user = await Comment.findOne({ authorId });
     return user;
   }
 
@@ -43,8 +43,8 @@ export class CommentModel {
   }
 
   // 댓글 수정, 채택
-  async update(commentId: string, update: Partial<CommentInfo>): Promise<CommentData> {
-    const filter = { commentId };
+  async update(commentId: Types.ObjectId, update: Partial<CommentInfo>): Promise<CommentData> {
+    const filter = { _id: commentId };
     const option = { returnOriginal: false };
 
     const updatedComment = await Comment.findOneAndUpdate(filter, update, option);
@@ -59,9 +59,9 @@ export class CommentModel {
   }
 
   // 게시글 삭제할때 댓글도 같이 삭제
-  async deleteByArticleId(articleId: string): Promise<CommentData[]> {
-    const deletedComments = await Comment.find({ articleId });
-    await Comment.deleteMany({ articleId });
+  async deleteByArticleId(articleId: Types.ObjectId): Promise<CommentData[]> {
+    const deletedComments = await Comment.find({ _id: articleId });
+    await Comment.deleteMany({ _id: articleId });
     if (!deletedComments) {
       const error = new Error('게시글에 작성된 댓글을 삭제하지 못했습니다.');
       error.name = 'NotFound';
@@ -71,8 +71,8 @@ export class CommentModel {
   }
 
   // 댓글 하나 삭제
-  async deleteByCommentId(_id: string): Promise<CommentData> {
-    const deletedComment = await Comment.findOneAndDelete({ _id });
+  async deleteByCommentId(commentId: Types.ObjectId): Promise<CommentData> {
+    const deletedComment = await Comment.findOneAndDelete({ _id: commentId });
     if (!deletedComment) {
       const error = new Error('댓글을 삭제하지 못했습니다.');
       error.name = 'NotFound';
