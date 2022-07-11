@@ -18,8 +18,10 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
         Accept: 'application/json',
       },
     });
-    // 깃허브 토큰
+    // 깃허브 access 토큰
     const accessToken = data.access_token;
+    // 깃허브 refresh 토큰
+    const refreshToken = data.refresh_token;
 
     // 깃허브 유저 정보
     const user = await axios.get('https://api.github.com/user', {
@@ -47,11 +49,19 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인
-      const loginFrontUrl = `http://localhost:3000/github/register?token=${accessToken}`;
+      const loginFrontUrl = `http://localhost:3000/github/register?token=${accessToken}&refreshToken=${refreshToken}`;
+
+      const refreshTokenUrl = `https://github.com/login/oauth/access_token?refresh_token=${refreshToken}&grant_type=refresh_token&client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}`;
+      const refreshData = await axios.get(refreshTokenUrl, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      console.log(refreshData.data);
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
-      const registerFrontUrl = `http://localhost:3000/github/register?token=${accessToken}&githubProfileUrl=${userInfo.githubProfileUrl}&githubEmail=${userInfo.githubEmail}&githubAvatar=${userInfo.githubAvatar}`;
+      const registerFrontUrl = `http://localhost:3000/github/register?token=${accessToken}&refreshToken=${refreshToken}&githubProfileUrl=${userInfo.githubProfileUrl}&githubEmail=${userInfo.githubEmail}&githubAvatar=${userInfo.githubAvatar}`;
       res.redirect(registerFrontUrl);
     }
   } catch (error) {
@@ -61,7 +71,6 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
 
 // 깃허브 로그인 url
 authRouter.get('/github/login', async (req: Request, res: Response, next: NextFunction) => {
-  // const { code } = req.query;
   try {
     const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
     res.redirect(accessTokenUrl);

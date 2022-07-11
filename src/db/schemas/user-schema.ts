@@ -50,19 +50,10 @@ const UserSchema = new Schema(
       required: false,
       default: 'guest',
     },
-    articles: [
-      new Schema(
-        {
-          articleId: {
-            type: String,
-            required: true,
-          },
-        },
-        {
-          _id: false,
-        },
-      ),
-    ],
+    refreshToken: {
+      type: String,
+      required: true,
+    },
 
   },
   {
