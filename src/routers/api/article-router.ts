@@ -17,7 +17,7 @@ articleRouter.post('/', loginRequired, async (req: Request, res: Response, next:
     const articleInfo = {
       articleType, author, authorId: userId, title, content, carrots, tags,
     };
-    const result = await articleService.createArticle(articleInfo);
+    const result = await articleService.createArticle(userId, articleInfo);
     res.status(200).json(result);
   } catch (error) {
     next(error);
