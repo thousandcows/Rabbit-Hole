@@ -1,18 +1,20 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
+import { loginRequired } from '../../middlewares/login-required';
 import { articleService } from '../../services';
 
 const articleRouter = Router();
 
 // 1. 새 게시글 작성
-articleRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const userId = req.currentUserId;
     const {
       articleType, author, authorId, title, content, carrots, tags,
     } = req.body;
     const articleInfo = {
-      articleType, author, authorId, title, content, carrots, tags,
+      articleType, author, userId, title, content, carrots, tags,
     };
     const result = await articleService.createArticle(articleInfo);
     res.status(200).json(result);
@@ -48,11 +50,12 @@ articleRouter.get('/:articleId', async (req: Request, res: Response, next: NextF
   }
 });
 // 4. 게시글 제목, 내용 수정
-articleRouter.put('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.put('/:articleId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const userId = req.currentUserId;
     const { articleId } = req.params;
     const { title, content, tags } = req.body;
-    const updatedArticle = await articleService.updateArticle({
+    const updatedArticle = await articleService.updateArticle(userId, {
       articleId, title, content, tags,
     });
     res.status(200).json(updatedArticle);
@@ -61,17 +64,18 @@ articleRouter.put('/:articleId', async (req: Request, res: Response, next: NextF
   }
 });
 // 5. 게시글 삭제
-articleRouter.delete('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.delete('/:articleId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const userId = req.currentUserId;
     const { articleId } = req.params;
-    const result = await articleService.deleteArticle(articleId);
+    const result = await articleService.deleteArticle(userId, articleId);
     res.status(200).json(result);
   } catch (error) {
     next(error);
   }
 });
 // 6. 게시글 좋아요
-articleRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
 
     //   res.status(200).json();
