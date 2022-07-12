@@ -61,7 +61,6 @@ commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response
 commentRouter.delete('/:commentId', loginRequired, async (req: Request, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
-
     const { commentId } = req.params;
 
     const deletedComment = await commentService.deleteCommentsById(userId, commentId);
