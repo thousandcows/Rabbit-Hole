@@ -5,8 +5,8 @@ import { Comment } from '..';
 export interface CommentInfo {
     commentType: string;
     articleId: string;
-    author: string;
-    authorId: string;
+    author?: string;
+    authorId?: string;
     content: string;
     likes?: number;
     isAdopted?: boolean;
