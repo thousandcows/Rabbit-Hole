@@ -125,7 +125,28 @@ export class ArticleModel {
     }
     return result;
   }
-  // 7. 게시글 검색
+
+  // 7. 게시글 검색 - 글 제목
+  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
+    const articles = await Article.find({ articleType, title: new RegExp(title) });
+    if (!articles) {
+      const error = new Error('해당 게시글이 존재하지 않습니다');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return articles;
+  }
+
+  // 7. 게시글 검색 - 작성자
+  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
+    const articles = await Article.find({ articleType, author: new RegExp(author) });
+    if (!articles) {
+      const error = new Error('해당 게시글이 존재하지 않습니다');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return articles;
+  }
 }
 
 export const articleModel = new ArticleModel();
