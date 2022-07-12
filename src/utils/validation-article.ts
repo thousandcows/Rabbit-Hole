@@ -1,11 +1,13 @@
 import { ArticleInfo, articleModel } from '../db/models/article-model';
 import { commentModel } from '../db/models/comment-model';
+import { userService } from '../services/user-service';
 
 class ArticleValidation {
-  createArticle(articleInfo: ArticleInfo) {
+  async createArticle(articleInfo: ArticleInfo) {
     const {
-      articleType, author, authorId, title, content,
+      articleType, author, authorId, title, content, carrots,
     } = articleInfo;
+    const authorInfo = await userService.getUserById(authorId);
     if (!articleType) {
       const error = new Error('게시글 타입을 입력해 주세요.');
       error.name = 'BadRequest';
@@ -34,6 +36,14 @@ class ArticleValidation {
       const error = new Error('글 내용은 5000자 이내로 입력해 주세요.');
       error.name = 'BadRequest';
       throw error;
+    } else if (carrots && carrots < 0) {
+      const error = new Error('당근은 0개 이상이어야 합니다.');
+      error.name = 'BadRequest';
+      throw error;
+    } else if (carrots && authorInfo.carrots && (carrots > authorInfo.carrots)) {
+      const error = new Error('당근 개수가 부족합니다.');
+      error.name = 'BadRequest';
+      throw error;
     }
   }
 
@@ -54,7 +64,7 @@ class ArticleValidation {
         for (let i = 0; i < commentList?.length; i += 1) {
           if (commentList[i].isAdopted === true) {
             const error = new Error('채택된 질문은 수정할 수 없습니다.');
-            error.name = 'BadRequest';
+            error.name = 'Forbidden';
             throw error;
           }
         }
@@ -93,7 +103,7 @@ class ArticleValidation {
     const authorId = articleInfo?.authorId;
     if (userId !== authorId) {
       const error = new Error('이 글의 작성자가 아닙니다');
-      error.name = 'BadRequest';
+      error.name = 'Forbidden';
       throw error;
     }
     // 질문 게시판: 댓글이 있으면 삭제가 불가능함
@@ -101,9 +111,13 @@ class ArticleValidation {
       const commentList = await commentModel.findByArticleId(articleId);
       if (commentList) {
         const error = new Error('댓글이 존재하여 삭제할 수 없습니다.');
-        error.name = 'BadRequest';
+        error.name = 'Forbidden';
         throw error;
       }
+      // 삭제가 가능하다면 질문자에게 당근 환급
+      const carrotsToReturn = articleInfo.carrots;
+      const update = { $inc: { carrots: -carrotsToReturn } };
+      await userService.manageCarrots(userId, update);
     }
   }
 
