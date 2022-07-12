@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import {
   NextFunction, Request, Response, Router,
 } from 'express';
@@ -47,8 +48,8 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     // 이미 가입된 회원인지 확인
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
-      // 로그인
-      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&githubProfileUrl=${userData.githubProfileUrl}&githubEmail=${userData.githubEmail}&githubAvatar=${userData.githubAvatar}`;
+      // 로그인 토큰, userId, userName, 만료시간 600
+      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&expiry=600`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
