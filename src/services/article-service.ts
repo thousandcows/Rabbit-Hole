@@ -1,5 +1,6 @@
 import { Types, Document } from 'mongoose';
 import { articleModel, ArticleModel } from '../db/models/article-model';
+import { commentModel, CommentData } from '../db/models/comment-model';
 import { articleValidation } from '../utils/validation-article';
 
 interface TagInfo {
@@ -64,9 +65,12 @@ class ArticleService {
   }
 
   // 3. 게시글 조회 - 게시글 아이디
-  async findArticle(articleId: string): Promise<ArticleData | null> {
+  async findArticle(articleId: string): Promise<[ArticleData | null, CommentData[] | null]> {
+    // 게시글 정보
     const article = await this.articleModel.findArticle(articleId);
-    return article;
+    // 게시글에 있는 댓글 정보
+    const commentList = await commentModel.findByArticleId(articleId);
+    return [article, commentList];
   }
 
   // 4. 게시글 제목, 내용 수정
@@ -79,14 +83,14 @@ class ArticleService {
 
   // 5. 게시글 삭제
   async deleteArticle(userId: string, articleId: string): Promise<ArticleData | null> {
-    // validation
+    // validation - 유저 아이디, 댓글 여부
     articleValidation.deleteArticle(userId, articleId);
-    // 게시글에 댓글이 있다면 삭제 불가
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
     const result = await this.articleModel.deleteArticle(articleId);
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
+    commentModel.deleteByArticleId(articleId);
     return result;
   }
 
