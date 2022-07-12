@@ -50,13 +50,15 @@ class ArticleValidation {
     // 질문 게시판: 채택된 답변이 있으면 수정이 불가능함
     if (articleInfo?.articleType === 'question') {
       const commentList = await commentModel.findByArticleId(articleId);
-      commentList?.map((comment) => {
-        if (comment.isAdopted === true) {
-          const error = new Error('채택된 질문은 수정할 수 없습니다.');
-          error.name = 'BadRequest';
-          throw error;
+      if (commentList) {
+        for (let i = 0; i < commentList?.length; i += 1) {
+          if (commentList[i].isAdopted === true) {
+            const error = new Error('채택된 질문은 수정할 수 없습니다.');
+            error.name = 'BadRequest';
+            throw error;
+          }
         }
-      });
+      }
     }
     if (!title) {
       const error = new Error('글 제목을 입력해 주세요.');
