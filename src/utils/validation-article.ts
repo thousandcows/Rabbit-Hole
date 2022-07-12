@@ -1,4 +1,5 @@
 import { ArticleInfo, articleModel } from '../db/models/article-model';
+import { commentModel } from '../db/models/comment-model';
 
 class ArticleValidation {
   createArticle(articleInfo: ArticleInfo) {
@@ -46,7 +47,17 @@ class ArticleValidation {
       error.name = 'BadRequest';
       throw error;
     }
-
+    // 질문 게시판: 채택된 답변이 있으면 수정이 불가능함
+    if (articleInfo?.articleType === 'question') {
+      const commentList = await commentModel.findByArticleId(articleId);
+      commentList?.map((comment) => {
+        if (comment.isAdopted === true) {
+          const error = new Error('채택된 질문은 수정할 수 없습니다.');
+          error.name = 'BadRequest';
+          throw error;
+        }
+      });
+    }
     if (!title) {
       const error = new Error('글 제목을 입력해 주세요.');
       error.name = 'BadRequest';
@@ -82,6 +93,15 @@ class ArticleValidation {
       const error = new Error('이 글의 작성자가 아닙니다');
       error.name = 'BadRequest';
       throw error;
+    }
+    // 질문 게시판: 댓글이 있으면 삭제가 불가능함
+    if (articleInfo?.articleType === 'question') {
+      const commentList = await commentModel.findByArticleId(articleId);
+      if (commentList) {
+        const error = new Error('댓글이 존재하여 삭제할 수 없습니다.');
+        error.name = 'BadRequest';
+        throw error;
+      }
     }
   }
 
