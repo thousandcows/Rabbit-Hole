@@ -27,25 +27,43 @@ class CommentService {
   }
 
   // 특정 유저가 작성한 댓글 가져오기
-  async getCommentsByAuthorId(AuthorId: string): Promise<CommentData | null> {
+  async getCommentsByAuthorId(AuthorId: string): Promise<CommentData[] | null> {
     const comments = await this.commentModel.findByAuthorId(AuthorId);
     return comments;
   }
 
-  // 댓글 수정, 채택
-  async setComment(commentId: string, update: Partial<CommentInfo>): Promise<CommentData> {
+  // 댓글 수정
+  async setComment(
+    userId: Types.ObjectId,
+    commentId: string,
+    update: Partial<CommentInfo>,
+  ): Promise<CommentData> {
+    const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
+    if (new Types.ObjectId(comment.authorId) !== userId) {
+      const error = new Error('본인이 작성한 댓글만 수정할 수 있습니다.');
+      error.name = 'Unauthorized';
+      throw error;
+    }
     const updatedComment = await this.commentModel.update(commentId, update);
     return updatedComment;
   }
 
   // 게시글 삭제할때 댓글도 같이 삭제
-  async deleteCommentsByArticleId(articleId: Types.ObjectId): Promise<CommentData[]> {
+  async deleteCommentsByArticleId(
+    articleId: Types.ObjectId,
+  ): Promise<CommentData[]> {
     const deletedComments = await this.commentModel.deleteByArticleId(articleId);
     return deletedComments;
   }
 
   // 댓글 하나 삭제
-  async deleteCommentsById(commentId: string): Promise<CommentData> {
+  async deleteCommentsById(userId:Types.ObjectId, commentId: string): Promise<CommentData> {
+    const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
+    if (new Types.ObjectId(comment.authorId) !== userId) {
+      const error = new Error('본인이 작성한 댓글만 삭제할 수 있습니다.');
+      error.name = 'Unauthorized';
+      throw error;
+    }
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
     return deletedComment;
   }

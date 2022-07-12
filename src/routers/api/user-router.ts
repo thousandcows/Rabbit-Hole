@@ -55,12 +55,7 @@ userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Respons
 
 userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.currentUserId;
-    if (!userId) {
-      const error = new Error('로그인 후 개인정보 변경이 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
+    const userId = validation.isLogin(req.currentUserId);
     const update = req.body;
     contentTypeChecker(update);
     // 사용자 정보를 업데이트함.
@@ -74,12 +69,7 @@ userRouter.put('/', loginRequired, async (req: Request, res: Response, next: Nex
 
 userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req.currentUserId;
-    if (!userId) {
-      const error = new Error('로그인 후 확인 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
+    const userId = validation.isLogin(req.currentUserId);
     const deleteResult = await userService.deleteUser(userId);
 
     res.status(200).json(deleteResult);

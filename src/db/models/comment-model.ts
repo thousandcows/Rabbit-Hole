@@ -24,9 +24,19 @@ export class CommentModel {
   }
 
   // 특정 유저가 작성한 댓글 가져오기
-  async findByAuthorId(authorId: string): Promise<CommentData | null> {
-    const user = await Comment.findOne({ authorId });
-    return user;
+  async findByAuthorId(authorId: string | Types.ObjectId): Promise<CommentData[] | null> {
+    const comments = await Comment.find({ authorId });
+    return comments;
+  }
+
+  async findById(commentId: Types.ObjectId): Promise<CommentData> {
+    const comment = await Comment.findOne({ _id: commentId });
+    if (!comment) {
+      const error = new Error('댓글이 존재하지 않습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return comment;
   }
 
   // 댓글 작성
