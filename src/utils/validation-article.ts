@@ -40,7 +40,7 @@ class ArticleValidation {
     const { articleId, title, content } = updateInfo;
     // 유저 === 작성자 확인 필요, unAuthorized
     const articleInfo = await articleModel.findArticle(articleId);
-    const { authorId } = articleInfo;
+    const authorId = articleInfo?.authorId;
     if (userId !== authorId) {
       const error = new Error('이 글의 작성자가 아닙니다');
       error.name = 'BadRequest';
@@ -77,7 +77,7 @@ class ArticleValidation {
   async deleteArticle(userId: string, articleId: string) {
     // 유저 === authorId 확인 필요함
     const articleInfo = await articleModel.findArticle(articleId);
-    const { authorId } = articleInfo;
+    const authorId = articleInfo?.authorId;
     if (userId !== authorId) {
       const error = new Error('이 글의 작성자가 아닙니다');
       error.name = 'BadRequest';
