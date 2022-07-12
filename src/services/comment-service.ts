@@ -41,7 +41,7 @@ class CommentService {
     const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
     if (new Types.ObjectId(comment.authorId) !== userId) {
       const error = new Error('본인이 작성한 댓글만 수정할 수 있습니다.');
-      error.name = 'Unauthorized';
+      error.name = 'Forbidden';
       throw error;
     }
     const updatedComment = await this.commentModel.update(commentId, update);
@@ -61,7 +61,7 @@ class CommentService {
     const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
     if (new Types.ObjectId(comment.authorId) !== userId) {
       const error = new Error('본인이 작성한 댓글만 삭제할 수 있습니다.');
-      error.name = 'Unauthorized';
+      error.name = 'Forbidden';
       throw error;
     }
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
