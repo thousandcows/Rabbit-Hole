@@ -3,7 +3,7 @@ import { ArticleInfo } from '../db/models/article-model';
 class ArticleValidation {
   createArticle(articleInfo: ArticleInfo) {
     const {
-      articleType, author, authorId, title, content
+      articleType, author, authorId, title, content,
     } = articleInfo;
     if (!articleType) {
       const error = new Error('게시글 타입을 입력해 주세요.');
@@ -43,5 +43,4 @@ class ArticleValidation {
 }
 const articleValidation = new ArticleValidation();
 
-export { articleValidation }
-
+export { articleValidation };
