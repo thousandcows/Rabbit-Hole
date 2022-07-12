@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-import { Types } from 'mongoose';
 import {
   UserModel, userModel, UserInfo, UserData,
 } from '../db/models/user-model';
@@ -33,17 +32,17 @@ class UserService {
     return user;
   }
 
-  async getUserById(_id: Types.ObjectId): Promise<UserData> {
+  async getUserById(_id: string): Promise<UserData> {
     const user = await this.userModel.findById(_id);
     return user;
   }
 
-  async setUser(_id: Types.ObjectId, update: Partial<UserInfo>): Promise<UserData> {
+  async setUser(_id: string, update: Partial<UserInfo>): Promise<UserData> {
     const updatedUser = await this.userModel.update(_id, update);
     return updatedUser;
   }
 
-  async deleteUser(_id: Types.ObjectId): Promise<UserData> {
+  async deleteUser(_id: string): Promise<UserData> {
     const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
   }

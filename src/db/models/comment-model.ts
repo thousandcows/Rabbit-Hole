@@ -24,12 +24,12 @@ export class CommentModel {
   }
 
   // 특정 유저가 작성한 댓글 가져오기
-  async findByAuthorId(authorId: string | Types.ObjectId): Promise<CommentData[] | null> {
+  async findByAuthorId(authorId: string): Promise<CommentData[] | null> {
     const comments = await Comment.find({ authorId });
     return comments;
   }
 
-  async findById(commentId: Types.ObjectId): Promise<CommentData> {
+  async findById(commentId: string): Promise<CommentData> {
     const comment = await Comment.findOne({ _id: commentId });
     if (!comment) {
       const error = new Error('댓글이 존재하지 않습니다.');
@@ -68,7 +68,7 @@ export class CommentModel {
   }
 
   // 게시글 삭제할때 댓글도 같이 삭제
-  async deleteByArticleId(articleId: Types.ObjectId): Promise<CommentData[]> {
+  async deleteByArticleId(articleId: string): Promise<CommentData[]> {
     const deletedComments = await Comment.find({ _id: articleId });
     await Comment.deleteMany({ _id: articleId });
     if (!deletedComments) {

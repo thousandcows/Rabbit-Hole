@@ -43,7 +43,7 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
       error.name = 'Unauthorized';
       throw error;
     }
-    req.currentUserId = user._id;
+    req.currentUserId = String(user._id);
 
     next();
   } catch (error) {

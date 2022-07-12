@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-import { Types } from 'mongoose';
 import {
   commentModel, CommentModel, CommentData, CommentInfo,
 } from '../db/models/comment-model';
@@ -14,7 +13,7 @@ class CommentService {
   }
 
   // 댓글 작성
-  async addComment(userId: Types.ObjectId, commentInfo: CommentInfo): Promise<CommentData> {
+  async addComment(userId: string, commentInfo: CommentInfo): Promise<CommentData> {
     validation.addComment(commentInfo);
 
     const user = await userService.getUserById(userId);
@@ -38,12 +37,12 @@ class CommentService {
 
   // 댓글 수정
   async setComment(
-    userId: Types.ObjectId,
+    userId: string,
     commentId: string,
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
-    const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
-    if (comment.authorId !== String(userId)) {
+    const comment = await this.commentModel.findById(commentId);
+    if (comment.authorId !== userId) {
       const error = new Error('본인이 작성한 댓글만 수정할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;
@@ -54,12 +53,12 @@ class CommentService {
 
   //   // 댓글 채택
   //   async adoptComment(
-  //     userId: Types.ObjectId,
+  //     userId: string,
   //     commentId: string,
   //     update: Partial<CommentInfo>,
   //   ): Promise<CommentData> {
-  //     const article = await articleService.findArticle(new Types.ObjectId(commentId));
-  //     if (article.authorId !== String(userId)) {
+  //     const article = await articleService.findArticle(commentId);
+  //     if (article.authorId !== userId) {
   //       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
   //       error.name = 'Forbidden';
   //       throw error;
@@ -70,16 +69,16 @@ class CommentService {
 
   // 게시글 삭제할때 댓글도 같이 삭제
   async deleteCommentsByArticleId(
-    articleId: Types.ObjectId,
+    articleId: string,
   ): Promise<CommentData[]> {
     const deletedComments = await this.commentModel.deleteByArticleId(articleId);
     return deletedComments;
   }
 
   // 댓글 하나 삭제
-  async deleteCommentsById(userId:Types.ObjectId, commentId: string): Promise<CommentData> {
-    const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
-    if (comment.authorId !== String(userId)) {
+  async deleteCommentsById(userId:string, commentId: string): Promise<CommentData> {
+    const comment = await this.commentModel.findById(commentId);
+    if (comment.authorId !== userId) {
       const error = new Error('본인이 작성한 댓글만 삭제할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;

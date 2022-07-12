@@ -26,7 +26,7 @@ export class UserModel {
     return user;
   }
 
-  async findById(_id: Types.ObjectId): Promise<UserData> {
+  async findById(_id: string): Promise<UserData> {
     const user = await User.findOne({ _id });
     if (!user) {
       const error = new Error('해당 id의 사용자가 없습니다. 다시 한 번 확인해 주세요.');
@@ -54,7 +54,7 @@ export class UserModel {
     return createdNewUser;
   }
 
-  async update(_id: Types.ObjectId, update: Partial<UserInfo>): Promise<UserData> {
+  async update(_id: string, update: Partial<UserInfo>): Promise<UserData> {
     const filter = { _id };
     const option = { returnOriginal: false };
 
@@ -79,7 +79,7 @@ export class UserModel {
     return deletedUser;
   }
 
-  async deleteById(_id: Types.ObjectId): Promise<UserData> {
+  async deleteById(_id: string): Promise<UserData> {
     const deletedUser = await User.findOneAndDelete({ _id });
     if (!deletedUser) {
       const error = new Error('사용자의 삭제에 실패하였습니다');

@@ -1,5 +1,4 @@
 /* eslint-disable class-methods-use-this */
-import { Types } from 'mongoose';
 import { CommentInfo } from '../db/models/comment-model';
 import { UserInfo } from '../db/models/user-model';
 
@@ -31,7 +30,7 @@ class Validation {
     }
   }
 
-  isLogin(userId: Types.ObjectId | undefined): Types.ObjectId {
+  isLogin(userId: string | undefined): string {
     if (typeof userId === 'undefined') {
       const error = new Error('로그인 후 확인 가능합니다.');
       error.name = 'Unauthorized';
