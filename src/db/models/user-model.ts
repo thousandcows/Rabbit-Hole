@@ -88,6 +88,18 @@ export class UserModel {
     }
     return deletedUser;
   }
+
+  async manageCarrots(_id: string, update: any): Promise<UserData> {
+    const filter = { _id };
+    const option = { returnOriginal: false };
+    const updatedUser = await User.findOneAndUpdate(filter, update, option);
+    if (!updatedUser) {
+      const error = new Error('업데이트에 실패하였습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return updatedUser;
+  }
 }
 
 export const userModel = new UserModel();

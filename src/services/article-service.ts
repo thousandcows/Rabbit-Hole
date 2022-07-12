@@ -1,5 +1,6 @@
 import { articleModel, ArticleModel, ArticleData, ArticleInfo } from '../db/models/article-model';
 import { commentModel, CommentData } from '../db/models/comment-model';
+import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
 
 class ArticleService {
@@ -10,12 +11,17 @@ class ArticleService {
   }
 
   // 1. 새 게시글 작성
-  async createArticle(articleInfo: ArticleInfo): Promise<ArticleData> {
+  async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData> {
     // 기본 validation
     articleValidation.createArticle(articleInfo);
     // 글 제목 중복 확인
     articleValidation.checkDuplicatedTitle(articleInfo.title);
     const result = await this.articleModel.createArticle(articleInfo);
+    // 유저 당근 개수 조정
+    // eslint-disable-next-line max-len
+    if (articleInfo.carrots){
+    await userService.manageCarrots(userId, { $inc: {carrots: -articleInfo.carrots }});
+    }
     return result;
   }
 
