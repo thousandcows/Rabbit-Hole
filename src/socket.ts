@@ -112,36 +112,35 @@ function webSocket(server: http.Server) {
           withoutEnlargement: true,
         })
         .toBuffer();
-      // 이미지 로컬에 임시 저장
-      const writer = await fs.createWriteStream(path.resolve(`${__dirname}/uploads/${message.name}`), {
-        encoding: 'base64',
-      });
-      await writer.write(newFile);
-      await writer.end();
-      // 이미지 로컬 저장 후
-      await writer.on('finish', async () => {
-        // 이미지 채팅창 송출
-        socket.emit('image-uploaded', message);
-        socket.broadcast.emit('image-uploaded', message);
-        // 이미지 s3에 업로드
-        const fileToUpload = {
-          path: `${__dirname}/uploads/${message.name}`,
-          filename: message.name,
-          type: message.type,
-        };
-        const uploadResult = await uploadFile(fileToUpload);
-        // 이미지 객체 url DB에 저장
-        const chatInfo: ChatInfo = {
-          roomType: 'main',
-          username: 'username', // 추후 수정 필요함
-          message: 'image', // 추후 수정 필요함
-          time: new Date().getHours().toString(),
-          image: uploadResult.Location,
-        };
-        await chatService.addChat(chatInfo);
-        // 로컬에서 이미지 삭제
-        await unlinkFile(fileToUpload.path);
-      });
+      // 이미지 s3에 업로드
+      const fileToUpload = {
+        body: newFile,
+        filename: message.name,
+        type: message.type,
+      };
+      const uploadResult = await uploadFile(fileToUpload);
+      if (!uploadResult) {
+        const error = new Error('이미지를 s3에 업로드하는데 실패했습니다. 다시 시도해주세요');
+        error.name = 'NotFound';
+        throw error;
+      }
+      // 이미지 객체 url DB에 저장
+      const chatInfo: ChatInfo = {
+        roomType: 'main',
+        username: 'username', // 추후 수정 필요함
+        message: 'image', // 추후 수정 필요함
+        time: new Date().getHours().toString(),
+        image: uploadResult.Location,
+      };
+      const saveResult = await chatService.addChat(chatInfo);
+      if (!saveResult) {
+        const error = new Error('이미지를 DB에 저장하는데 실패했습니다. 다시 시도해주세요');
+        error.name = 'NotFound';
+        throw error;
+      }
+      // 이미지 채팅창 송출
+      socket.emit('image-uploaded', message);
+      socket.broadcast.emit('image-uploaded', message);
     });
     // socket 연결 종료
     io.sockets.on('disconnect', () => {
