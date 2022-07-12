@@ -16,8 +16,6 @@ class ArticleService {
   async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData> {
     // 기본 validation
     articleValidation.createArticle(articleInfo);
-    // 글 제목 중복 확인
-    articleValidation.checkDuplicatedTitle(articleInfo.title);
     const result = await this.articleModel.createArticle(articleInfo);
     // 유저 당근 개수 조정
     // eslint-disable-next-line max-len
