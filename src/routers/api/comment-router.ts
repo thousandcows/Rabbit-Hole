@@ -1,7 +1,7 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import { loginRequired } from '../../middlewares/login-required';
+import { loginRequired } from '../../middlewares';
 import { commentService } from '../../services';
 import { contentTypeChecker } from '../../utils/content-type-checker';
 import { validation } from '../../utils/validation';
@@ -39,23 +39,23 @@ commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response
 });
 
 // 댓글 채택
-// commentRouter.put(
-//   '/:commentId/adoption',
-//   loginRequired,
-//   async (req:Request, res:Response, next:NextFunction) => {
-//     try {
-//       const userId = validation.isLogin(req.currentUserId);
+commentRouter.put(
+  '/:commentId/adoption',
+  loginRequired,
+  async (req:Request, res:Response, next:NextFunction) => {
+    try {
+      const userId = validation.isLogin(req.currentUserId);
 
-//       const { commentId } = req.params;
-//       const { update } = req.body;
+      const { commentId } = req.params;
+      const { update } = req.body;
 
-//       const updatedComment = await commentService.adoptComment(userId, commentId, update);
-//       res.status(200).json(updatedComment);
-//     } catch (error) {
-//       next(error);
-//     }
-//   },
-// );
+      const updatedComment = await commentService.adoptComment(userId, commentId, update);
+      res.status(200).json(updatedComment);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 // 댓글 하나 삭제
 commentRouter.delete('/:commentId', loginRequired, async (req: Request, res:Response, next:NextFunction) => {

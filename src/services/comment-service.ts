@@ -52,20 +52,20 @@ class CommentService {
   }
 
   //   // 댓글 채택
-  //   async adoptComment(
-  //     userId: string,
-  //     commentId: string,
-  //     update: Partial<CommentInfo>,
-  //   ): Promise<CommentData> {
-  //     const article = await articleService.findArticle(commentId);
-  //     if (article.authorId !== userId) {
-  //       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
-  //       error.name = 'Forbidden';
-  //       throw error;
-  //     }
-  //     const updatedComment = await this.commentModel.update(commentId, update);
-  //     return updatedComment;
-  //   }
+  async adoptComment(
+    userId: string,
+    commentId: string,
+    update: Partial<CommentInfo>,
+  ): Promise<CommentData> {
+    const article = await articleService.findArticle(commentId);
+    if (article.authorId !== userId) {
+      const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
+      error.name = 'Forbidden';
+      throw error;
+    }
+    const updatedComment = await this.commentModel.update(commentId, update);
+    return updatedComment;
+  }
 
   // 게시글 삭제할때 댓글도 같이 삭제
   async deleteCommentsByArticleId(

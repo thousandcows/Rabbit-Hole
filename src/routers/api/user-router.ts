@@ -1,7 +1,7 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import { loginRequired } from '../../middlewares/login-required';
+import { loginRequired } from '../../middlewares';
 import { userService } from '../../services';
 import { contentTypeChecker } from '../../utils/content-type-checker';
 import { validation } from '../../utils/validation';
