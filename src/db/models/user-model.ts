@@ -54,8 +54,8 @@ export class UserModel {
     return createdNewUser;
   }
 
-  async update(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
-    const filter = { githubEmail };
+  async update(_id: string, update: Partial<UserInfo>): Promise<UserData> {
+    const filter = { _id };
     const option = { returnOriginal: false };
 
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
@@ -73,6 +73,16 @@ export class UserModel {
     const deletedUser = await User.findOneAndDelete({ githubEmail });
     if (!deletedUser) {
       const error = new Error(`${githubEmail} 사용자의 삭제에 실패하였습니다`);
+      error.name = 'NotFound';
+      throw error;
+    }
+    return deletedUser;
+  }
+
+  async deleteById(_id: string): Promise<UserData> {
+    const deletedUser = await User.findOneAndDelete({ _id });
+    if (!deletedUser) {
+      const error = new Error('사용자의 삭제에 실패하였습니다');
       error.name = 'NotFound';
       throw error;
     }

@@ -27,11 +27,6 @@ class UserService {
     return createdNewUser;
   }
 
-  async getUsers(): Promise<UserData[]> {
-    const users = await this.userModel.findAll();
-    return users;
-  }
-
   async getUserByEmail(githubEmail: string): Promise<UserData | null> {
     const user = await this.userModel.findByEmail(githubEmail);
     return user;
@@ -42,13 +37,13 @@ class UserService {
     return user;
   }
 
-  async setUser(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
-    const updatedUser = await this.userModel.update(githubEmail, update);
+  async setUser(_id: string, update: Partial<UserInfo>): Promise<UserData> {
+    const updatedUser = await this.userModel.update(_id, update);
     return updatedUser;
   }
 
-  async deleteUser(githubEmail: string): Promise<UserData> {
-    const deletedUser = await this.userModel.deleteByEmail(githubEmail);
+  async deleteUser(_id: string): Promise<UserData> {
+    const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
   }
 }

@@ -9,6 +9,9 @@ function errorHandler(error: Error, req: Request, res: Response) {
     case 'Unauthorized':
       res.status(401);
       break;
+    case 'Forbidden':
+      res.status(403);
+      break;
     case 'NotFound':
       res.status(404);
       break;

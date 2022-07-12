@@ -4,24 +4,22 @@ import {
 import { loginRequired } from '../../middlewares/login-required';
 import { userService } from '../../services';
 import { contentTypeChecker } from '../../utils/content-type-checker';
+import { validation } from '../../utils/validation';
 
 const userRouter = Router();
 
+// 마이페이지
 userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
   try {
-    const githubEmail = req.currentGithubEmail;
-    if (!githubEmail) {
-      const error = new Error('로그인 후 확인 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
-    const myInfo = await userService.getUserByEmail(githubEmail);
+    const userId = validation.isLogin(req.currentUserId);
+    const myInfo = await userService.getUserById(userId);
     res.status(200).json(myInfo);
   } catch (error) {
     next(error);
   }
 });
 
+// 회원가입
 userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userInfo = req.body;
@@ -34,17 +32,7 @@ userRouter.post('/register', async (req: Request, res: Response, next: NextFunct
   }
 });
 
-userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // 전체 사용자 목록을 얻음
-    const users = await userService.getUsers();
-
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
-});
-
+// 이메일로 회원 조회
 userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { githubEmail } = req.params;
@@ -57,18 +45,14 @@ userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Respons
   }
 });
 
+// 회원정보 수정
 userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const githubEmail = req.currentGithubEmail;
-    if (!githubEmail) {
-      const error = new Error('로그인 후 개인정보 변경이 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
+    const userId = validation.isLogin(req.currentUserId);
     const update = req.body;
     contentTypeChecker(update);
     // 사용자 정보를 업데이트함.
-    const updatedUser = await userService.setUser(githubEmail, update);
+    const updatedUser = await userService.setUser(userId, update);
 
     res.status(200).json(updatedUser);
   } catch (error) {
@@ -76,15 +60,11 @@ userRouter.put('/', loginRequired, async (req: Request, res: Response, next: Nex
   }
 });
 
+// 회원탈퇴
 userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const githubEmail = req.currentGithubEmail;
-    if (!githubEmail) {
-      const error = new Error('로그인 후 확인 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
-    const deleteResult = await userService.deleteUser(githubEmail);
+    const userId = validation.isLogin(req.currentUserId);
+    const deleteResult = await userService.deleteUser(userId);
 
     res.status(200).json(deleteResult);
   } catch (error) {
