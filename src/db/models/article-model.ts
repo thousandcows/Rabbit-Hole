@@ -19,7 +19,7 @@ export interface ArticleInfo {
     tags?: TagInfo[],
 }
 
-interface ArticleData extends Document<Types.ObjectId> {
+export interface ArticleData extends Document<Types.ObjectId> {
     articleType: string,
     author: string,
     authorId: string,

@@ -1,37 +1,6 @@
-import { Types, Document } from 'mongoose';
-import { articleModel, ArticleModel } from '../db/models/article-model';
+import { articleModel, ArticleModel, ArticleData, ArticleInfo } from '../db/models/article-model';
 import { commentModel, CommentData } from '../db/models/comment-model';
 import { articleValidation } from '../utils/validation-article';
-
-interface TagInfo {
-    [key: string]: string
-}
-
-interface LikeInfo {
-    [key: string]: string
-}
-
-interface ArticleInfo {
-    articleType: string,
-    author: string,
-    authorId: string,
-    title: string,
-    content: string,
-    carrots?: number,
-    tags?: TagInfo[],
-}
-
-interface ArticleData extends Document<Types.ObjectId> {
-    articleType: string,
-    author: string,
-    authorId: string,
-    title: string,
-    content: string,
-    likes: LikeInfo[],
-    views: number,
-    carrots: number,
-    tags: TagInfo[],
-}
 
 class ArticleService {
   articleModel: ArticleModel;
