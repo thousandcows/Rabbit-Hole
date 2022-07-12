@@ -48,9 +48,9 @@ articleRouter.get('/:articleId', async (req: Request, res: Response, next: NextF
   }
 });
 // 4. 게시글 제목, 내용 수정
-articleRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.put('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { articleId } = req.query;
+    const { articleId } = req.params;
     const { title, content, tags } = req.body;
     const updatedArticle = await articleService.updateArticle({
       articleId, title, content, tags,
@@ -72,15 +72,6 @@ articleRouter.delete('/:articleId', async (req: Request, res: Response, next: Ne
 });
 // 6. 게시글 좋아요
 articleRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-
-    //   res.status(200).json();
-  } catch (error) {
-    next(error);
-  }
-});
-// 7. 게시글 검색
-articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
 
     //   res.status(200).json();
