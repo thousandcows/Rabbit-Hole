@@ -35,6 +35,7 @@ function webSocket(server: http.Server) {
     // 새 접속자 입장
     socket.on('newUser', async (newUser: string) => { // 접속자 정보 어떻게 받을지 논의
       // 새 접속자 리스트에 추가
+      connectedClientList[newUser] = newUser;
       const { clientsCount } = io.sockets.server.engine;
       // 현재 시간
       const today = new Date(); // 현재 시간
@@ -145,7 +146,7 @@ function webSocket(server: http.Server) {
     // socket 연결 종료
     io.sockets.on('disconnect', () => {
     // 접속자 목록에서 삭제
-      delete connectedClientList.username;
+      delete connectedClientList.newUser;
       // 전체 접속자에게 알림
       const { clientsCount } = io.sockets.server.engine;
       // 현재 시간
