@@ -84,6 +84,15 @@ class ArticleValidation {
       throw error;
     }
   }
+
+  async checkDuplicatedTitle(articleTitle: string) {
+    const isTitleNotOk = await articleModel.checkDuplicatedTitle(articleTitle);
+    if (isTitleNotOk) {
+      const error = new Error('이미 존재하는 제목입니다.');
+      error.name = 'BadRequest';
+      throw error;
+    }
+  }
 }
 const articleValidation = new ArticleValidation();
 

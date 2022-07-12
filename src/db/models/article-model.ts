@@ -147,6 +147,13 @@ export class ArticleModel {
     }
     return articles;
   }
+
+  // 8. 게시글 제목 중복 확인
+  async checkDuplicatedTitle(articleTitle: string): Promise<ArticleData[] | null> {
+    const query = { title: articleTitle };
+    const sameTitle = await Article.find(query);
+    return sameTitle;
+  }
 }
 
 export const articleModel = new ArticleModel();

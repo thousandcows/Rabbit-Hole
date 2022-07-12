@@ -41,8 +41,10 @@ class ArticleService {
 
   // 1. 새 게시글 작성
   async createArticle(articleInfo: ArticleInfo): Promise<ArticleData> {
-    // validation
+    // 기본 validation
     articleValidation.createArticle(articleInfo);
+    // 글 제목 중복 확인
+    articleValidation.checkDuplicatedTitle(articleInfo.title);
     const result = await this.articleModel.createArticle(articleInfo);
     return result;
   }
@@ -68,18 +70,16 @@ class ArticleService {
   }
 
   // 4. 게시글 제목, 내용 수정
-  async updateArticle(updateInfo: any): Promise<ArticleData | null> {
+  async updateArticle(userId: string, updateInfo: any): Promise<ArticleData | null> {
     // validation
-    const userId = ''; // userId
     articleValidation.updateArticle(userId, updateInfo);
     const updatedResult = await this.articleModel.updateArticle(updateInfo);
     return updatedResult;
   }
 
   // 5. 게시글 삭제
-  async deleteArticle(articleId: string): Promise<ArticleData | null> {
-    // user validation
-    const userId = ''; // userId
+  async deleteArticle(userId: string, articleId: string): Promise<ArticleData | null> {
+    // validation
     articleValidation.deleteArticle(userId, articleId);
     // 게시글에 댓글이 있다면 삭제 불가
     // 삭제할 게시글 전용 collection으로 이동
