@@ -95,7 +95,18 @@ class ArticleService {
     const result = await this.articleModel.likeArticle(articleId, update);
     return result;
   }
-  // 7. 게시글 검색
+
+  // 7. 게시글 검색 - 글 제목
+  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
+    const articles = await this.articleModel.searchArticlesByTitle(title, articleType);
+    return articles;
+  }
+
+  // 8. 게시글 검색 - 작성자
+  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
+    const articles = await this.articleModel.searchArticlesByAuthor(author, articleType);
+    return articles;
+  }
 }
 
 export const articleService = new ArticleService(articleModel);
