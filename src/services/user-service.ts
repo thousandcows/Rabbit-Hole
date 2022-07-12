@@ -46,6 +46,11 @@ class UserService {
     const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
   }
+
+  async manageCarrots(_id: string, update: any): Promise<UserData> {
+    const updatedUser = await this.userModel.manageCarrots(_id, update);
+    return updatedUser;
+  }
 }
 
 export const userService = new UserService(userModel);

@@ -4,6 +4,7 @@ import {
 } from '../db/models/comment-model';
 import { validation } from '../utils/validation';
 import { userService } from './user-service';
+import { articleService } from './article-service';
 
 class CommentService {
   commentModel: CommentModel;
@@ -51,19 +52,25 @@ class CommentService {
     return updatedComment;
   }
 
-  //   // 댓글 채택
+  // 댓글 채택
   async adoptComment(
     userId: string,
     commentId: string,
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
-    const article = await articleService.findArticle(commentId);
-    if (article.authorId !== userId) {
+    const [article, comment] = await articleService.findArticle(commentId);
+    if (article && article.authorId !== userId) {
       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;
     }
     const updatedComment = await this.commentModel.update(commentId, update);
+    // 당근을 답변자에게 전달
+    const commenterId = updatedComment.authorId;
+    if (commenterId) {
+      const carrotUpdate = { $inc: { carrots: article?.carrots } };
+      await userService.manageCarrots(commenterId, carrotUpdate);
+    }
     return updatedComment;
   }
 
