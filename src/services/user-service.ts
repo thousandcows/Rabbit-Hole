@@ -28,11 +28,6 @@ class UserService {
     return createdNewUser;
   }
 
-  async getUsers(): Promise<UserData[]> {
-    const users = await this.userModel.findAll();
-    return users;
-  }
-
   async getUserByEmail(githubEmail: string): Promise<UserData | null> {
     const user = await this.userModel.findByEmail(githubEmail);
     return user;

@@ -8,6 +8,7 @@ import { validation } from '../../utils/validation';
 
 const userRouter = Router();
 
+// 마이페이지
 userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
@@ -18,6 +19,7 @@ userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:
   }
 });
 
+// 회원가입
 userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userInfo = req.body;
@@ -30,17 +32,7 @@ userRouter.post('/register', async (req: Request, res: Response, next: NextFunct
   }
 });
 
-userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // 전체 사용자 목록을 얻음
-    const users = await userService.getUsers();
-
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
-});
-
+// 이메일로 회원 조회
 userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { githubEmail } = req.params;
@@ -53,6 +45,7 @@ userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Respons
   }
 });
 
+// 회원정보 수정
 userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
@@ -67,6 +60,7 @@ userRouter.put('/', loginRequired, async (req: Request, res: Response, next: Nex
   }
 });
 
+// 회원탈퇴
 userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);

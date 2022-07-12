@@ -9,7 +9,8 @@ import { validation } from '../../utils/validation';
 const commentRouter = Router();
 
 // 댓글 작성
-commentRouter.post('/', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+// commentRouter.post('/', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+commentRouter.post('/', async (req:Request, res:Response, next:NextFunction) => {
   try {
     const commentInfo = req.body;
     contentTypeChecker(commentInfo);
@@ -24,7 +25,8 @@ commentRouter.post('/', loginRequired, async (req:Request, res:Response, next:Ne
 });
 
 // 특정 게시글에 작성된 댓글 가져오기
-commentRouter.get('/:articleId', loginRequired, async (req:Request, res:Response, next :NextFunction) => {
+// commentRouter.get('/:articleId', loginRequired, async (req:Request, res:Response, next :NextFunction) => {
+commentRouter.get('/:articleId', async (req:Request, res:Response, next :NextFunction) => {
   try {
     validation.isLogin(req.currentUserId);
 
@@ -37,7 +39,8 @@ commentRouter.get('/:articleId', loginRequired, async (req:Request, res:Response
 });
 
 // 특정 유저가 작성한 댓글 가져오기
-commentRouter.get('/:authorId', loginRequired, async (req:Request, res:Response, next :NextFunction) => {
+// commentRouter.get('/:authorId', loginRequired, async (req:Request, res:Response, next :NextFunction) => {
+commentRouter.get('/:authorId', async (req:Request, res:Response, next :NextFunction) => {
   try {
     validation.isLogin(req.currentUserId);
 
@@ -50,7 +53,8 @@ commentRouter.get('/:authorId', loginRequired, async (req:Request, res:Response,
 });
 
 // 댓글 수정, 채택
-commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+// commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+commentRouter.put('/:commentId', async (req:Request, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
 
