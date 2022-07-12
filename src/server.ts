@@ -2,8 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
-import { apiRouter, authRouter } from './routers';
-import { errorHandler } from './middlewares';
+import { apiRouter } from './routers';
 
 const app = express();
 app.use(cors());
@@ -15,16 +14,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const { PORT } = process.env;
+app.use(express.static(__dirname));
 
 app.get('/', (req: any, res: any) => {
   // eslint-disable-next-line no-path-concat, prefer-template
-  res.sendFile(__dirname + '/chatting-test.html');
+  res.sendFile(__dirname + '/chatting-image-test.html');
 });
 
 app.use('/api', apiRouter);
-app.use('/auth', authRouter);
-
-app.use(errorHandler);
 
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 

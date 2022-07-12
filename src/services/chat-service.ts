@@ -25,14 +25,7 @@ class ChatService {
 
   // 1. 새 메시지 추가
   async addChat(chat: ChatInfo): Promise<ChatData> {
-    console.log('reached addChat method');
-    console.log('chat: ', chat);
-    const result = await chatModel.addChat(chat);
-    if (!result) {
-      const error = new Error('서버와의 연결이 원활하지 않습니다.');
-      error.name = 'InternalServerError';
-      throw error;
-    }
+    const result = await this.chatModel.addChat(chat);
     return result;
   }
 
@@ -40,9 +33,7 @@ class ChatService {
   async findAllChats(): Promise<ChatData[]> {
     const chatList = await this.chatModel.findAllChats();
     if (!chatList) {
-      const error = new Error('채팅 내역을 불러올 수 없습니다.');
-      error.name = 'NotFound';
-      throw error;
+      return [];
     }
     return chatList;
   }
