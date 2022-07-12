@@ -49,7 +49,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인 토큰, userId, userName, 만료시간 600
-      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&expiry=600`;
+      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&expire=600`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
