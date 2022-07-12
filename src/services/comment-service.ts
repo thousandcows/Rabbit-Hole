@@ -43,7 +43,7 @@ class CommentService {
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
     const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
-    if (new Types.ObjectId(comment.authorId) !== userId) {
+    if (comment.authorId !== String(userId)) {
       const error = new Error('본인이 작성한 댓글만 수정할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;
@@ -52,21 +52,21 @@ class CommentService {
     return updatedComment;
   }
 
-  // 댓글 채택
-  async adoptComment(
-    userId: Types.ObjectId,
-    commentId: string,
-    update: Partial<CommentInfo>,
-  ): Promise<CommentData> {
-    const article = await articleService.findArticle(new Types.ObjectId(commentId));
-    if (new Types.ObjectId(article.authorId) !== userId) {
-      const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
-      error.name = 'Forbidden';
-      throw error;
-    }
-    const updatedComment = await this.commentModel.update(commentId, update);
-    return updatedComment;
-  }
+  //   // 댓글 채택
+  //   async adoptComment(
+  //     userId: Types.ObjectId,
+  //     commentId: string,
+  //     update: Partial<CommentInfo>,
+  //   ): Promise<CommentData> {
+  //     const article = await articleService.findArticle(new Types.ObjectId(commentId));
+  //     if (article.authorId !== String(userId)) {
+  //       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
+  //       error.name = 'Forbidden';
+  //       throw error;
+  //     }
+  //     const updatedComment = await this.commentModel.update(commentId, update);
+  //     return updatedComment;
+  //   }
 
   // 게시글 삭제할때 댓글도 같이 삭제
   async deleteCommentsByArticleId(
@@ -79,7 +79,7 @@ class CommentService {
   // 댓글 하나 삭제
   async deleteCommentsById(userId:Types.ObjectId, commentId: string): Promise<CommentData> {
     const comment = await this.commentModel.findById(new Types.ObjectId(commentId));
-    if (new Types.ObjectId(comment.authorId) !== userId) {
+    if (comment.authorId !== String(userId)) {
       const error = new Error('본인이 작성한 댓글만 삭제할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;

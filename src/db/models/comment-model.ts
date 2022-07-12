@@ -58,7 +58,6 @@ export class CommentModel {
     const option = { returnOriginal: false };
 
     const updatedComment = await Comment.findOneAndUpdate(filter, update, option);
-
     if (!updatedComment) {
       const error = new Error('댓글 수정을 실패하였습니다.');
       error.name = 'NotFound';
