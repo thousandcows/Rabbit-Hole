@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  userRouter, chatRouter, articleRouter, searchRouter, commentRouter
+  userRouter, chatRouter, articleRouter, searchRouter, commentRouter,
 } from './api/index';
 
 const apiRouter = Router();
