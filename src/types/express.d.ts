@@ -4,7 +4,7 @@ export {};
 declare global {
   namespace Express {
     interface Request {
-      currentGithubEmail?: string;
+      currentUserId?: string;
     }
   }
 }

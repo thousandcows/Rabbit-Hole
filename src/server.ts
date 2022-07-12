@@ -1,17 +1,8 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import webSocket from './socket';
 import { apiRouter } from './routers';
-
-const fs = require('fs');
-const util = require('util');
-
-const unlinkFile = util.promisify(fs.unlink);
-const multer = require('multer');
-
-const upload = multer({ dest: 'uploads/' });
-const { uploadFile, downloadFile } = require('./s3');
 
 const app = express();
 app.use(cors());
