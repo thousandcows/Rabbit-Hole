@@ -4,7 +4,6 @@ import 'dotenv/config';
 import webSocket from './socket';
 import { apiRouter } from './routers';
 
-
 const app = express();
 app.use(cors());
 
