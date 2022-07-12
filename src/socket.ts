@@ -2,11 +2,6 @@ import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
 
-const fs = require('fs');
-const util = require('util');
-
-const unlinkFile = util.promisify(fs.unlink);
-const path = require('path');
 const sharp = require('sharp');
 const { uploadFile } = require('./s3');
 
