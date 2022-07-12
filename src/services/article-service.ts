@@ -70,16 +70,23 @@ class ArticleService {
   // 4. 게시글 제목, 내용 수정
   async updateArticle(updateInfo: any): Promise<ArticleData | null> {
     // validation
-    articleValidation.updateArticle(updateInfo);
+    const userId = ''; // userId
+    articleValidation.updateArticle(userId, updateInfo);
     const updatedResult = await this.articleModel.updateArticle(updateInfo);
     return updatedResult;
   }
 
   // 5. 게시글 삭제
   async deleteArticle(articleId: string): Promise<ArticleData | null> {
-    // 게시글 삭제
+    // user validation
+    const userId = ''; // userId
+    articleValidation.deleteArticle(userId, articleId);
+    // 게시글에 댓글이 있다면 삭제 불가
+    // 삭제할 게시글 전용 collection으로 이동
+    // 해당 게시글 삭제
     const result = await this.articleModel.deleteArticle(articleId);
-    // 관련된 댓글 삭제: 추가
+    // 삭제할 댓글 전용 collection으로 이동
+    // 관련 댓글 삭제
     return result;
   }
 
