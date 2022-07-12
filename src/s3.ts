@@ -1,5 +1,4 @@
 require('dotenv').config();
-const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 
 const bucketName = process.env.AWS_BUCKET_NAME;
@@ -16,10 +15,9 @@ const s3 = new S3({
 
 // s3에 이미지 파일 업로드
 function uploadFile(file: any): Promise<any> {
-  const fileStream = fs.createReadStream(file.path);
   const uploadParams = {
     Bucket: bucketName,
-    Body: fileStream,
+    Body: file.body,
     Key: file.filename,
     ContentType: file.type,
   };
