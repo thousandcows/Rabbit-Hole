@@ -58,7 +58,7 @@ class CommentService {
     commentId: string,
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
-    const [ article, comment ] = await articleService.findArticle(commentId);
+    const [article, comment] = await articleService.findArticle(commentId);
     if (article && article.authorId !== userId) {
       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
       error.name = 'Forbidden';

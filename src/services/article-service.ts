@@ -1,4 +1,6 @@
-import { articleModel, ArticleModel, ArticleData, ArticleInfo } from '../db/models/article-model';
+import {
+  articleModel, ArticleModel, ArticleData, ArticleInfo,
+} from '../db/models/article-model';
 import { commentModel, CommentData } from '../db/models/comment-model';
 import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
@@ -19,8 +21,8 @@ class ArticleService {
     const result = await this.articleModel.createArticle(articleInfo);
     // 유저 당근 개수 조정
     // eslint-disable-next-line max-len
-    if (articleInfo.carrots){
-    await userService.manageCarrots(userId, { $inc: {carrots: -articleInfo.carrots }});
+    if (articleInfo.carrots) {
+      await userService.manageCarrots(userId, { $inc: { carrots: -articleInfo.carrots } });
     }
     return result;
   }
