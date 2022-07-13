@@ -22,10 +22,16 @@ const CommentSchema = new Schema(
       type: String,
       required: true,
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      new Schema(
+        {
+          userId: String,
+        },
+        {
+          _id: false,
+        },
+      ),
+    ],
     isAdopted: {
       type: Boolean,
       default: false,
