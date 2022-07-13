@@ -11,7 +11,7 @@ interface LikeInfo {
 
 export interface CommentInfo {
     commentType: string;
-    articleId?: string;
+    articleId: string;
     author?: string;
     authorId?: string;
     content: string;
@@ -24,8 +24,12 @@ export interface CommentData extends CommentInfo {
   }
 export class CommentModel {
   // 특정 게시글에 작성된 댓글 가져오기
-  async findByArticleId(articleId: string, page: number, perPage: number)
+  async findByArticleId(articleId: string, page?: number, perPage?: number)
   : Promise<[commentList: CommentData[] | null, totalPage: number]> {
+    if (!page || !perPage) {
+      const commentList = await Comment.find({ articleId });
+      return [commentList, 0];
+    }
     const sortFilter:sortFilter = { isAdopted: -1, createdAt: -1 };
 
     let total = await Comment.countDocuments({});
@@ -40,6 +44,7 @@ export class CommentModel {
     } else if (!commentList) {
       commentList = [];
     }
+
     return [commentList, totalPage];
   }
 

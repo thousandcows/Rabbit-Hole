@@ -43,9 +43,13 @@ articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
 articleRouter.get('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
-    // eslint-disable-next-line max-len
-    const articleInfo = await articleService.findArticle(articleId);
-    res.status(200).json(articleInfo);
+    const { page, perPage } = req.query;
+    const commentSearchCondition = { articleId, page: Number(page), perPage: Number(perPage) };
+    const [
+      articleInfo,
+      commentList,
+      commentTotalPage] = await articleService.findArticle(commentSearchCondition);
+    res.status(200).json({ articleInfo, commentList, commentTotalPage });
   } catch (error) {
     next(error);
   }

@@ -73,14 +73,16 @@ class CommentService {
     commentId: string,
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
-    const [article, comment] = await articleService.findArticle(commentId);
-    if (article && article.authorId !== userId) {
+    const comment = await this.commentModel.findById(commentId);
+    if (comment && comment.authorId !== userId) {
       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;
     }
     const updatedComment = await this.commentModel.update(commentId, update);
+
     // 당근을 답변자에게 전달
+    const article = await articleService.findArticleOne(comment.articleId);
     const commenterId = updatedComment.authorId;
     if (commenterId) {
       const carrotUpdate = { $inc: { carrots: article?.carrots } };
