@@ -5,6 +5,13 @@ import {
 import axios from 'axios';
 import { userService } from '../../services';
 
+interface UserEmail{
+  email: string;
+  primary:true;
+  verified: true;
+  visibility: any;
+}
+
 const authRouter = Router();
 
 // 깃허브 로그인 callback url
@@ -12,7 +19,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
   try {
     // 요청 코드
     const { code } = req.query;
-    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
+    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}&scope=user`;
 
     // 깃허브 토큰 데이터
     const { data } = await axios.get(accessTokenUrl, {
@@ -40,7 +47,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     });
     // 필요한 정보 객체화
     const userInfo = {
-      githubEmail: userEmail.data[0].email,
+      githubEmail: userEmail.data.filter((obj: UserEmail) => obj.primary)[0].email,
       githubProfileUrl: user.data.html_url,
       githubAvatar: user.data.avatar_url,
     };

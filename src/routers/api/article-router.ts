@@ -30,7 +30,10 @@ articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
       articleType, filter, page, perPage,
     } = req.query;
     const searchCondition = {
-      articleType, filter, page, perPage,
+      articleType: String(articleType),
+      filter: String(filter),
+      page: Number(page),
+      perPage: Number(perPage),
     };
       // eslint-disable-next-line max-len
     const [articleList, totalPage] = await articleService.findArticles(searchCondition);

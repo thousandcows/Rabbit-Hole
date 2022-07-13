@@ -1,6 +1,12 @@
-import { Types, Document } from 'mongoose';
+import { Types, Document, SortOrder } from 'mongoose';
 import { Article } from '../index';
 
+interface type {
+  articleType: string
+}
+interface sortFilter {
+  [key: string]: SortOrder;
+}
 interface TagInfo {
     [key: string]: string
 }
@@ -46,8 +52,8 @@ export class ArticleModel {
   // 2. 전체 게시글 조회 - 최신순/인기순, 페이지네이션
   // eslint-disable-next-line max-len
   async findArticles(articleType: string, filter: string, page: number, perPage: number): Promise<[articleList: ArticleData[], total: number ]> {
-    const type: any = { articleType };
-    let sortFilter: any = { createdAt: -1 };
+    const type: type = { articleType };
+    let sortFilter: sortFilter = { createdAt: -1 };
     if (filter === 'views') {
       sortFilter = { views: -1 };
     }

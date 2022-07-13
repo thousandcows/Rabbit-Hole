@@ -5,6 +5,13 @@ import { commentModel, CommentData } from '../db/models/comment-model';
 import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
 
+interface searchCondition {
+  articleType: string
+  filter: string;
+  page: number;
+  perPage: number;
+}
+
 interface commentSearchCondition {
   articleId: string;
   page: number;
@@ -33,15 +40,13 @@ class ArticleService {
 
   // 2. 전체 게시글 조회 - 최신순, 페이지네이션
   // eslint-disable-next-line max-len
-  async findArticles(searchCondition: any): Promise<[articleList: ArticleData[], total: number ]> {
+  async findArticles(searchCondition: searchCondition): Promise<[articleList: ArticleData[], total: number ]> {
     // eslint-disable-next-line max-len
     const {
       articleType, filter, page, perPage,
     } = searchCondition;
-    const numberedPage = Number(page);
-    const numberedPerPage = Number(perPage);
     // eslint-disable-next-line max-len
-    const [articleList, totalPage] = await this.articleModel.findArticles(articleType, filter, numberedPage, numberedPerPage);
+    const [articleList, totalPage] = await this.articleModel.findArticles(articleType, filter, page, perPage);
     return [articleList, totalPage];
   }
 
