@@ -70,7 +70,8 @@ class ArticleService {
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(articleId: string, update: any): Promise<ArticleData | null> {
+  async likeArticle(userId: string, articleId: string): Promise<ArticleData | null> {
+    const update = { $push: { likes: userId } };
     const result = await this.articleModel.likeArticle(articleId, update);
     return result;
   }
