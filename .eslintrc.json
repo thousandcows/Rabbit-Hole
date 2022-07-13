@@ -16,7 +16,8 @@
         "ignorePackages",
         {
             "ts": "never",
-            "tsx": "never"
+            "tsx": "never",
+            "js": "never"
         }
     ],
     "import/prefer-default-export":"off",

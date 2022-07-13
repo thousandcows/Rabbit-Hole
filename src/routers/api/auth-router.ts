@@ -3,7 +3,7 @@ import {
   NextFunction, Request, Response, Router,
 } from 'express';
 import axios from 'axios';
-import { userService } from '../services';
+import { userService } from '../../services';
 
 const authRouter = Router();
 
