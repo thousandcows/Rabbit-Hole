@@ -34,7 +34,7 @@ articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
     };
       // eslint-disable-next-line max-len
     const [articleList, totalPage] = await articleService.findArticles(searchCondition);
-    res.status(200).json([articleList, totalPage]);
+    res.status(200).json({ articleList, totalPage });
   } catch (error) {
     next(error);
   }
