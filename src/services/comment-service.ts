@@ -77,16 +77,18 @@ class CommentService {
     const comment = await this.commentModel.findById(commentId);
 
     // 채택 중복 방지
-    const [commentList] = await this.commentModel.findByArticleId(comment.authorId);
+    const [commentList] = await this.commentModel.findByArticleId(comment.articleId);
     if (!commentList) {
       const error = Error('댓글을 불러올 수 없습니다.');
       error.name = 'NotFound';
       throw error;
     }
+
     for (let i = 0; i < commentList.length; i += 1) {
       if (commentList[i].isAdopted === true) {
         const error = Error('한개의 답변에만 채택할 수 있습니다.');
         error.name = 'Conflict';
+        throw error;
       }
     }
 

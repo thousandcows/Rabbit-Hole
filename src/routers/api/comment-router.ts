@@ -63,7 +63,7 @@ commentRouter.put(
       const userId = validation.isLogin(req.currentUserId);
 
       const { commentId } = req.params;
-      const { update } = req.body;
+      const update = req.body;
 
       const updatedComment = await commentService.adoptComment(userId, commentId, update);
       res.status(200).json(updatedComment);
