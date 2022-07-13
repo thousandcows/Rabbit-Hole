@@ -6,6 +6,11 @@ import { validation } from '../utils/validation';
 import { userService } from './user-service';
 import { articleService } from './article-service';
 
+interface searchCondition {
+  articleId: string;
+  page: number;
+  perPage: number;
+}
 class CommentService {
   commentModel: CommentModel;
 
@@ -14,20 +19,30 @@ class CommentService {
   }
 
   // 댓글 작성
-  async addComment(userId: string, commentInfo: CommentInfo): Promise<CommentData> {
+  async addComment(
+    userId: string,
+    articleId: string,
+    commentInfo: CommentInfo,
+  ): Promise<CommentData> {
     validation.addComment(commentInfo);
 
     const user = await userService.getUserById(userId);
-    const createCommentInfo = { ...commentInfo, author: user.name, authorId: String(user._id) };
+    const createCommentInfo = {
+      ...commentInfo, author: user.name, authorId: userId, articleId,
+    };
 
     const createdNewComments = await this.commentModel.create(createCommentInfo);
     return createdNewComments;
   }
 
   // 특정 게시글에 작성된 댓글 가져오기
-  async getCommentsByArticleId(articleId: string): Promise<CommentData[] | null> {
-    const comments = await this.commentModel.findByArticleId(articleId);
-    return comments;
+  async getCommentsByArticleId(searchCondition: searchCondition)
+  : Promise<[commentList: CommentData[] | null, totalPage: number]> {
+    const { articleId, page, perPage } = searchCondition;
+    const [
+      commentList, totalPage,
+    ] = await this.commentModel.findByArticleId(articleId, page, perPage);
+    return [commentList, totalPage];
   }
 
   // 특정 유저가 작성한 댓글 가져오기

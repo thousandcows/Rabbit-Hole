@@ -8,15 +8,31 @@ import { validation } from '../../utils/validation';
 
 const commentRouter = Router();
 
-// 댓글 작성
-commentRouter.post('/', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+// 댓글 조회
+commentRouter.get('/:articleId', loginRequired, async (req: Request, res: Response, next:NextFunction) => {
   try {
+    const { articleId } = req.params;
+    const { page, perPage } = req.query;
+    const searchCondition = { articleId, page: Number(page), perPage: Number(perPage) };
+    const [
+      commentList, totalPage,
+    ] = await commentService.getCommentsByArticleId(searchCondition);
+    res.status(200).json({ commentList, totalPage });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 댓글 작성
+commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+  try {
+    const { articleId } = req.params;
     const commentInfo = req.body;
     contentTypeChecker(commentInfo);
 
     const userId = validation.isLogin(req.currentUserId);
 
-    const newComment = await commentService.addComment(userId, commentInfo);
+    const newComment = await commentService.addComment(userId, articleId, commentInfo);
     res.status(201).json(newComment);
   } catch (error) {
     next(error);
