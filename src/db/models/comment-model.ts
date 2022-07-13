@@ -13,7 +13,7 @@ export interface CommentInfo {
     commentType: string;
     articleId: string;
     author?: string;
-    authorId?: string;
+    authorId: string;
     content: string;
     likes?: LikeInfo[];
     isAdopted?: boolean;
