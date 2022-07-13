@@ -37,7 +37,7 @@ articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
     };
       // eslint-disable-next-line max-len
     const [articleList, totalPage] = await articleService.findArticles(searchCondition);
-    res.status(200).json([articleList, totalPage]);
+    res.status(200).json({ articleList, totalPage });
   } catch (error) {
     next(error);
   }
@@ -83,10 +83,12 @@ articleRouter.delete('/:articleId', loginRequired, async (req: Request, res: Res
   }
 });
 // 6. 게시글 좋아요
-articleRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.post('/:articleId/heart', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
-    //   res.status(200).json();
+    const { articleId } = req.params;
+    const result = await articleService.likeArticle(userId, articleId);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

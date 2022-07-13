@@ -58,21 +58,17 @@ export class ArticleModel {
       sortFilter = { views: -1 };
     }
 
-    const total = await Article.countDocuments({});
-    const articleList = await Article
+    let total = await Article.countDocuments({});
+    let articleList = await Article
       .find(type)
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
     const totalPage = Math.ceil(total / perPage);
     if (!total) {
-      const error = new Error('게시글 목록 불러오기에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
+      total = 0;
     } else if (!articleList) {
-      const error = new Error('게시글 목록 불러오기에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
+      articleList = [];
     }
     return [articleList, totalPage];
   }
