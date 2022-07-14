@@ -119,7 +119,8 @@ export class ArticleModel {
 
   // 6. 게시글 좋아요
   async likeArticle(articleId: string, update: any): Promise<ArticleData | null> {
-    const result = await Article.findByIdAndUpdate(articleId, update);
+    const option = { returnOriginal: false };
+    const result = await Article.findByIdAndUpdate(articleId, update, option);
     if (!result) {
       const error = new Error('게시글 좋아요에 실패했습니다.');
       error.name = 'NotFound';
