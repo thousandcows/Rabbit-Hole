@@ -114,6 +114,18 @@ export class CommentModel {
     }
     return deletedComment;
   }
+
+  // 댓글 좋아요
+  async likeComment(commentId: string, update: any): Promise<CommentData> {
+    const option = { returnOriginal: false };
+    const updatedComment = await Comment.findByIdAndUpdate(commentId, update, option);
+    if (!updatedComment) {
+      const error = new Error('좋아요에 실패했습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return updatedComment;
+  }
 }
 
 export const commentModel = new CommentModel();

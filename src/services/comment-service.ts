@@ -131,6 +131,13 @@ class CommentService {
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
     return deletedComment;
   }
+
+  // 댓글 좋아요
+  async likeComment(userId:string, commentId: string): Promise<CommentData> {
+    const update = { $push: { likes: userId } };
+    const updatedComment = await this.commentModel.likeComment(commentId, update);
+    return updatedComment;
+  }
 }
 
 export const commentService = new CommentService(commentModel);
