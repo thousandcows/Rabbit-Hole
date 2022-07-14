@@ -84,4 +84,22 @@ commentRouter.delete('/:commentId', loginRequired, async (req: Request, res:Resp
   }
 });
 
+// 댓글 좋아요
+commentRouter.put(
+  '/:commentId/heart',
+  loginRequired,
+  async (req:Request, res:Response, next:NextFunction) => {
+    try {
+      const userId = validation.isLogin(req.currentUserId);
+
+      const { commentId } = req.params;
+
+      const updatedComment = await commentService.likeComment(userId, commentId);
+      res.status(200).json(updatedComment);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 export { commentRouter };

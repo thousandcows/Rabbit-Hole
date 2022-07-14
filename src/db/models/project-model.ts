@@ -119,7 +119,8 @@ export class ProjectModel {
 
   // 6. 게시글 좋아요
   async likeProject(projectId: string, update: any): Promise<ProjectData | null> {
-    const result = await Project.findByIdAndUpdate(projectId, update);
+    const option = { returnOriginal: false };
+    const result = await Project.findByIdAndUpdate(projectId, update, option);
     if (!result) {
       const error = new Error('게시글 좋아요에 실패했습니다.');
       error.name = 'NotFound';
