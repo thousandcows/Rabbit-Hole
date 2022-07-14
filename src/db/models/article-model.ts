@@ -137,15 +137,14 @@ export class ArticleModel {
     perPage: number,
   )
     : Promise<[articleList: ArticleData[] | null, total: number]> {
-    const type: type = { articleType };
     let sortFilter: sortFilter = { createdAt: -1 };
     if (filter === 'views') {
       sortFilter = { views: -1 };
     }
 
-    let total = await Article.countDocuments({ articleType, author: new RegExp(author), type });
+    let total = await Article.countDocuments({ articleType, author: new RegExp(author) });
     let articleList = await Article
-      .find({ articleType, author: new RegExp(author), type })
+      .find({ articleType, author: new RegExp(author) })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
@@ -167,15 +166,14 @@ export class ArticleModel {
     perPage: number,
   )
     : Promise<[articleList: ArticleData[] | null, total: number]> {
-    const type: type = { articleType };
     let sortFilter: sortFilter = { createdAt: -1 };
     if (filter === 'views') {
       sortFilter = { views: -1 };
     }
 
-    let total = await Article.countDocuments({ articleType, title: new RegExp(title), type });
+    let total = await Article.countDocuments({ articleType, title: new RegExp(title) });
     let articleList = await Article
-      .find({ articleType, title: new RegExp(title), type })
+      .find({ articleType, title: new RegExp(title) })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);

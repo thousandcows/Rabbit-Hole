@@ -13,6 +13,14 @@ interface TagInfo {
     perPage: number;
   }
 
+  interface authorSearchCondition extends searchCondition {
+    author: string;
+  }
+
+  interface titleSearchCondition extends searchCondition {
+    title: string;
+  }
+
   interface commentSearchCondition {
     projectId: string;
     page: number;
@@ -104,16 +112,26 @@ class ProjectService {
     return result;
   }
 
-  // 7. 게시글 검색 - 글 제목
-  async searchProjectsByTitle(title: string): Promise<ProjectData[] | null> {
-    const projects = await this.projectModel.searchProjectsByTitle(title);
-    return projects;
+  // 7. 게시글 검색 - 작성자
+  async searchProjectsByAuthor(authorSearchCondition: authorSearchCondition)
+  : Promise<[projectList: ProjectData[] | null, total: number]> {
+    const {
+      author, filter, page, perPage,
+    } = authorSearchCondition;
+    const [projectList, totalPage] = await this.projectModel
+      .searchProjectsByAuthor(author, filter, page, perPage);
+    return [projectList, totalPage];
   }
 
-  // 8. 게시글 검색 - 작성자
-  async searchProjectsByAuthor(author: string): Promise<ProjectData[] | null> {
-    const projects = await this.projectModel.searchProjectsByAuthor(author);
-    return projects;
+  // 8. 게시글 검색 - 글 제목
+  async searchProjectsByTitle(titleSearchCondition: titleSearchCondition)
+  : Promise<[projectList: ProjectData[] | null, total: number]> {
+    const {
+      title, filter, page, perPage,
+    } = titleSearchCondition;
+    const [projectList, totalPage] = await this.projectModel
+      .searchProjectsByTitle(title, filter, page, perPage);
+    return [projectList, totalPage];
   }
 }
 

@@ -46,15 +46,31 @@ searchRouter.get('/articles', async (req: Request, res: Response, next: NextFunc
 searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.query.author) {
-      const { author } = req.query;
-      // eslint-disable-next-line max-len
-      const projects = await projectService.searchProjectsByAuthor(author.toString());
-      res.status(200).json(projects);
+      const {
+        author, filter, page, perPage,
+      } = req.query;
+      const authorSearchCondition = {
+        author: String(author),
+        filter: String(filter),
+        page: Number(page),
+        perPage: Number(perPage),
+      };
+      const [articleList, totalPage] = await projectService
+        .searchProjectsByAuthor(authorSearchCondition);
+      res.status(200).json({ articleList, totalPage });
     } else if (req.query.title) {
-      const { title } = req.query;
-      // eslint-disable-next-line max-len
-      const projects = await projectService.searchProjectsByTitle(title.toString());
-      res.status(200).json(projects);
+      const {
+        title, filter, page, perPage,
+      } = req.query;
+      const titleSearchCondition = {
+        title: String(title),
+        filter: String(filter),
+        page: Number(page),
+        perPage: Number(perPage),
+      };
+      const [articleList, totalPage] = await projectService
+        .searchProjectsByTitle(titleSearchCondition);
+      res.status(200).json({ articleList, totalPage });
     }
   } catch (error) {
     next(error);
