@@ -86,7 +86,7 @@ class ArticleService {
     const result = await this.articleModel.deleteArticle(articleId);
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
-    commentModel.deleteByArticleId(articleId);
+    await commentModel.deleteByArticleId(articleId);
     return result;
   }
 

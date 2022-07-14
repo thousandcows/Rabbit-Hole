@@ -55,7 +55,7 @@ export class ProjectModel {
       sortFilter = { views: -1 };
     }
     let total = await Project.countDocuments({});
-    let articleList = await Project
+    let projectList = await Project
       .find({})
       .sort(sortFilter)
       .skip(perPage * (page - 1))
@@ -63,10 +63,10 @@ export class ProjectModel {
     const totalPage = Math.ceil(total / perPage);
     if (!total) {
       total = 0;
-    } else if (!articleList) {
-      articleList = [];
+    } else if (!projectList) {
+      projectList = [];
     }
-    return [articleList, totalPage];
+    return [projectList, totalPage];
   }
 
   // 3. 게시글 조회 - 게시글 아이디
@@ -129,25 +129,25 @@ export class ProjectModel {
   }
 
   // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string): Promise<ProjectData[] | null> {
-    const articles = await Project.find({ title: new RegExp(title) });
-    if (!articles) {
+  async searchProjectsByTitle(title: string): Promise<ProjectData[] | null> {
+    const projects = await Project.find({ title: new RegExp(title) });
+    if (!projects) {
       const error = new Error('해당 게시글이 존재하지 않습니다');
       error.name = 'NotFound';
       throw error;
     }
-    return articles;
+    return projects;
   }
 
   // 7. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string): Promise<ProjectData[] | null> {
-    const articles = await Project.find({ author: new RegExp(author) });
-    if (!articles) {
+  async searchProjectsByAuthor(author: string): Promise<ProjectData[] | null> {
+    const projects = await Project.find({ author: new RegExp(author) });
+    if (!projects) {
       const error = new Error('해당 게시글이 존재하지 않습니다');
       error.name = 'NotFound';
       throw error;
     }
-    return articles;
+    return projects;
   }
 }
 

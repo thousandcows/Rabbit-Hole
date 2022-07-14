@@ -2,9 +2,11 @@ import {
   projectModel, ProjectModel, ProjectData, ProjectInfo,
 } from '../db/models/project-model';
 import { commentModel, CommentData } from '../db/models/comment-model';
-import { userService } from './user-service';
-import { articleValidation } from '../utils/validation-article';
+import { projectValidation } from '../utils/validation-project';
 
+interface TagInfo {
+    [key: string]: string
+}
   interface searchCondition {
     filter: string;
     page: number;
@@ -12,9 +14,18 @@ import { articleValidation } from '../utils/validation-article';
   }
 
   interface commentSearchCondition {
-    articleId: string;
+    projectId: string;
     page: number;
     perPage: number;
+  }
+
+  interface updateInfo {
+      projectId: string;
+      title: string;
+      shortDescription: string;
+      desription: string;
+      thumbnail: string;
+      tags: TagInfo[]
   }
 
 class ProjectService {
@@ -38,70 +49,71 @@ class ProjectService {
   async findProjects(searchCondition: searchCondition): Promise<[projectList: ProjectData[], total: number ]> {
     // eslint-disable-next-line max-len
     const {
-      articleType, filter, page, perPage,
+      filter, page, perPage,
     } = searchCondition;
       // eslint-disable-next-line max-len
-    const [articleList, totalPage] = await this.articleModel.findArticles(articleType, filter, page, perPage);
-    return [articleList, totalPage];
+    const [projectList, totalPage] = await this.projectModel.findProjects(filter, page, perPage);
+    return [projectList, totalPage];
   }
 
-  async findArticleOne(articleId: string): Promise<ArticleData | null> {
-    const article = await this.articleModel.findArticle(articleId);
+  // 게시글 조회 - 서버에서만 사용 목적
+  async findProjectOne(projectId: string): Promise<ProjectData | null> {
+    const article = await this.projectModel.findProject(projectId);
     return article;
   }
 
   // 3. 게시글 조회 - 게시글 아이디
-  async findArticle(commentSearchCondition: commentSearchCondition)
+  async findproject(commentSearchCondition: commentSearchCondition)
     : Promise<[
-      articleInfo: ArticleData | null,
+      projectInfo: ProjectData | null,
       commentList: CommentData[] | null,
       totalPage: number]> {
-    const { articleId, page, perPage } = commentSearchCondition;
+    const { projectId, page, perPage } = commentSearchCondition;
     // 게시글 정보
-    const articleInfo = await this.articleModel.findArticle(articleId);
+    const projectInfo = await this.projectModel.findProject(projectId);
     // 게시글에 있는 댓글 정보
-    const [commentList, totalPage] = await commentModel.findByArticleId(articleId, page, perPage);
-    return [articleInfo, commentList, totalPage];
+    const [commentList, totalPage] = await commentModel.findByArticleId(projectId, page, perPage);
+    return [projectInfo, commentList, totalPage];
   }
 
   // 4. 게시글 제목, 내용 수정
-  async updateArticle(userId: string, updateInfo: any): Promise<ArticleData | null> {
+  async updateArticle(userId: string, updateInfo: updateInfo): Promise<ProjectData | null> {
     // validation
-    articleValidation.updateArticle(userId, updateInfo);
-    const updatedResult = await this.articleModel.updateArticle(updateInfo);
+    projectValidation.updateProject(userId, updateInfo);
+    const updatedResult = await this.projectModel.updateProject(updateInfo);
     return updatedResult;
   }
 
   // 5. 게시글 삭제
-  async deleteArticle(userId: string, articleId: string): Promise<ArticleData | null> {
+  async deleteArticle(userId: string, projectId: string): Promise<ProjectData | null> {
     // validation - 유저 아이디, 댓글 여부
-    articleValidation.deleteArticle(userId, articleId);
+    projectValidation.deleteProject(userId, projectId);
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
-    const result = await this.articleModel.deleteArticle(articleId);
+    const result = await this.projectModel.deleteArticle(projectId);
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
-    commentModel.deleteByArticleId(articleId);
+    await commentModel.deleteByArticleId(projectId);
     return result;
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(userId: string, articleId: string): Promise<ArticleData | null> {
+  async likeArticle(userId: string, projectId: string): Promise<ProjectData | null> {
     const update = { $push: { likes: userId } };
-    const result = await this.articleModel.likeArticle(articleId, update);
+    const result = await this.projectModel.likeArticle(projectId, update);
     return result;
   }
 
   // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByTitle(title, articleType);
-    return articles;
+  async searchArticlesByTitle(title: string): Promise<ProjectData[] | null> {
+    const projects = await this.projectModel.searchProjectsByTitle(title);
+    return projects;
   }
 
   // 8. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByAuthor(author, articleType);
-    return articles;
+  async searchArticlesByAuthor(author: string): Promise<ProjectData[] | null> {
+    const projects = await this.projectModel.searchProjectsByAuthor(author);
+    return projects;
   }
 }
 
