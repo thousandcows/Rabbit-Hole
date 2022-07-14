@@ -8,16 +8,34 @@ const searchRouter = Router();
 // 1. 게시글 검색
 searchRouter.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (req.query.author && req.query.type) {
-      const { author, type } = req.query;
-      // eslint-disable-next-line max-len
-      const articles = await articleService.searchArticlesByAuthor(author.toString(), type?.toString());
-      res.status(200).json(articles);
-    } else if (req.query.title && req.query.type) {
-      const { title, type } = req.query;
-      // eslint-disable-next-line max-len
-      const articles = await articleService.searchArticlesByTitle(title.toString(), type?.toString());
-      res.status(200).json(articles);
+    if (req.query.author && req.query.articleType) {
+      const {
+        author, articleType, filter, page, perPage,
+      } = req.query;
+      const authorSearchCondition = {
+        author: String(author),
+        articleType: String(articleType),
+        filter: String(filter),
+        page: Number(page),
+        perPage: Number(perPage),
+      };
+      const [articleList, totalPage] = await articleService
+        .searchArticlesByAuthor(authorSearchCondition);
+      res.status(200).json({ articleList, totalPage });
+    } else if (req.query.title && req.query.articleType) {
+      const {
+        title, articleType, filter, page, perPage,
+      } = req.query;
+      const titleSearchCondition = {
+        title: String(title),
+        articleType: String(articleType),
+        filter: String(filter),
+        page: Number(page),
+        perPage: Number(perPage),
+      };
+      const [articleList, totalPage] = await articleService
+        .searchArticlesByTitle(titleSearchCondition);
+      res.status(200).json({ articleList, totalPage });
     }
   } catch (error) {
     next(error);

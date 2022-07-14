@@ -128,26 +128,64 @@ export class ArticleModel {
     return result;
   }
 
-  // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await Article.find({ articleType, title: new RegExp(title) });
-    if (!articles) {
-      const error = new Error('해당 게시글이 존재하지 않습니다');
-      error.name = 'NotFound';
-      throw error;
+  // 7. 게시글 검색 - 작성자
+  async searchArticlesByAuthor(
+    author: string,
+    articleType: string,
+    filter: string,
+    page: number,
+    perPage: number,
+  )
+    : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const type: type = { articleType };
+    let sortFilter: sortFilter = { createdAt: -1 };
+    if (filter === 'views') {
+      sortFilter = { views: -1 };
     }
-    return articles;
+
+    let total = await Article.countDocuments({ articleType, author: new RegExp(author), type });
+    let articleList = await Article
+      .find({ articleType, author: new RegExp(author), type })
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!articleList) {
+      articleList = [];
+    }
+    return [articleList, totalPage];
   }
 
-  // 7. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await Article.find({ articleType, author: new RegExp(author) });
-    if (!articles) {
-      const error = new Error('해당 게시글이 존재하지 않습니다');
-      error.name = 'NotFound';
-      throw error;
+  // 7. 게시글 검색 - 글 제목
+  async searchArticlesByTitle(
+    title: string,
+    articleType: string,
+    filter: string,
+    page: number,
+    perPage: number,
+  )
+    : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const type: type = { articleType };
+    let sortFilter: sortFilter = { createdAt: -1 };
+    if (filter === 'views') {
+      sortFilter = { views: -1 };
     }
-    return articles;
+
+    let total = await Article.countDocuments({ articleType, title: new RegExp(title), type });
+    let articleList = await Article
+      .find({ articleType, title: new RegExp(title), type })
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!articleList) {
+      articleList = [];
+    }
+    return [articleList, totalPage];
   }
 
   // 8. 게시글 제목 중복 확인

@@ -6,12 +6,19 @@ import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
 
 interface searchCondition {
-  articleType: string
+  articleType: string;
   filter: string;
   page: number;
   perPage: number;
 }
 
+interface authorSearchCondition extends searchCondition {
+  author: string;
+}
+
+interface titleSearchCondition extends searchCondition {
+  title: string;
+}
 interface commentSearchCondition {
   articleId: string;
   page: number;
@@ -97,16 +104,26 @@ class ArticleService {
     return result;
   }
 
-  // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByTitle(title, articleType);
-    return articles;
+  // 7. 게시글 검색 - 작성자
+  async searchArticlesByAuthor(authorSearchCondition: authorSearchCondition)
+  : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const {
+      author, articleType, filter, page, perPage,
+    } = authorSearchCondition;
+    const [articleList, totalPage] = await this.articleModel
+      .searchArticlesByAuthor(author, articleType, filter, page, perPage);
+    return [articleList, totalPage];
   }
 
-  // 8. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByAuthor(author, articleType);
-    return articles;
+  // 8. 게시글 검색 - 글 제목
+  async searchArticlesByTitle(titleSearchCondition: titleSearchCondition)
+  : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const {
+      title, articleType, filter, page, perPage,
+    } = titleSearchCondition;
+    const [articleList, totalPage] = await this.articleModel
+      .searchArticlesByTitle(title, articleType, filter, page, perPage);
+    return [articleList, totalPage];
   }
 }
 
