@@ -24,8 +24,6 @@ function uploadFile(file: any): Promise<any> {
   return s3.upload(uploadParams).promise();
 }
 
-exports.uploadFile = uploadFile;
-
 // s3에서 이미지 파일 다운로드
 function downloadFile(fileKey: any) {
   const downloadParams = {
@@ -36,4 +34,4 @@ function downloadFile(fileKey: any) {
   return s3.getObject(downloadParams).createReadStream();
 }
 
-exports.downloadFile = downloadFile;
+export { uploadFile, downloadFile };

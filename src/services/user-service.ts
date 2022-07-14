@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import {
-  UserModel, userModel, UserInfo, UserData,
+  UserModel, userModel, UserInfo, UserData, ImageInfo,
 } from '../db/models/user-model';
 import { validation } from '../utils/validation';
+import { uploadFile } from '../s3';
 
 class UserService {
   userModel: UserModel;
@@ -45,6 +46,16 @@ class UserService {
   async deleteUser(_id: string): Promise<UserData> {
     const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
+  }
+
+  async addAuthImage(imageInfo: ImageInfo): Promise<any> {
+    const imageUrl = await uploadFile(imageInfo);
+    if (!imageUrl) {
+      const error = new Error('이미지 업로드에 실패했습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return imageUrl;
   }
 
   async manageCarrots(_id: string, update: any): Promise<UserData> {

@@ -19,6 +19,12 @@ export interface UserInfo {
 export interface UserData extends UserInfo {
     _id: Types.ObjectId;
   }
+
+export interface ImageInfo {
+  body: string,
+  filename: string,
+  type: string
+}
 export class UserModel {
   async findByEmail(githubEmail: string): Promise<UserData | null> {
     const user = await User.findOne({ githubEmail });

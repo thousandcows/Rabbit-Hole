@@ -5,6 +5,19 @@ import { commentModel, CommentData } from '../db/models/comment-model';
 import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
 
+interface searchCondition {
+  articleType: string
+  filter: string;
+  page: number;
+  perPage: number;
+}
+
+interface commentSearchCondition {
+  articleId: string;
+  page: number;
+  perPage: number;
+}
+
 class ArticleService {
   articleModel: ArticleModel;
 
@@ -27,25 +40,33 @@ class ArticleService {
 
   // 2. 전체 게시글 조회 - 최신순, 페이지네이션
   // eslint-disable-next-line max-len
-  async findArticles(searchCondition: any): Promise<[articleList: ArticleData[], total: number ]> {
+  async findArticles(searchCondition: searchCondition): Promise<[articleList: ArticleData[], total: number ]> {
     // eslint-disable-next-line max-len
     const {
       articleType, filter, page, perPage,
     } = searchCondition;
-    const numberedPage = Number(page);
-    const numberedPerPage = Number(perPage);
     // eslint-disable-next-line max-len
-    const [articleList, totalPage] = await this.articleModel.findArticles(articleType, filter, numberedPage, numberedPerPage);
+    const [articleList, totalPage] = await this.articleModel.findArticles(articleType, filter, page, perPage);
     return [articleList, totalPage];
   }
 
-  // 3. 게시글 조회 - 게시글 아이디
-  async findArticle(articleId: string): Promise<[ArticleData | null, CommentData[] | null]> {
-    // 게시글 정보
+  async findArticleOne(articleId: string): Promise<ArticleData | null> {
     const article = await this.articleModel.findArticle(articleId);
+    return article;
+  }
+
+  // 3. 게시글 조회 - 게시글 아이디
+  async findArticle(commentSearchCondition: commentSearchCondition)
+  : Promise<[
+    articleInfo: ArticleData | null,
+    commentList: CommentData[] | null,
+    totalPage: number]> {
+    const { articleId, page, perPage } = commentSearchCondition;
+    // 게시글 정보
+    const articleInfo = await this.articleModel.findArticle(articleId);
     // 게시글에 있는 댓글 정보
-    const commentList = await commentModel.findByArticleId(articleId);
-    return [article, commentList];
+    const [commentList, totalPage] = await commentModel.findByArticleId(articleId, page, perPage);
+    return [articleInfo, commentList, totalPage];
   }
 
   // 4. 게시글 제목, 내용 수정

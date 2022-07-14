@@ -6,6 +6,11 @@ import { validation } from '../utils/validation';
 import { userService } from './user-service';
 import { articleService } from './article-service';
 
+interface searchCondition {
+  articleId: string;
+  page: number;
+  perPage: number;
+}
 class CommentService {
   commentModel: CommentModel;
 
@@ -14,20 +19,30 @@ class CommentService {
   }
 
   // 댓글 작성
-  async addComment(userId: string, commentInfo: CommentInfo): Promise<CommentData> {
+  async addComment(
+    userId: string,
+    articleId: string,
+    commentInfo: CommentInfo,
+  ): Promise<CommentData> {
     validation.addComment(commentInfo);
 
     const user = await userService.getUserById(userId);
-    const createCommentInfo = { ...commentInfo, author: user.name, authorId: String(user._id) };
+    const createCommentInfo = {
+      ...commentInfo, author: user.name, authorId: userId, articleId,
+    };
 
     const createdNewComments = await this.commentModel.create(createCommentInfo);
     return createdNewComments;
   }
 
   // 특정 게시글에 작성된 댓글 가져오기
-  async getCommentsByArticleId(articleId: string): Promise<CommentData[] | null> {
-    const comments = await this.commentModel.findByArticleId(articleId);
-    return comments;
+  async getCommentsByArticleId(searchCondition: searchCondition)
+  : Promise<[commentList: CommentData[] | null, totalPage: number]> {
+    const { articleId, page, perPage } = searchCondition;
+    const [
+      commentList, totalPage,
+    ] = await this.commentModel.findByArticleId(articleId, page, perPage);
+    return [commentList, totalPage];
   }
 
   // 특정 유저가 작성한 댓글 가져오기
@@ -58,14 +73,35 @@ class CommentService {
     commentId: string,
     update: Partial<CommentInfo>,
   ): Promise<CommentData> {
-    const [article, comment] = await articleService.findArticle(commentId);
-    if (article && article.authorId !== userId) {
+    // 이 댓글
+    const comment = await this.commentModel.findById(commentId);
+
+    // 채택 중복 방지
+    const [commentList] = await this.commentModel.findByArticleId(comment.articleId);
+    if (!commentList) {
+      const error = Error('댓글을 불러올 수 없습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+
+    for (let i = 0; i < commentList.length; i += 1) {
+      if (commentList[i].isAdopted === true) {
+        const error = Error('한개의 답변에만 채택할 수 있습니다.');
+        error.name = 'Conflict';
+        throw error;
+      }
+    }
+
+    // 댓글 채택
+    if (comment && comment.authorId !== userId) {
       const error = new Error('본인이 작성한 게시글의 댓글만 채택할 수 있습니다.');
       error.name = 'Forbidden';
       throw error;
     }
     const updatedComment = await this.commentModel.update(commentId, update);
+
     // 당근을 답변자에게 전달
+    const article = await articleService.findArticleOne(comment.articleId);
     const commenterId = updatedComment.authorId;
     if (commenterId) {
       const carrotUpdate = { $inc: { carrots: article?.carrots } };

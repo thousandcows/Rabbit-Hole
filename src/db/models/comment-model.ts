@@ -1,14 +1,21 @@
 /* eslint-disable class-methods-use-this */
-import { Types } from 'mongoose';
+import { SortOrder, Types } from 'mongoose';
 import { Comment } from '..';
+
+interface sortFilter {
+  [key: string]: SortOrder;
+}
+interface LikeInfo {
+  [key: string]: string
+}
 
 export interface CommentInfo {
     commentType: string;
     articleId: string;
     author?: string;
-    authorId?: string;
+    authorId: string;
     content: string;
-    likes?: number;
+    likes?: LikeInfo[];
     isAdopted?: boolean;
   }
 
@@ -17,10 +24,28 @@ export interface CommentData extends CommentInfo {
   }
 export class CommentModel {
   // 특정 게시글에 작성된 댓글 가져오기
-  async findByArticleId(articleId: string): Promise<CommentData[] | null> {
-    const comments = await Comment.find({ articleId });
+  async findByArticleId(articleId: string, page?: number, perPage?: number)
+  : Promise<[commentList: CommentData[] | null, totalPage: number]> {
+    if (!page || !perPage) {
+      const commentList = await Comment.find({ articleId });
+      return [commentList, 0];
+    }
+    const sortFilter:sortFilter = { isAdopted: -1, createdAt: -1 };
 
-    return comments;
+    let total = await Comment.countDocuments({});
+    let commentList = await Comment
+      .find({ articleId })
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!commentList) {
+      commentList = [];
+    }
+
+    return [commentList, totalPage];
   }
 
   // 특정 유저가 작성한 댓글 가져오기
