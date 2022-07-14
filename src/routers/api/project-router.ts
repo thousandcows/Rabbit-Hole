@@ -4,21 +4,30 @@ import {
 import { loginRequired } from '../../middlewares/login-required';
 import { projectService } from '../../services';
 import { validation } from '../../utils/validation';
+import { upload } from '../../utils/multer-s3';
 
 const projectRouter = Router();
 
 // 1. 새 게시글 작성
-projectRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.post('/', upload.single('thumbnail'), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = validation.isLogin(req.currentUserId);
-    const {
-      author, title, shortDescription, description, thumbnail, tags,
-    } = req.body;
-    const projectInfo = {
-      author, authorId: userId, title, shortDescription, description, thumbnail, tags,
-    };
-    const result = await projectService.createProject(userId, projectInfo);
-    res.status(200).json(result);
+    const image: any = req.file;
+    if (image) {
+      const userId = validation.isLogin(req.currentUserId);
+      const thumbnail = image.location;
+      const {
+        author, title, shortDescription, description, tags,
+      } = req.body;
+      const projectInfo = {
+        author, authorId: userId, title, shortDescription, description, thumbnail, tags,
+      };
+      const result = await projectService.createProject(userId, projectInfo);
+      res.status(200).json(result);
+    } else {
+      const error = new Error('이미지 업로드에 실패하였습니다');
+      error.name = 'NotFound';
+      throw error;
+    }
   } catch (error) {
     next(error);
   }

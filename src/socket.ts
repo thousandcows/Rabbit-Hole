@@ -1,7 +1,7 @@
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
-import { uploadFile } from './s3';
+import { uploadFile } from './utils/s3';
 
 const sharp = require('sharp');
 
