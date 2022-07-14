@@ -55,11 +55,10 @@ commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response
 // 댓글 채택
 commentRouter.put(
   '/:commentId/adoption',
-  // loginRequired,
+  loginRequired,
   async (req:Request, res:Response, next:NextFunction) => {
     try {
-      // const userId = validation.isLogin(req.currentUserId);
-      const userId = '62c8691b1673e09fbcfa4298';
+      const userId = validation.isLogin(req.currentUserId);
 
       const { commentId } = req.params;
       const update = req.body;
