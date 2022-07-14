@@ -3,7 +3,6 @@ import {
 } from 'express';
 import { loginRequired } from '../../middlewares';
 import { userService } from '../../services';
-import { contentTypeChecker } from '../../utils/content-type-checker';
 import { validation } from '../../utils/validation';
 
 const userRouter = Router();
@@ -23,7 +22,6 @@ userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:
 userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userInfo = req.body;
-    contentTypeChecker(userInfo);
     // 위 데이터를 사용자 db에 추가하기
     const newUser = await userService.addUser(userInfo);
     res.status(201).json(newUser);
@@ -50,7 +48,6 @@ userRouter.put('/', loginRequired, async (req: Request, res: Response, next: Nex
   try {
     const userId = validation.isLogin(req.currentUserId);
     const update = req.body;
-    contentTypeChecker(update);
     // 사용자 정보를 업데이트함.
     const updatedUser = await userService.setUser(userId, update);
 
