@@ -1,6 +1,6 @@
 import mongoose, { model } from 'mongoose';
 import {
-  ChatSchema, CommentSchema, UserSchema, ArticleSchema,
+  ChatSchema, CommentSchema, UserSchema, ArticleSchema, ProjectSchema,
 } from './schemas';
 
 const DB_URL = process.env.MONGODB_URL
@@ -16,3 +16,4 @@ export const Chat = model('chats', ChatSchema);
 export const User = model('users', UserSchema);
 export const Article = model('articles', ArticleSchema);
 export const Comment = model('comments', CommentSchema);
+export const Project = model('projects', ProjectSchema);

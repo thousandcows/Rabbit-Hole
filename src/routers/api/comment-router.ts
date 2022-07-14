@@ -3,7 +3,6 @@ import {
 } from 'express';
 import { loginRequired } from '../../middlewares';
 import { commentService } from '../../services';
-import { contentTypeChecker } from '../../utils/content-type-checker';
 import { validation } from '../../utils/validation';
 
 const commentRouter = Router();
@@ -28,7 +27,6 @@ commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Respons
   try {
     const { articleId } = req.params;
     const commentInfo = req.body;
-    contentTypeChecker(commentInfo);
 
     const userId = validation.isLogin(req.currentUserId);
 
