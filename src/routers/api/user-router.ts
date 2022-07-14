@@ -5,6 +5,8 @@ import { loginRequired } from '../../middlewares';
 import { userService } from '../../services';
 import { validation } from '../../utils/validation';
 
+const upload = require('../../utils/multer-s3');
+
 const userRouter = Router();
 
 // 마이페이지
@@ -19,25 +21,24 @@ userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:
 });
 
 // 회원가입
-userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userInfo = req.body;
-    // 위 데이터를 사용자 db에 추가하기
-    const newUser = await userService.addUser(userInfo);
-    res.status(201).json(newUser);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// 회원 인증 이미지 등록
-userRouter.post('/image', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const imageInfo = req.body;
-    // 이미지 데이터를 S3에 업로드
-    const imageUrl = await userService.addAuthImage(imageInfo);
-    // 이미지 url을 반환
-    res.status(201).json(imageUrl);
+    const img: any = req.file;
+    // 회원 이미지 업로드 확인
+    if (img) {
+      const authImage = img.location;
+      const {
+        name, track, trackCardinalNumber, position, githubEmail, githubProfileUrl, githubAvatar,
+      } = req.body;
+      const userInfo = {
+        name, track, trackCardinalNumber, position, authImage, githubEmail, githubProfileUrl, githubAvatar,
+      };
+      const newUser = await userService.addUser(userInfo);
+      res.status(201).json({ newUser });
+    } else {
+      const error = new Error('이미지 업로드에 실패하였습니다');
+      error.name = '';
+    }
   } catch (error) {
     next(error);
   }
