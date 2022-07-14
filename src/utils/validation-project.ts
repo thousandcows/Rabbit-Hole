@@ -1,6 +1,4 @@
 import { ProjectInfo, projectModel } from '../db/models/project-model';
-import { commentModel } from '../db/models/comment-model';
-import { userService } from '../services/user-service';
 
 class ProjectValidation {
   async createProject(projectInfo: ProjectInfo) {
@@ -91,33 +89,11 @@ class ProjectValidation {
 
   async deleteProject(userId: string, projectId: string) {
     // 유저 === authorId 확인 필요함
-    const articleInfo = await projectModel.findProject(projectId);
-    const authorId = articleInfo?.authorId;
+    const projectInfo = await projectModel.findProject(projectId);
+    const authorId = projectInfo?.authorId;
     if (userId !== authorId) {
       const error = new Error('이 글의 작성자가 아닙니다');
       error.name = 'Forbidden';
-      throw error;
-    }
-    // 질문 게시판: 댓글이 있으면 삭제가 불가능함
-    if (articleInfo?.articleType === 'question') {
-      const commentList = await commentModel.findByArticleId(articleId);
-      if (commentList) {
-        const error = new Error('댓글이 존재하여 삭제할 수 없습니다.');
-        error.name = 'Forbidden';
-        throw error;
-      }
-      // 삭제가 가능하다면 질문자에게 당근 환급
-      const carrotsToReturn = articleInfo.carrots;
-      const update = { $inc: { carrots: -carrotsToReturn } };
-      await userService.manageCarrots(userId, update);
-    }
-  }
-
-  async checkDuplicatedTitle(articleTitle: string) {
-    const isTitleNotOk = await articleModel.checkDuplicatedTitle(articleTitle);
-    if (isTitleNotOk) {
-      const error = new Error('이미 존재하는 제목입니다.');
-      error.name = 'BadRequest';
       throw error;
     }
   }
