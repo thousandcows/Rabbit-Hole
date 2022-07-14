@@ -108,8 +108,8 @@ class ArticleValidation {
     }
     // 질문 게시판: 댓글이 있으면 삭제가 불가능함
     if (articleInfo?.articleType === 'question') {
-      const commentList = await commentModel.findByArticleId(articleId);
-      if (commentList) {
+      const [commentList] = await commentModel.findByArticleId(articleId);
+      if (commentList && commentList.length > 0) {
         const error = new Error('댓글이 존재하여 삭제할 수 없습니다.');
         error.name = 'Forbidden';
         throw error;
