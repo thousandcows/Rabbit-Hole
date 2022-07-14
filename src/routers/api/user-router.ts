@@ -37,7 +37,8 @@ userRouter.post('/register', upload.single('authImage'), async (req: Request, re
       res.status(201).json({ newUser });
     } else {
       const error = new Error('이미지 업로드에 실패하였습니다');
-      error.name = '';
+      error.name = 'NotFound';
+      throw error;
     }
   } catch (error) {
     next(error);
