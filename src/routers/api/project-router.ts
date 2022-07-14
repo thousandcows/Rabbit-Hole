@@ -12,10 +12,10 @@ projectRouter.post('/', loginRequired, async (req: Request, res: Response, next:
   try {
     const userId = validation.isLogin(req.currentUserId);
     const {
-      author, title, shortDescription, description, thumbnail,
+      author, title, shortDescription, description, thumbnail, tags,
     } = req.body;
     const projectInfo = {
-      author, authorId: userId, title, shortDescription, description, thumbnail,
+      author, authorId: userId, title, shortDescription, description, thumbnail, tags,
     };
     const result = await projectService.createProject(userId, projectInfo);
     res.status(200).json(result);
@@ -62,10 +62,10 @@ projectRouter.put('/:projectId', loginRequired, async (req: Request, res: Respon
     const userId = validation.isLogin(req.currentUserId);
     const { projectId } = req.params;
     const {
-      title, shortDescription, desription, thumbnail, tags,
+      title, shortDescription, description, thumbnail, tags,
     } = req.body;
     const updatedArticle = await projectService.updateProject(userId, {
-      projectId, title, shortDescription, desription, thumbnail, tags,
+      projectId, title, shortDescription, description, thumbnail, tags,
     });
     res.status(200).json(updatedArticle);
   } catch (error) {

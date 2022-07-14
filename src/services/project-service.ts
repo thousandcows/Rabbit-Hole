@@ -23,7 +23,7 @@ interface TagInfo {
       projectId: string;
       title: string;
       shortDescription: string;
-      desription: string;
+      description: string;
       thumbnail: string;
       tags: TagInfo[]
   }
@@ -38,7 +38,7 @@ class ProjectService {
   // 1. 새 게시글 작성
   async createProject(userId: string, projectInfo: ProjectInfo): Promise<ProjectData> {
     // 기본 validation
-    projectValidation.createProject(projectInfo);
+    await projectValidation.createProject(projectInfo);
     const result = await this.projectModel.createProject(projectInfo);
 
     return result;
@@ -79,7 +79,7 @@ class ProjectService {
   // 4. 게시글 제목, 내용 수정
   async updateProject(userId: string, updateInfo: updateInfo): Promise<ProjectData | null> {
     // validation
-    projectValidation.updateProject(userId, updateInfo);
+    await projectValidation.updateProject(userId, updateInfo);
     const updatedResult = await this.projectModel.updateProject(updateInfo);
     return updatedResult;
   }
@@ -87,7 +87,7 @@ class ProjectService {
   // 5. 게시글 삭제
   async deleteProject(userId: string, projectId: string): Promise<ProjectData | null> {
     // validation - 유저 아이디, 댓글 여부
-    projectValidation.deleteProject(userId, projectId);
+    await projectValidation.deleteProject(userId, projectId);
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
     const result = await this.projectModel.deleteProject(projectId);

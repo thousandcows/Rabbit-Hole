@@ -28,7 +28,7 @@ class ArticleService {
   // 1. 새 게시글 작성
   async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData> {
     // 기본 validation
-    articleValidation.createArticle(articleInfo);
+    await articleValidation.createArticle(articleInfo);
     const result = await this.articleModel.createArticle(articleInfo);
     // 유저 당근 개수 조정
     // eslint-disable-next-line max-len
@@ -72,7 +72,7 @@ class ArticleService {
   // 4. 게시글 제목, 내용 수정
   async updateArticle(userId: string, updateInfo: any): Promise<ArticleData | null> {
     // validation
-    articleValidation.updateArticle(userId, updateInfo);
+    await articleValidation.updateArticle(userId, updateInfo);
     const updatedResult = await this.articleModel.updateArticle(updateInfo);
     return updatedResult;
   }
@@ -80,7 +80,7 @@ class ArticleService {
   // 5. 게시글 삭제
   async deleteArticle(userId: string, articleId: string): Promise<ArticleData | null> {
     // validation - 유저 아이디, 댓글 여부
-    articleValidation.deleteArticle(userId, articleId);
+    await articleValidation.deleteArticle(userId, articleId);
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
     const result = await this.articleModel.deleteArticle(articleId);
