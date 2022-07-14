@@ -106,7 +106,7 @@ export class ProjectModel {
   }
 
   // 5. 게시글 삭제 요청 to 관리자
-  async deleteArticle(projectId: string): Promise<ProjectData | null> {
+  async deleteProject(projectId: string): Promise<ProjectData | null> {
     // 게시글 삭제
     const result = await Project.findByIdAndDelete(projectId);
     if (!result) {
@@ -118,7 +118,7 @@ export class ProjectModel {
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(projectId: string, update: any): Promise<ProjectData | null> {
+  async likeProject(projectId: string, update: any): Promise<ProjectData | null> {
     const result = await Project.findByIdAndUpdate(projectId, update);
     if (!result) {
       const error = new Error('게시글 좋아요에 실패했습니다.');

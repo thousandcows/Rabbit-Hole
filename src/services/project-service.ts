@@ -77,7 +77,7 @@ class ProjectService {
   }
 
   // 4. 게시글 제목, 내용 수정
-  async updateArticle(userId: string, updateInfo: updateInfo): Promise<ProjectData | null> {
+  async updateProject(userId: string, updateInfo: updateInfo): Promise<ProjectData | null> {
     // validation
     projectValidation.updateProject(userId, updateInfo);
     const updatedResult = await this.projectModel.updateProject(updateInfo);
@@ -85,12 +85,12 @@ class ProjectService {
   }
 
   // 5. 게시글 삭제
-  async deleteArticle(userId: string, projectId: string): Promise<ProjectData | null> {
+  async deleteProject(userId: string, projectId: string): Promise<ProjectData | null> {
     // validation - 유저 아이디, 댓글 여부
     projectValidation.deleteProject(userId, projectId);
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
-    const result = await this.projectModel.deleteArticle(projectId);
+    const result = await this.projectModel.deleteProject(projectId);
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(projectId);
@@ -98,20 +98,20 @@ class ProjectService {
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(userId: string, projectId: string): Promise<ProjectData | null> {
+  async likeProject(userId: string, projectId: string): Promise<ProjectData | null> {
     const update = { $push: { likes: userId } };
-    const result = await this.projectModel.likeArticle(projectId, update);
+    const result = await this.projectModel.likeProject(projectId, update);
     return result;
   }
 
   // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string): Promise<ProjectData[] | null> {
+  async searchProjectsByTitle(title: string): Promise<ProjectData[] | null> {
     const projects = await this.projectModel.searchProjectsByTitle(title);
     return projects;
   }
 
   // 8. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string): Promise<ProjectData[] | null> {
+  async searchProjectsByAuthor(author: string): Promise<ProjectData[] | null> {
     const projects = await this.projectModel.searchProjectsByAuthor(author);
     return projects;
   }
