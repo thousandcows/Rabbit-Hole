@@ -32,6 +32,19 @@ userRouter.post('/register', async (req: Request, res: Response, next: NextFunct
   }
 });
 
+// 회원 인증 이미지 등록
+userRouter.post('/image', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const imageInfo = req.body;
+    // 이미지 데이터를 S3에 업로드
+    const imageUrl = await userService.addAuthImage(imageInfo);
+    // 이미지 url을 반환
+    res.status(201).json(imageUrl);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 이메일로 회원 조회
 userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
