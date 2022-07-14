@@ -4,8 +4,7 @@ import {
 import { loginRequired } from '../../middlewares';
 import { userService } from '../../services';
 import { validation } from '../../utils/validation';
-
-const upload = require('../../utils/multer-s3');
+import { upload } from '../../utils/multer-s3';
 
 const userRouter = Router();
 
