@@ -1,12 +1,12 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import { articleService } from '../../services';
+import { articleService, projectService } from '../../services';
 
 const searchRouter = Router();
 
 // 1. 게시글 검색
-searchRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+searchRouter.get('/article', async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.query.author && req.query.type) {
       const { author, type } = req.query;
@@ -18,6 +18,25 @@ searchRouter.get('/', async (req: Request, res: Response, next: NextFunction) =>
       // eslint-disable-next-line max-len
       const articles = await articleService.searchArticlesByTitle(title.toString(), type?.toString());
       res.status(200).json(articles);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 1. 프로젝트 게시글 검색
+searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.query.author) {
+      const { author } = req.query;
+      // eslint-disable-next-line max-len
+      const projects = await projectService.searchProjectsByAuthor(author.toString());
+      res.status(200).json(projects);
+    } else if (req.query.title) {
+      const { title } = req.query;
+      // eslint-disable-next-line max-len
+      const projects = await projectService.searchProjectsByTitle(title.toString());
+      res.status(200).json(projects);
     }
   } catch (error) {
     next(error);

@@ -14,8 +14,8 @@ interface searchCondition {
 class CommentService {
   commentModel: CommentModel;
 
-  constructor(commentModelArg: CommentModel) {
-    this.commentModel = commentModelArg;
+  constructor(commentModel: CommentModel) {
+    this.commentModel = commentModel;
   }
 
   // 댓글 작성
