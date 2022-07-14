@@ -3,7 +3,7 @@ import {
   UserModel, userModel, UserInfo, UserData, ImageInfo,
 } from '../db/models/user-model';
 import { validation } from '../utils/validation';
-import { uploadFile } from '../s3';
+import { uploadFile } from '../utils/s3';
 
 class UserService {
   userModel: UserModel;
