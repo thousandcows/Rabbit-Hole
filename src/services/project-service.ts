@@ -63,7 +63,7 @@ class ProjectService {
   }
 
   // 3. 게시글 조회 - 게시글 아이디
-  async findproject(commentSearchCondition: commentSearchCondition)
+  async findProject(commentSearchCondition: commentSearchCondition)
     : Promise<[
       projectInfo: ProjectData | null,
       commentList: CommentData[] | null,
