@@ -22,7 +22,7 @@ projectRouter.post('/', upload.single('thumbnail'), async (req: Request, res: Re
         author, authorId: userId, title, shortDescription, description, thumbnail, tags,
       };
       const result = await projectService.createProject(userId, projectInfo);
-      res.status(200).json(result);
+      res.status(201).json(result);
     } else {
       const error = new Error('이미지 업로드에 실패하였습니다');
       error.name = 'NotFound';
