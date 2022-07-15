@@ -12,10 +12,11 @@ interface UserEmail{
 
 async function loginRequired(req: Request, res: Response, next: NextFunction) {
   // request 헤더로부터 authorization bearer 토큰을 받음.
-  // token format 확인
+
   const wholeToken = req.headers.authorization?.split(' ');
 
   if (wholeToken) {
+    // token format 확인
     const tokenFormat = wholeToken[0];
     if (tokenFormat !== 'Bearer') {
       res.status(401).json({
@@ -28,12 +29,12 @@ async function loginRequired(req: Request, res: Response, next: NextFunction) {
     // 이 토큰은 github 토큰 문자열이거나, 혹은 "null" 문자열이거나, undefined임.
     // 토큰이 "null" 일 경우, login_required 가 필요한 서비스 사용을 제한함.
     if (!userToken || userToken === 'null') {
-      const error = new Error('로그인한 유저만 사용할 수 있는 서비스입니다.');
-      error.name = 'Unauthorized';
-      throw error;
+      res.status(401).json({
+        result: 'Unauthorized',
+        reason: '로그인한 유저만 사용할 수 있는 서비스입니다.',
+      });
     }
 
-    // 해당 token 이 정상적인 token인지 확인
     try {
       const userEmail = await axios.get('https://api.github.com/user/emails', {
         headers: {
