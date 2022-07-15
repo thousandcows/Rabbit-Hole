@@ -5,6 +5,7 @@ import { adminRequired } from '../../middlewares/admin-required';
 import {
   userService, articleService, commentService, projectService,
 } from '../../services';
+import { transPort } from '../../utils/email';
 
 const adminRouter = Router();
 
@@ -24,12 +25,36 @@ adminRouter.get('/users', adminRequired, async (req: Request, res: Response, nex
   }
 });
 // 1-2. 유저 승인 기능
-adminRouter.put('/users/:userId', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.put('/users/:userId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
     const updatedUser = await userService.authorizeUser(userId, role);
-    res.status(200).json(updatedUser);
+    // nodeMailer 옵션
+    const mailOptions = {
+      from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
+      to: updatedUser.githubEmail,
+      subject: '회원가입이 완료되었습니다',
+      text: '축하합니다. 회원가입이 완료되었습니다.',
+    };
+    // 메일 전송
+    await transPort.sendMail(mailOptions, (error, info) => {
+      console.log(error);
+      if (error) {
+        const error = new Error('이메일 전송에 실패했습니다');
+        error.name = 'NotFount';
+        throw error;
+      }
+      console.log(info);
+      // transPort.close();
+      // res.status(200).json(updatedUser);
+      res.status(200).json({
+        status: 'Success',
+        code: 200,
+        message: 'Sent Auth Email',
+      });
+    });
+    
   } catch (error) {
     next(error);
   }
