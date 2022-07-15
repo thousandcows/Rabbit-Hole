@@ -13,6 +13,7 @@ projectRouter.post('/', loginRequired, upload.single('thumbnail'), async (req: R
   try {
     const image: any = req.file;
     if (image) {
+      req.body.tags = JSON.parse(req.body.tags);
       const userId = validation.isLogin(req.currentUserId);
       const thumbnail = image.location;
       const {
