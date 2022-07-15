@@ -58,7 +58,7 @@ export class ArticleModel {
       sortFilter = { views: -1 };
     }
 
-    let total = await Article.countDocuments({});
+    let total = await Article.countDocuments(type);
     let articleList = await Article
       .find(type)
       .sort(sortFilter)
