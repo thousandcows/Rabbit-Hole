@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --watch src --exec ts-node src/server.ts",
     "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
-    "test": "jest --setupFiles dotenv/config --forceExit"
+    "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --forceExit"
   },
   "engines": {
     "node": "16.14.0"
@@ -20,6 +20,7 @@
     "aws-sdk": "^2.1174.0",
     "axios": "^0.27.2",
     "bson": "^4.6.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongodb-memory-server": "^8.7.2",
