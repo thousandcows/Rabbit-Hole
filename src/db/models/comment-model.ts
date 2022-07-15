@@ -126,6 +126,23 @@ export class CommentModel {
     }
     return updatedComment;
   }
+
+  // 댓글 전체 조회
+  async getAllComments(commentType: string, page: number, perPage: number): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
+    const type = { commentType };
+    let total = await Comment.countDocuments(type);
+    let commentList = await Comment
+      .find({})
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!commentList) {
+      commentList = [];
+    }
+    return [commentList, totalPage];
+  }
 }
 
 export const commentModel = new CommentModel();
