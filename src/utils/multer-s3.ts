@@ -1,5 +1,6 @@
-require('dotenv').config();
 import { Request } from 'express';
+
+require('dotenv').config();
 
 const S3 = require('aws-sdk/clients/s3');
 const multer = require('multer');
@@ -31,7 +32,7 @@ const fileFilter = (req: Request, file: any, cb: any) => {
     const error = new Error('지원하는 이미지 타입이 아닙니다');
     error.name = 'Forbidden';
     throw error;
-   }
+  }
 };
 
 const upload = multer({
