@@ -135,7 +135,7 @@ class ArticleService {
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(articleId);
     return result;
-}
+  }
 }
 
 export const articleService = new ArticleService(articleModel);
