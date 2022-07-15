@@ -138,6 +138,21 @@ class CommentService {
     const updatedComment = await this.commentModel.likeComment(commentId, update);
     return updatedComment;
   }
+
+  // 전체 댓글 조회
+  // eslint-disable-next-line max-len
+  async getAllComments(searchCondition: any): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
+    // eslint-disable-next-line max-len
+    const { commentType, page, perPage } = searchCondition;
+    const [commentList, totalPage] = await this.commentModel.getAllComments(commentType, page, perPage);
+    return [commentList, totalPage];
+  }
+
+  // 댓글 삭제 - 관리자
+  async deleteCommentForAdmin(commentId: string): Promise<CommentData> {
+    const deletedComment = await this.commentModel.deleteByCommentId(commentId);
+    return deletedComment;
+  }
 }
 
 export const commentService = new CommentService(commentModel);

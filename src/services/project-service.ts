@@ -133,6 +133,17 @@ class ProjectService {
       .searchProjectsByTitle(title, filter, page, perPage);
     return [projectList, totalPage];
   }
+
+  // 9. 프로젝트 삭제 - 관리자
+  async deleteProjectForAdmin(projectId: string): Promise<ProjectData | null> {
+    // 삭제할 게시글 전용 collection으로 이동
+    // 해당 게시글 삭제
+    const result = await this.projectModel.deleteProject(projectId);
+    // 삭제할 댓글 전용 collection으로 이동
+    // 관련 댓글 삭제
+    await commentModel.deleteByArticleId(projectId);
+    return result;
+  }
 }
 
 export const projectService = new ProjectService(projectModel);
