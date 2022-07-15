@@ -2,10 +2,10 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import morgan from 'morgan';
+import axios from 'axios';
 import webSocket from './socket';
 import { apiRouter } from './routers';
-import { errorHandler} from './middlewares';
-import axios from 'axios';
+import { errorHandler } from './middlewares';
 import { redisClient } from './redis/redis';
 
 const app = express();
@@ -24,7 +24,7 @@ app.use(morgan('dev'));
 app.use('/api', apiRouter);
 app.use(errorHandler);
 
- const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
+const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 
 // socket
 webSocket(server);
