@@ -30,7 +30,14 @@ userRouter.post('/register', upload.single('authImage'), async (req: Request, re
         name, track, trackCardinalNumber, position, githubEmail, githubProfileUrl, githubAvatar,
       } = req.body;
       const userInfo = {
-        name, track, trackCardinalNumber, position, authImage, githubEmail, githubProfileUrl, githubAvatar,
+        name,
+        track,
+        trackCardinalNumber,
+        position,
+        authImage,
+        githubEmail,
+        githubProfileUrl,
+        githubAvatar,
       };
       const newUser = await userService.addUser(userInfo);
       res.status(201).json({ newUser });
