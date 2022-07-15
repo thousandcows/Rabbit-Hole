@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  userRouter, chatRouter, articleRouter, searchRouter, commentRouter, authRouter, imageRouter,, adminRouter,
+  userRouter, chatRouter, articleRouter, searchRouter, commentRouter, authRouter, imageRouter, adminRouter,
 } from './api/index';
 import { projectRouter } from './api/project-router';
 
