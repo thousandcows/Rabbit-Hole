@@ -19,7 +19,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
   try {
     // 요청 코드
     const { code } = req.query;
-    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}&scope=user`;
+    const accessTokenUrl = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
 
     // 깃허브 토큰 데이터
     const { data } = await axios.get(accessTokenUrl, {
@@ -56,7 +56,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인 토큰, userId, userName, 만료시간 600
-      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&expire=600`;
+      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&carrots=${userData.carrots}&expire=600`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
@@ -71,7 +71,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
 // 깃허브 로그인 url
 authRouter.get('/github/login', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}`;
+    const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}&scope=user`;
     res.redirect(accessTokenUrl);
   } catch (error) {
     next(error);

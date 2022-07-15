@@ -83,7 +83,7 @@ articleRouter.delete('/:articleId', loginRequired, async (req: Request, res: Res
   }
 });
 // 6. 게시글 좋아요
-articleRouter.post('/:articleId/heart', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.put('/:articleId/heart', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;

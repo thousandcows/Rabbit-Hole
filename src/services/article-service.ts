@@ -6,12 +6,19 @@ import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
 
 interface searchCondition {
-  articleType: string
+  articleType: string;
   filter: string;
   page: number;
   perPage: number;
 }
 
+interface authorSearchCondition extends searchCondition {
+  author: string;
+}
+
+interface titleSearchCondition extends searchCondition {
+  title: string;
+}
 interface commentSearchCondition {
   articleId: string;
   page: number;
@@ -28,7 +35,7 @@ class ArticleService {
   // 1. 새 게시글 작성
   async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData> {
     // 기본 validation
-    articleValidation.createArticle(articleInfo);
+    await articleValidation.createArticle(articleInfo);
     const result = await this.articleModel.createArticle(articleInfo);
     // 유저 당근 개수 조정
     // eslint-disable-next-line max-len
@@ -72,7 +79,7 @@ class ArticleService {
   // 4. 게시글 제목, 내용 수정
   async updateArticle(userId: string, updateInfo: any): Promise<ArticleData | null> {
     // validation
-    articleValidation.updateArticle(userId, updateInfo);
+    await articleValidation.updateArticle(userId, updateInfo);
     const updatedResult = await this.articleModel.updateArticle(updateInfo);
     return updatedResult;
   }
@@ -80,13 +87,13 @@ class ArticleService {
   // 5. 게시글 삭제
   async deleteArticle(userId: string, articleId: string): Promise<ArticleData | null> {
     // validation - 유저 아이디, 댓글 여부
-    articleValidation.deleteArticle(userId, articleId);
+    await articleValidation.deleteArticle(userId, articleId);
     // 삭제할 게시글 전용 collection으로 이동
     // 해당 게시글 삭제
     const result = await this.articleModel.deleteArticle(articleId);
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
-    commentModel.deleteByArticleId(articleId);
+    await commentModel.deleteByArticleId(articleId);
     return result;
   }
 
@@ -97,16 +104,26 @@ class ArticleService {
     return result;
   }
 
-  // 7. 게시글 검색 - 글 제목
-  async searchArticlesByTitle(title: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByTitle(title, articleType);
-    return articles;
+  // 7. 게시글 검색 - 작성자
+  async searchArticlesByAuthor(authorSearchCondition: authorSearchCondition)
+  : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const {
+      author, articleType, filter, page, perPage,
+    } = authorSearchCondition;
+    const [articleList, totalPage] = await this.articleModel
+      .searchArticlesByAuthor(author, articleType, filter, page, perPage);
+    return [articleList, totalPage];
   }
 
-  // 8. 게시글 검색 - 작성자
-  async searchArticlesByAuthor(author: string, articleType: string): Promise<ArticleData[] | null> {
-    const articles = await this.articleModel.searchArticlesByAuthor(author, articleType);
-    return articles;
+  // 8. 게시글 검색 - 글 제목
+  async searchArticlesByTitle(titleSearchCondition: titleSearchCondition)
+  : Promise<[articleList: ArticleData[] | null, total: number]> {
+    const {
+      title, articleType, filter, page, perPage,
+    } = titleSearchCondition;
+    const [articleList, totalPage] = await this.articleModel
+      .searchArticlesByTitle(title, articleType, filter, page, perPage);
+    return [articleList, totalPage];
   }
 }
 
