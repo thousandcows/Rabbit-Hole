@@ -19,7 +19,7 @@ class UserService {
 
     const user = await this.userModel.findByEmail(githubEmail);
     if (user) {
-      const error = new Error('이 이메일은 현재 사용중입니다. 다른 이름을 입력해 주세요.');
+      const error = new Error('이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
       error.name = 'Conflict';
       throw error;
     }

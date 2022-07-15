@@ -26,7 +26,7 @@ function webSocket(server: http.Server) {
   });
   const connectedClientList: clientList = {};
   // socket 연결 중
-  io.sockets.on('connect', (socket: any) => {
+  io.sockets.on('connect', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
     // 새 접속자 입장
     socket.on('newUser', async (newUser: string) => { // 접속자 정보 어떻게 받을지 논의
       // 새 접속자 리스트에 추가
