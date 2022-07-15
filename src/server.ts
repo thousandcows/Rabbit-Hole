@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 const { PORT } = process.env;
 app.use(express.static(__dirname));
-app.use(morgan('dev'));
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :date[web] ${}'));
 
 app.use('/api', apiRouter);
 app.use(errorHandler);
