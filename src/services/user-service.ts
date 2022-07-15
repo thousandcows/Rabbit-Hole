@@ -64,7 +64,8 @@ class UserService {
   }
 
   // 유저 목록 조회 - 관리자
-  async getAllUsers(searchCondition: any): Promise<[userList: UserData[] | null, totalPage: number | null]> {
+  async getAllUsers(searchCondition: any)
+  : Promise<[userList: UserData[] | null, totalPage: number | null]> {
     const [userList, totalPage] = await this.userModel.findAll(searchCondition);
     return [userList, totalPage];
   }
