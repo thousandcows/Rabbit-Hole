@@ -9,7 +9,7 @@ import { upload } from '../../utils/multer-s3';
 const projectRouter = Router();
 
 // 1. 새 게시글 작성
-projectRouter.post('/', upload.single('thumbnail'), async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.post('/', loginRequired, upload.single('thumbnail'), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const image: any = req.file;
     if (image) {
