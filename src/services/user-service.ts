@@ -42,6 +42,7 @@ class UserService {
     const updatedUser = await this.userModel.update(_id, update);
     return updatedUser;
   }
+  
 
   async deleteUser(_id: string): Promise<UserData> {
     const deletedUser = await this.userModel.deleteById(_id);
@@ -60,6 +61,17 @@ class UserService {
 
   async manageCarrots(_id: string, update: any): Promise<UserData> {
     const updatedUser = await this.userModel.manageCarrots(_id, update);
+    return updatedUser;
+  }
+  // 유저 목록 조회 - 관리자
+  async getAllUsers(searchCondition: any): Promise<[userList: UserData[] | null, totalPage: number | null]> {
+    const [userList, totalPage] = await this.userModel.findAll(searchCondition);
+    return [userList, totalPage];
+  }
+  
+  // 유저 승인 - 관리자
+  async authorizeUser(_id: string, update: string): Promise<UserData> {
+    const updatedUser = await this.userModel.authorizeUser(_id, update);
     return updatedUser;
   }
 }

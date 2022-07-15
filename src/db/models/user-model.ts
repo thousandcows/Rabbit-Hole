@@ -42,10 +42,20 @@ export class UserModel {
     return user;
   }
 
-  async findAll(): Promise<UserData[]> {
-    const users = await User.find({});
-
-    return users;
+  async findAll(searchCondition: any): Promise<[userList: UserData[] | null, totalPage: number | null]> {
+    const { page, perPage } = searchCondition;
+    let total = await User.countDocuments({});
+    let userList = await User
+      .find({})
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!userList) {
+      userList = [];
+    }
+    return [userList, totalPage];
   }
 
   async create(userInfo: UserInfo): Promise<UserData> {
@@ -63,7 +73,6 @@ export class UserModel {
   async update(_id: string, update: Partial<UserInfo>): Promise<UserData> {
     const filter = { _id };
     const option = { returnOriginal: false };
-
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
 
     if (!updatedUser) {
@@ -98,6 +107,20 @@ export class UserModel {
   async manageCarrots(_id: string, update: any): Promise<UserData> {
     const filter = { _id };
     const option = { returnOriginal: false };
+    const updatedUser = await User.findOneAndUpdate(filter, update, option);
+    if (!updatedUser) {
+      const error = new Error('업데이트에 실패하였습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return updatedUser;
+  }
+
+  // 유저 승인 - 관리자
+  async authorizeUser(_id: string, role: string): Promise<UserData> {
+    const filter = { _id };
+    const option = { returnOriginal: false };
+    const update = { $set: { role } };
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
     if (!updatedUser) {
       const error = new Error('업데이트에 실패하였습니다.');
