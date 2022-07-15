@@ -125,6 +125,17 @@ class ArticleService {
       .searchArticlesByTitle(title, articleType, filter, page, perPage);
     return [articleList, totalPage];
   }
+
+  // 9. 게시글 삭제 - 관리자
+  // eslint-disable-next-line max-len
+  async deleteArticleForAdmin(articleId: string): Promise<ArticleData | null> {
+    // 해당 게시글 삭제
+    const result = await this.articleModel.deleteArticle(articleId);
+    // 삭제할 댓글 전용 collection으로 이동
+    // 관련 댓글 삭제
+    await commentModel.deleteByArticleId(articleId);
+    return result;
+}
 }
 
 export const articleService = new ArticleService(articleModel);
