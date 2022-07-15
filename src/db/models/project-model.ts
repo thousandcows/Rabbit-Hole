@@ -129,26 +129,57 @@ export class ProjectModel {
     return result;
   }
 
-  // 7. 게시글 검색 - 글 제목
-  async searchProjectsByTitle(title: string): Promise<ProjectData[] | null> {
-    const projects = await Project.find({ title: new RegExp(title) });
-    if (!projects) {
-      const error = new Error('해당 게시글이 존재하지 않습니다');
-      error.name = 'NotFound';
-      throw error;
+  // 7. 게시글 검색 - 작성자
+  async searchProjectsByAuthor(
+    author: string,
+    filter: string,
+    page: number,
+    perPage: number,
+  ): Promise<[projectList: ProjectData[] | null, total: number]> {
+    let sortFilter: sortFilter = { createdAt: -1 };
+    if (filter === 'views') {
+      sortFilter = { views: -1 };
     }
-    return projects;
+
+    let total = await Project.countDocuments({ author: new RegExp(author) });
+    let projectList = await Project
+      .find({ author: new RegExp(author) })
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!projectList) {
+      projectList = [];
+    }
+    return [projectList, totalPage];
   }
 
-  // 7. 게시글 검색 - 작성자
-  async searchProjectsByAuthor(author: string): Promise<ProjectData[] | null> {
-    const projects = await Project.find({ author: new RegExp(author) });
-    if (!projects) {
-      const error = new Error('해당 게시글이 존재하지 않습니다');
-      error.name = 'NotFound';
-      throw error;
+  // 7. 게시글 검색 - 글 제목
+  async searchProjectsByTitle(
+    title: string,
+    filter: string,
+    page: number,
+    perPage: number,
+  ): Promise<[projectList: ProjectData[] | null, total: number]> {
+    let sortFilter: sortFilter = { createdAt: -1 };
+    if (filter === 'views') {
+      sortFilter = { views: -1 };
     }
-    return projects;
+    let total = await Project.countDocuments({ title: new RegExp(title) });
+    let projectList = await Project
+      .find({ title: new RegExp(title) })
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!projectList) {
+      projectList = [];
+    }
+    return [projectList, totalPage];
   }
 }
 
