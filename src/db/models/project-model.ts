@@ -181,6 +181,29 @@ export class ProjectModel {
     }
     return [projectList, totalPage];
   }
+
+  // 8. 마이페이지 - 게시글 조회
+  async findProjectById(
+    userId: string,
+    page: number,
+    perPage: number,
+  ): Promise<[projectList: ProjectData[] | null, total: number | null]> {
+    const filter = { authorId: userId };
+    const sortFilter: sortFilter = { createdAt: -1 };
+    let total = await Project.countDocuments(filter);
+    let projectList = await Project
+      .find(filter)
+      .sort(sortFilter)
+      .skip(perPage * (page - 1))
+      .limit(perPage);
+    const totalPage = Math.ceil(total / perPage);
+    if (!total) {
+      total = 0;
+    } else if (!projectList) {
+      projectList = [];
+    }
+    return [projectList, totalPage];
+  }
 }
 
 export const projectModel = new ProjectModel();
