@@ -42,7 +42,8 @@ export class UserModel {
     return user;
   }
 
-  async findAll(searchCondition: any): Promise<[userList: UserData[] | null, totalPage: number | null]> {
+  async findAll(searchCondition: any)
+  : Promise<[userList: UserData[] | null, totalPage: number | null]> {
     const { page, perPage } = searchCondition;
     let total = await User.countDocuments({});
     let userList = await User
