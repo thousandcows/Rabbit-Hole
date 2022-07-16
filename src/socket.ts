@@ -1,9 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 import * as http from 'http';
-import { Server, Server } from 'socket.io';
-import * as http from 'http';
-import { chatService, chatService } from './services/chat-service';
-import { uploadFile, uploadFile } from './utils/s3';
+import { Server } from 'socket.io';
+import { chatService } from './services/chat-service';
+import { uploadFile } from './utils/s3';
 
 const sharp = require('sharp');
 
