@@ -13,6 +13,12 @@ interface TagInfo {
     perPage: number;
   }
 
+  interface userIdSearchCondition {
+    userId: string;
+    page: number;
+    perPage: number;
+  }
+
   interface authorSearchCondition extends searchCondition {
     author: string;
   }
@@ -143,6 +149,18 @@ class ProjectService {
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(projectId);
     return result;
+  }
+
+  // 10 마이페이지 - 게시글 조회
+  // eslint-disable-next-line max-len
+  async findProjectById(searchCondition: userIdSearchCondition): Promise<[projectList: ProjectData[] | null, total: number | null ]> {
+    // eslint-disable-next-line max-len
+    const {
+      userId, page, perPage,
+    } = searchCondition;
+      // eslint-disable-next-line max-len
+    const [projectList, totalPage] = await this.projectModel.findProjectById(userId, page, perPage);
+    return [projectList, totalPage];
   }
 }
 
