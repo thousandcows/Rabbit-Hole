@@ -1,8 +1,7 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import morgan from 'morgan';
-import axios from 'axios';
 import webSocket from './socket';
 import { apiRouter } from './routers';
 import { errorHandler } from './middlewares';
@@ -19,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 const { PORT } = process.env;
 app.use(express.static(__dirname));
-app.use(morgan('dev'));
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :date[web] ${}'));
 
 app.use('/api', apiRouter);
 app.use(errorHandler);
@@ -28,3 +27,5 @@ const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
 
 // socket
 webSocket(server);
+
+export { app };
