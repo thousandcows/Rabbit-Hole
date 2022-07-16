@@ -204,6 +204,18 @@ export class ProjectModel {
     }
     return [projectList, totalPage];
   }
+
+  // 9. 프로젝트 댓글 추가
+  async commentProject(updateInfo: any): Promise<ProjectData | null> {
+    const {
+      commentId, projectId,
+    } = updateInfo;
+    const id = { _id: projectId };
+    const update: any = { $push: { comments: { commentId } } };
+    const option = { returnOriginal: false };
+    const updatedResult = await Project.findByIdAndUpdate(id, update, option);
+    return updatedResult;
+  }
 }
 
 export const projectModel = new ProjectModel();

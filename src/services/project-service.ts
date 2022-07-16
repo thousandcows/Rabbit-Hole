@@ -162,6 +162,13 @@ class ProjectService {
     const [projectList, totalPage] = await this.projectModel.findProjectById(userId, page, perPage);
     return [projectList, totalPage];
   }
+
+  // 11. 프로젝트 댓글 추가
+  async commentProject(commentId: string, projectId: string): Promise<ProjectData | null> {
+    const updateInfo = { commentId, projectId };
+    const result = await this.projectModel.commentProject(updateInfo);
+    return result;
+  }
 }
 
 export const projectService = new ProjectService(projectModel);
