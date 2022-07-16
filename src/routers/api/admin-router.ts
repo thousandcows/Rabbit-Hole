@@ -54,7 +54,6 @@ adminRouter.put('/users/:userId', async (req: Request, res: Response, next: Next
         message: 'Sent Auth Email',
       });
     });
-    
   } catch (error) {
     next(error);
   }
