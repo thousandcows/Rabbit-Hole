@@ -66,7 +66,7 @@ userRouter.post('/register', upload.single('authImage'), async (req: Request, re
         githubAvatar,
       };
       const newUser = await userService.addUser(userInfo);
-      res.status(201).json({ newUser });
+      res.status(201).json(newUser);
     } else {
       const error = new Error('이미지 업로드에 실패하였습니다');
       error.name = 'NotFound';
