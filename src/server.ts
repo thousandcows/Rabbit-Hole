@@ -11,10 +11,12 @@ const app = express();
 app.use(cors());
 
 // Content-Type: application/json 형태의 데이터를 인식하고 핸들링할 수 있게 함.
-app.use(express.json());
+app.use(express.json({
+  limit: '50mb',
+}));
 
 // Content-Type: application/x-www-form-urlencoded 형태의 데이터를 인식하고 핸들링할 수 있게 함.
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ limit: '50mb', extended: false }));
 
 const { PORT } = process.env;
 app.use(express.static(__dirname));

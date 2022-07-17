@@ -2,7 +2,8 @@
 /* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
-
+import fs from 'fs';
+import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
 import { userService } from '../services';
@@ -10,13 +11,13 @@ import { app } from '../server';
 import { userModel } from '../db/models/user-model';
 
 let token: string;
-
+const testImage = fs.readFileSync(path.join(__dirname, '/garbage.png'));
 const signUpMock = {
   name: 'jest1',
   track: 'SW트랙',
   trackCardinalNumber: 1,
   position: '프론트엔드',
-  authImage: '이미지',
+  authImage: testImage,
   githubAvatar: '아바타',
   githubEmail: 'test10@test.com',
   githubProfileUrl: '프로필',
@@ -27,7 +28,7 @@ const cantsignUpMock = {
   track: 'SW트랙',
   trackCardinalNumber: 1,
   position: '프론트엔드',
-  authImage: '이미지',
+  authImage: testImage,
   githubAvatar: '아바타',
   githubEmail: 'test@test.com',
   githubProfileUrl: '프로필',
@@ -40,11 +41,12 @@ beforeAll(async () => {
     track: 'SW트랙',
     trackCardinalNumber: 1,
     position: '프론트엔드',
-    authImage: '이미지',
+    authImage: testImage,
     githubAvatar: '아바타',
     githubEmail: 'test@test.com',
     githubProfileUrl: '프로필',
   });
+  console.log(result);
   token = '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';
 });
 afterAll(() => db.close());
