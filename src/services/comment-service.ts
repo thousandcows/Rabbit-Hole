@@ -5,6 +5,7 @@ import {
 import { validation } from '../utils/validation';
 import { userService } from './user-service';
 import { articleService } from './article-service';
+import { projectService } from './project-service';
 
 interface searchCondition {
   articleId: string;
@@ -25,13 +26,19 @@ class CommentService {
     commentInfo: CommentInfo,
   ): Promise<CommentData> {
     validation.addComment(commentInfo);
-
     const user = await userService.getUserById(userId);
     const createCommentInfo = {
       ...commentInfo, author: user.name, authorId: userId, articleId,
     };
 
     const createdNewComments = await this.commentModel.create(createCommentInfo);
+
+    const { _id, commentType } = createdNewComments;
+    if (commentType === 'project') {
+      await projectService.commentProject(String(_id), articleId);
+    } else {
+      await articleService.commentArticle(String(_id), articleId);
+    }
     return createdNewComments;
   }
 
@@ -144,8 +151,13 @@ class CommentService {
   async getAllComments(searchCondition: any): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
     // eslint-disable-next-line max-len
     const { commentType, page, perPage } = searchCondition;
+<<<<<<< HEAD
     const [commentList, totalPage] = await this.commentModel
       .getAllComments(commentType, page, perPage);
+=======
+    // eslint-disable-next-line max-len
+    const [commentList, totalPage] = await this.commentModel.getAllComments(commentType, page, perPage);
+>>>>>>> 6ef27549fb760d705af42e5e52fc427187b43826
     return [commentList, totalPage];
   }
 

@@ -29,7 +29,7 @@ commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Respons
     const commentInfo = req.body;
 
     const userId = validation.isLogin(req.currentUserId);
-
+    
     const newComment = await commentService.addComment(userId, articleId, commentInfo);
     res.status(201).json(newComment);
   } catch (error) {

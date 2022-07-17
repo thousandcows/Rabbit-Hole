@@ -50,6 +50,16 @@ const ProjectSchema = new Schema(
         },
       ),
     ],
+    comments: [
+      new Schema(
+        {
+          name: String,
+        },
+        {
+          _id: false,
+        },
+      ),
+    ],
   },
   {
     collection: 'projects',
