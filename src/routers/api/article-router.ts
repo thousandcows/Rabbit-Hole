@@ -10,7 +10,6 @@ const articleRouter = Router();
 // 1. 새 게시글 작성
 articleRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    req.body.tags = JSON.parse(req.body.tags);
     const userId = validation.isLogin(req.currentUserId);
     const {
       articleType, author, title, content, carrots, tags,
@@ -94,5 +93,6 @@ articleRouter.put('/:articleId/heart', loginRequired, async (req: Request, res: 
     next(error);
   }
 });
+
 
 export { articleRouter };
