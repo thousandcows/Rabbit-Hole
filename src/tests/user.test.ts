@@ -50,38 +50,37 @@ beforeAll(async () => {
 afterAll(() => db.close());
 
 describe('Report Function', () => {
-  test('should have a DiaryService.create function', async () => {
+  test('이메일 조회 서비스 함수', async () => {
     jest.setTimeout(30000);
     expect(typeof userService.getUserByEmail).toBe('function');
   });
-  test('should have a DiaryService.create function', async () => {
+  test('회원가입 함수', async () => {
     jest.setTimeout(30000);
     expect(typeof userModel.create).toBe('function');
   });
-  test('should have a DiaryService.create function', async () => {
+  test('이메일 조회 모델 함수', async () => {
     jest.setTimeout(30000);
     expect(typeof userModel.findByEmail).toBe('function');
   });
-  test('should return 200 response code', async () => {
+  test('마이페이지 성공', async () => {
     jest.setTimeout(30000);
     const res = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
 
     expect(res.statusCode).toBe(200);
   });
-  test('should return 404 response code', async () => {
+  test('마이페이지 실패', async () => {
     jest.setTimeout(30000);
     const res = await request(app).get('/api/users/mypage');
     expect(res.statusCode).toBe(401);
   });
-  test('should return 200 response code', async () => {
+  test('회원가입 성공', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post('/api/users/register').send(signUpMock);
     expect(res.statusCode).toBe(200);
   });
-  test('should return 200 response code with false', async () => {
+  test('회원가입 실패', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post('/api/users/register').send(cantsignUpMock);
     expect(res.statusCode).toBe(404);
-    expect(res.body).toBe(false);
   });
 });
