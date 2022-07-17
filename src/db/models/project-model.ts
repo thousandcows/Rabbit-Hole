@@ -216,6 +216,12 @@ export class ProjectModel {
     const updatedResult = await Project.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
+
+  // 10. 프로젝트 전체 조회 - redis
+  async findAll(): Promise<ProjectData[] | null > {
+    const projectList = await Project.find({});
+    return projectList;
+  }
 }
 
 export const projectModel = new ProjectModel();
