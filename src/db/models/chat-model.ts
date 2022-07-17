@@ -25,7 +25,7 @@ export class ChatModel {
 
   // 2. 전체 메시지 조회
   async findAllChats(): Promise<ChatData[]> {
-    const chatList = await Chat.find({});
+    const chatList = await Chat.find({}).sort({ createdAt: -1 });
     return chatList;
   }
 

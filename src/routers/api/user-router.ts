@@ -1,95 +1,119 @@
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import { userService } from '../../services';
-// import { contentTypeChecker } from '../../utils/content-type-checker';
+import { loginRequired } from '../../middlewares';
+import { userService, articleService, projectService } from '../../services';
+import { validation } from '../../utils/validation';
+import { upload } from '../../utils/multer-s3';
 
 const userRouter = Router();
 
-userRouter.get('/my', async (req:Request, res:Response, next:NextFunction) => {
+// 마이페이지
+userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
   try {
-    const githubEmail = req.currentGithubEmail;
-    if (!githubEmail) {
-      const error = new Error('로그인 후 확인 가능합니다.');
-      error.name = 'Unauthorized';
-      throw error;
-    }
-    const myInfo = await userService.getUserByEmail(githubEmail);
+    const userId = validation.isLogin(req.currentUserId);
+    const myInfo = await userService.getUserById(userId);
     res.status(200).json(myInfo);
   } catch (error) {
     next(error);
   }
 });
 
-userRouter.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+// 마이페이지 - 게시글 조회
+userRouter.get('/:userId/articles', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userInfo = req.body;
-    // contentTypeChecker(userInfo);
-    // 위 데이터를 사용자 db에 추가하기
-    const newUser = await userService.addUser(userInfo);
-    res.status(201).json(newUser);
+    const { userId } = req.params;
+    const { page, perPage } = req.query;
+    const searchCondition = { userId, page: Number(page), perPage: Number(perPage) };
+    const [articleList, totalPage] = await articleService.findProjectById(searchCondition);
+    res.status(200).json({ articleList, totalPage });
   } catch (error) {
     next(error);
   }
 });
 
-userRouter.get('/list', async (req: Request, res: Response, next: NextFunction) => {
+// 마이페이지 - 프로젝트 조회
+userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // 전체 사용자 목록을 얻음
-    const users = await userService.getUsers();
-
-    res.status(200).json(users);
+    const { userId } = req.params;
+    const { page, perPage } = req.query;
+    const searchCondition = { userId, page: Number(page), perPage: Number(perPage) };
+    const [projectList, totalPage] = await projectService.findProjectById(searchCondition);
+    res.status(200).json({ projectList, totalPage });
   } catch (error) {
     next(error);
   }
 });
 
-// userRouter.get('/id', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const _id = req.currentUserId;
-//     const userData = await userService.getUserById(_id);
+// 회원가입
+userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const img: any = req.file;
+    // 회원 이미지 업로드 확인
+    if (img) {
+      const authImage = img.location;
+      const {
+        name, track, trackCardinalNumber, position, githubEmail, githubProfileUrl, githubAvatar,
+      } = req.body;
+      const userInfo = {
+        name,
+        track,
+        trackCardinalNumber,
+        position,
+        authImage,
+        githubEmail,
+        githubProfileUrl,
+        githubAvatar,
+      };
+      const newUser = await userService.addUser(userInfo);
+      res.status(201).json(newUser);
+    } else {
+      const error = new Error('이미지 업로드에 실패하였습니다');
+      error.name = 'NotFound';
+      throw error;
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
-//     res.status(200).json(userData);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+// 이메일로 회원 조회
+userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { githubEmail } = req.params;
 
-// userRouter.get('/email', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const githubEmail = req.currentUserEmail;
-//     const userData = await userService.getUserByEmail(githubEmail);
+    const userData = await userService.getUserByEmail(githubEmail);
 
-//     res.status(200).json(userData);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+    res.status(200).json(userData);
+  } catch (error) {
+    next(error);
+  }
+});
 
-// userRouter.put('/', async (req: Request, res: Response, next: NextFunction) => {
+// 회원정보 수정
+userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = validation.isLogin(req.currentUserId);
+    const update = req.body;
+    // 사용자 정보를 업데이트함.
+    const updatedUser = await userService.setUser(userId, update);
 
-//   try {
-//     const githubEmail = req.currentUserEmail;
-//     const update = req.body;
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+});
 
-//     // 사용자 정보를 업데이트함.
-//     const updatedUser = await userService.setUser(githubEmail, update);
+// 회원탈퇴
+userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = validation.isLogin(req.currentUserId);
+    const deleteResult = await userService.deleteUser(userId);
 
-//     res.status(200).json(updatedUser);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// userRouter.delete('/', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const githubEmail = req.currentUserEmail;
-//     const deleteResult = await userService.deleteUser(githubEmail);
-
-//     res.status(200).json(deleteResult);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+    res.status(200).json(deleteResult);
+  } catch (error) {
+    next(error);
+  }
+});
 
 export { userRouter };

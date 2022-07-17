@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-import jwt from 'jsonwebtoken';
 import {
-  UserModel, userModel, UserInfo, UserData,
+  UserModel, userModel, UserInfo, UserData, ImageInfo,
 } from '../db/models/user-model';
+import { validation } from '../utils/validation';
+import { uploadFile } from '../utils/s3';
 
 class UserService {
   userModel: UserModel;
@@ -12,70 +13,19 @@ class UserService {
   }
 
   async addUser(userInfo: UserInfo): Promise<UserData> {
-    const {
-      name, track, trackCardinalNumber, authImage, githubEmail, githubProfileUrl, githubAvatar,
-    } = userInfo;
+    const { githubEmail } = userInfo;
 
-    if (!name
-       || !track
-       || !trackCardinalNumber
-       || !authImage
-       || !githubEmail
-       || !githubProfileUrl
-       || !githubAvatar) {
-      const error = new Error('필수 정보를 전부 입력해 주세요.');
-      error.name = 'NotFound';
-      throw error;
-    }
+    validation.addUser(userInfo);
 
     const user = await this.userModel.findByEmail(githubEmail);
     if (user) {
-      const error = new Error('이 이메일은 현재 사용중입니다. 다른 이름을 입력해 주세요.');
+      const error = new Error('이 이메일은 현재 사용중입니다. 다른 이메일을 입력해 주세요.');
       error.name = 'Conflict';
       throw error;
     }
 
     const createdNewUser = await this.userModel.create(userInfo);
     return createdNewUser;
-  }
-
-  // 로그인 및 토큰 발급
-  async getUserToken(githubEmail: string) {
-    if (!githubEmail) {
-      throw new Error('이메일 혹은 비밀번호를 입력해 주세요.');
-    }
-    // 우선 해당 이메일의 사용자 정보가  db에 존재하는지 확인
-    const user = await this.userModel.findByEmail(githubEmail);
-    if (!user) {
-      const error = new Error(
-        '해당 이메일은 가입 내역이 없습니다. 다시 한 번 확인해 주세요.',
-      );
-      error.name = 'NotFound';
-      throw error;
-    }
-
-    // 로그인 성공 -> JWT 웹 토큰 생성
-    const secretKey = process.env.JWT_SECRET_KEY || 'secret-key';
-
-    // userId와 role (일반 회원, 판매자, 관리자)을 토큰에 담아 발급한다.
-    const token = jwt.sign({
-      userId: user._id,
-      role: user.role,
-      githubEmail: user.githubEmail,
-    }, secretKey, {
-      expiresIn: '1h', // token 1시간 뒤  만료
-    });
-
-    if (!token) {
-      throw new Error('토큰이 정상적으로 발급되지 않았습니다.');
-    }
-
-    return { token };
-  }
-
-  async getUsers(): Promise<UserData[]> {
-    const users = await this.userModel.findAll();
-    return users;
   }
 
   async getUserByEmail(githubEmail: string): Promise<UserData | null> {
@@ -88,14 +38,42 @@ class UserService {
     return user;
   }
 
-  async setUser(githubEmail: string, update: Partial<UserInfo>): Promise<UserData> {
-    const updatedUser = await this.userModel.update(githubEmail, update);
+  async setUser(_id: string, update: Partial<UserInfo>): Promise<UserData> {
+    const updatedUser = await this.userModel.update(_id, update);
     return updatedUser;
   }
 
-  async deleteUser(githubEmail: string): Promise<UserData> {
-    const deletedUser = await this.userModel.deleteByEmail(githubEmail);
+  async deleteUser(_id: string): Promise<UserData> {
+    const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
+  }
+
+  async addAuthImage(imageInfo: ImageInfo): Promise<any> {
+    const imageUrl = await uploadFile(imageInfo);
+    if (!imageUrl) {
+      const error = new Error('이미지 업로드에 실패했습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
+    return imageUrl;
+  }
+
+  async manageCarrots(_id: string, update: any): Promise<UserData> {
+    const updatedUser = await this.userModel.manageCarrots(_id, update);
+    return updatedUser;
+  }
+
+  // 유저 목록 조회 - 관리자
+  async getAllUsers(searchCondition: any)
+  : Promise<[userList: UserData[] | null, totalPage: number | null]> {
+    const [userList, totalPage] = await this.userModel.findAll(searchCondition);
+    return [userList, totalPage];
+  }
+
+  // 유저 승인 - 관리자
+  async authorizeUser(_id: string, update: string): Promise<UserData> {
+    const updatedUser = await this.userModel.authorizeUser(_id, update);
+    return updatedUser;
   }
 }
 
