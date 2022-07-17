@@ -2,7 +2,6 @@
 /* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
-import fs from 'fs';
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
@@ -11,7 +10,6 @@ import { app } from '../server';
 import { userModel } from '../db/models/user-model';
 
 let token: string;
-const testImage = fs.readFileSync(path.join(__dirname, '/garbage.png'));
 
 const signUpMock = {
   name: 'jest1',
@@ -46,7 +44,7 @@ beforeAll(async () => {
 });
 afterAll(() => db.close());
 
-describe('Report Function', () => {
+describe('user-router 유저 API 테스트', () => {
   test('이메일 조회 서비스 함수', async () => {
     jest.setTimeout(30000);
     expect(typeof userService.getUserByEmail).toBe('function');

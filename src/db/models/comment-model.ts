@@ -54,6 +54,7 @@ export class CommentModel {
     return comments;
   }
 
+  // 댓글 id로 조회
   async findById(commentId: string): Promise<CommentData> {
     const comment = await Comment.findOne({ _id: commentId });
     if (!comment) {

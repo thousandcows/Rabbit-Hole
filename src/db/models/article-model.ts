@@ -228,7 +228,6 @@ export class ArticleModel {
     const id = { _id: articleId };
     const update: any = { $push: { comments: { commentId } } };
     const option = { returnOriginal: false };
-    console.log(typeof update);
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
