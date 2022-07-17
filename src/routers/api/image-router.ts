@@ -3,6 +3,7 @@ import {
 } from 'express';
 import { loginRequired } from '../../middlewares';
 import { upload } from '../../utils/multer-s3';
+import { loginRequired } from '../../middlewares';
 
 const imageRouter = Router();
 
