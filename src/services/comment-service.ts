@@ -151,8 +151,8 @@ class CommentService {
   async getAllComments(searchCondition: any): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
     // eslint-disable-next-line max-len
     const { commentType, page, perPage } = searchCondition;
-    // eslint-disable-next-line max-len
-    const [commentList, totalPage] = await this.commentModel.getAllComments(commentType, page, perPage);
+    const [commentList, totalPage] = await this.commentModel
+      .getAllComments(commentType, page, perPage);
     return [commentList, totalPage];
   }
 

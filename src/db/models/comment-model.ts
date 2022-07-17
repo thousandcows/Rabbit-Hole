@@ -128,7 +128,8 @@ export class CommentModel {
   }
 
   // 댓글 전체 조회
-  async getAllComments(commentType: string, page: number, perPage: number): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
+  async getAllComments(commentType: string, page: number, perPage: number)
+  : Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
     const type = { commentType };
     let total = await Comment.countDocuments(type);
     let commentList = await Comment

@@ -38,16 +38,12 @@ adminRouter.put('/users/:userId', async (req: Request, res: Response, next: Next
       text: '축하합니다. 회원가입이 완료되었습니다.',
     };
     // 메일 전송
-    await transPort.sendMail(mailOptions, (error, info) => {
-      console.log(error);
+    await transPort.sendMail(mailOptions, (error) => {
       if (error) {
         const error = new Error('이메일 전송에 실패했습니다');
         error.name = 'NotFount';
         throw error;
       }
-      console.log(info);
-      // transPort.close();
-      // res.status(200).json(updatedUser);
       res.status(200).json({
         status: 'Success',
         code: 200,
@@ -92,7 +88,6 @@ adminRouter.get('/articles', adminRequired, async (req: Request, res: Response, 
 adminRouter.delete('/articles/:articleId', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
-    console.log(articleId);
     const result = await articleService.deleteArticleForAdmin(articleId);
     res.status(200).json({ result });
   } catch (error) {
