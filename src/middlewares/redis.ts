@@ -80,6 +80,20 @@ async function deleteProjectFromRedis(proejctId: string) {
   return result;
 }
 
+// 댓글 생성 => redis에 반영
+async function uploadNewComment(comment: any) {
+  const { _id } = comment;
+  const key = `comment:${String(_id)}`;
+  await client.json.set(key, '$', comment);
+}
+
+// 댓글 삭제 => redis에 반영
+async function deleteCommentFromRedis(commentId: string) {
+  const key = `comment:${commentId}`;
+  const result = await client.json.del(key);
+  return result;
+}
+
 // 실시간 좋아요 기능  => 게시글, 댓글, 프로젝트
 async function putLikes(type: string, articleId: string, userId: string) {
   // 1. 받은 데이터를 put한다.
@@ -104,20 +118,6 @@ async function putLikes(type: string, articleId: string, userId: string) {
   return result;
 }
 
-// 새 댓글 업로드 기능
-async function uploadNewComment(comment: any) {
-  const { _id } = comment;
-  const key = `comment:${String(_id)}`;
-  await client.json.set(key, '$', comment);
-}
-
-// 댓글 삭제 
-async function deleteCommentFromRedis(commentId: string) {
-  const key = `comment:${commentId}`;
-  const result = await client.json.del(key);
-  return result;
-}
-
 // 실시간 댓글 업데이트 기능 => 게시글, 댓글, 프로젝트
 async function putComments(commentType: string, articleId: string, commentId: string) {
   // 1. 받은 데이터를 put한다.
@@ -129,7 +129,7 @@ async function putComments(commentType: string, articleId: string, commentId: st
   return result;
 }
 
-// 실시간 댓글 취소 기능 => 게시글, 댓글, 프로젝트
+// 실시간 댓글 삭제 기능 => 게시글, 댓글, 프로젝트
 async function pullComments(commentType: string, articleId: string, commentId: string) {
   // 1. 받은 데이터를 pull한다.
   const key = `${commentType}:${articleId}`;
