@@ -6,9 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
-import { userService } from '../services';
 import { app } from '../server';
-import { userModel } from '../db/models/user-model';
 
 let token: string;
 let testImage: any;
@@ -16,7 +14,6 @@ let testImage: any;
 beforeAll(async () => {
   db.connect();
   testImage = fs.readFileSync(path.join(__dirname, '/garbage.png'));
-  console.log(testImage);
 });
 afterAll(() => db.close());
 

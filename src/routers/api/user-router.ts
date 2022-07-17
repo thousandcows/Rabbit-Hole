@@ -49,7 +49,6 @@ userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Res
 userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const img: any = req.file;
-    console.log(req.file);
     // 회원 이미지 업로드 확인
     if (img) {
       const authImage = img.location;
