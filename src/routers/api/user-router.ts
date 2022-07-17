@@ -20,9 +20,10 @@ userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:
 });
 
 // 회원가입
-userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/register', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const img: any = req.file;
+    console.log(req.file);
     // 회원 이미지 업로드 확인
     if (img) {
       const authImage = img.location;

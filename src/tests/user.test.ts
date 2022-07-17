@@ -46,7 +46,6 @@ beforeAll(async () => {
     githubEmail: 'test@test.com',
     githubProfileUrl: '프로필',
   });
-  console.log(result);
   token = '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';
 });
 afterAll(() => db.close());
