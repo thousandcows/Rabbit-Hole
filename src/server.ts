@@ -2,9 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import morgan from 'morgan';
+import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler';
 import webSocket from './socket';
 import { apiRouter } from './routers';
 import { errorHandler } from './middlewares';
+import { updateDatabase, client, fillDatabase } from './middlewares/redis';
+
 
 const app = express();
 
@@ -24,6 +27,16 @@ app.use('/api', apiRouter);
 app.use(errorHandler);
 
 const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
+
+// redis-connect
+client.connect();
+
+// toad-schedular: Redis => DB 정기 업데이트
+const scheduler = new ToadScheduler();
+const task = new Task('updateDatabase', async () => { await updateDatabase(); });
+const job = new SimpleIntervalJob({ seconds: 5 }, task);
+
+scheduler.addSimpleIntervalJob(job);
 
 // socket
 webSocket(server);
