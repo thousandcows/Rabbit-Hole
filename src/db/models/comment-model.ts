@@ -143,6 +143,12 @@ export class CommentModel {
     }
     return [commentList, totalPage];
   }
+
+  // 댓글 전체 조회 - redis
+  async findAll(): Promise<CommentData[] | null > {
+    const commentList = await Comment.find({});
+    return commentList;
+  }
 }
 
 export const commentModel = new CommentModel();
