@@ -25,7 +25,7 @@ userRouter.get('/:userId/articles', loginRequired, async (req: Request, res: Res
     const { userId } = req.params;
     const { page, perPage } = req.query;
     const searchCondition = { userId, page: Number(page), perPage: Number(perPage) };
-    const [ articleList, totalPage ] = await articleService.findProjectById(searchCondition);
+    const [articleList, totalPage] = await articleService.findProjectById(searchCondition);
     res.status(200).json({ articleList, totalPage });
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Res
     const { userId } = req.params;
     const { page, perPage } = req.query;
     const searchCondition = { userId, page: Number(page), perPage: Number(perPage) };
-    const [ projectList, totalPage ] = await projectService.findProjectById(searchCondition);
+    const [projectList, totalPage] = await projectService.findProjectById(searchCondition);
     res.status(200).json({ projectList, totalPage });
   } catch (error) {
     next(error);
@@ -46,7 +46,7 @@ userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Res
 });
 
 // 회원가입
-userRouter.post('/register', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const img: any = req.file;
     console.log(req.file);
