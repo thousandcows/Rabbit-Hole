@@ -5,9 +5,7 @@
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
-import { userService } from '../services';
 import { app } from '../server';
-import { userModel } from '../db/models/user-model';
 import { commentModel } from '../db/models/comment-model';
 
 let token: string;
