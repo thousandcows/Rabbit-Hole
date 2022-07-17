@@ -12,6 +12,7 @@ import { userModel } from '../db/models/user-model';
 
 let token: string;
 const testImage = fs.readFileSync(path.join(__dirname, '/garbage.png'));
+
 const signUpMock = {
   name: 'jest1',
   track: 'SW트랙',
@@ -22,27 +23,19 @@ const signUpMock = {
   githubProfileUrl: '프로필',
 };
 
-const cantsignUpMock = {
+const my = {
   name: 'jest1',
   track: 'SW트랙',
   trackCardinalNumber: 1,
   position: '프론트엔드',
   githubAvatar: '아바타',
-  githubEmail: 'test@test.com',
+  githubEmail: 'chss3339@gmail.com',
   githubProfileUrl: '프로필',
 };
 
 beforeAll(async () => {
   db.connect();
-  const result = await request(app).post('/api/users/register').send({
-    name: 'jest1',
-    track: 'SW트랙',
-    trackCardinalNumber: 1,
-    position: '프론트엔드',
-    githubAvatar: '아바타',
-    githubEmail: 'test@test.com',
-    githubProfileUrl: '프로필',
-  });
+  const result = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';
 });
 afterAll(() => db.close());
@@ -71,7 +64,7 @@ describe('Report Function', () => {
     const res = await request(app).get('/api/users/mypage');
     expect(res.statusCode).toBe(401);
   });
-  test.only('회원가입 성공', async () => {
+  test('회원가입 성공', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post('/api/users/register').field(signUpMock).attach('authImage', path.join(__dirname, '/garbage.png'));
 
@@ -79,7 +72,7 @@ describe('Report Function', () => {
   });
   test('회원가입 실패', async () => {
     jest.setTimeout(30000);
-    const res = await request(app).post('/api/users/register').send(cantsignUpMock);
-    expect(res.statusCode).toBe(404);
+    const res = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
+    expect(res.statusCode).toBe(409);
   });
 });
