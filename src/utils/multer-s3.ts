@@ -26,6 +26,7 @@ const storage = multerS3({
 });
 
 const fileFilter = (req: Request, file: any, cb: any) => {
+  console.log('짱구', file);
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/gif' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
