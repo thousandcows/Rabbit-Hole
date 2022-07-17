@@ -232,6 +232,12 @@ export class ArticleModel {
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
+  
+  // 11. 게시글 업로드 - redis
+  async findAll(): Promise<ArticleData[] | null> {
+    const articleList = await Article.find({});
+    return articleList;
+  }
 }
 
 export const articleModel = new ArticleModel();
