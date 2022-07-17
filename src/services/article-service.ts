@@ -103,7 +103,7 @@ class ArticleService {
 
   // 6. 게시글 좋아요
   async likeArticle(userId: string, articleId: string): Promise<ArticleData | null> {
-    const update = { $push: { likes: userId } };
+    const update: any = { $push: { likes: { userId } } };
     const result = await this.articleModel.likeArticle(articleId, update);
     return result;
   }
@@ -151,6 +151,12 @@ class ArticleService {
       // eslint-disable-next-line max-len
     const [projectList, totalPage] = await this.articleModel.findProjectById(userId, page, perPage);
     return [projectList, totalPage];
+  }
+
+  // 11. 게시글 댓글 추가
+  async commentArticle(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const result = await this.articleModel.commentArticle(commentId, articleId);
+    return result;
   }
 }
 

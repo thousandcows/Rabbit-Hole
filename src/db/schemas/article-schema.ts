@@ -50,6 +50,16 @@ const ArticleSchema = new Schema(
         },
       ),
     ],
+    comments: [
+      new Schema(
+        {
+          commentId: String,
+        },
+        {
+          _id: false,
+        },
+      ),
+    ],
   },
   {
     collection: 'articles',
