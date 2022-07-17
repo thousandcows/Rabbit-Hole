@@ -15,6 +15,10 @@ interface LikeInfo {
     [key: string]: string
 }
 
+interface CommentInfo {
+  [key: string]: string
+}
+
 export interface ArticleInfo {
     articleType: string,
     author: string,
@@ -23,6 +27,7 @@ export interface ArticleInfo {
     content: string,
     carrots?: number,
     tags?: TagInfo[],
+    comments?: CommentInfo[],
 }
 
 export interface ArticleData extends Document<Types.ObjectId> {
@@ -35,6 +40,7 @@ export interface ArticleData extends Document<Types.ObjectId> {
     views: number,
     carrots: number,
     tags: TagInfo[],
+    comments: CommentInfo[],
 }
 
 export class ArticleModel {
@@ -215,6 +221,16 @@ export class ArticleModel {
       projectList = [];
     }
     return [projectList, totalPage];
+  }
+
+  // 10. 게시글 댓글 추가
+  async commentArticle(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const id = { _id: articleId };
+    const update: any = { $push: { comments: { commentId } } };
+    const option = { returnOriginal: false };
+    console.log(typeof update);
+    const updatedResult = await Article.findByIdAndUpdate(id, update, option);
+    return updatedResult;
   }
 }
 
