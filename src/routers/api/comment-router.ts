@@ -94,8 +94,10 @@ commentRouter.put(
 
       const { commentId } = req.params;
 
-      const updatedComment = await commentService.likeComment(userId, commentId);
-      res.status(200).json(updatedComment);
+      const result = await commentService.likeComment(userId, commentId);
+      if (result) {
+        res.status(200).json({ result: 'success' });
+      }
     } catch (error) {
       next(error);
     }
