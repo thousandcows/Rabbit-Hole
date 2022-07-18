@@ -5,7 +5,9 @@ import {
 import { validation } from '../utils/validation';
 import { userService } from './user-service';
 import { articleService } from './article-service';
-import { putLikes, putComments, pullComments, uploadNewComment, deleteCommentFromRedis } from '../middlewares/redis';
+import {
+  putLikes, putComments, pullComments, uploadNewComment, deleteCommentFromRedis,
+} from '../middlewares/redis';
 
 interface searchCondition {
   articleId: string;
@@ -141,7 +143,7 @@ class CommentService {
 
   // 댓글 좋아요
   async likeComment(userId:string, commentId: string): Promise<CommentData | any> {
-    const update = { $push: { likes: { userId } }};
+    const update = { $push: { likes: { userId } } };
     await this.commentModel.likeComment(commentId, update);
     const updatedRedis = await putLikes('comment', commentId, userId);
     return updatedRedis;
@@ -165,6 +167,7 @@ class CommentService {
 
   // 데이터베이스 업데이트: 좋아요, 댓글
   async updateDatabase(commentList: any): Promise<void> {
+    // eslint-disable-next-line no-restricted-syntax
     for await (const comment of commentList) {
       const { _id, likes } = comment;
       const updateInfo = { _id, likes };

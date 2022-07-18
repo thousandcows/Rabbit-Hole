@@ -27,7 +27,6 @@ export interface ProjectInfo {
     tags?: TagInfo[],
     comments?: CommentInfo[],
 }
-
 export interface ProjectData extends Document<Types.ObjectId> {
     title: string,
     author: string,
@@ -231,8 +230,8 @@ export class ProjectModel {
 
   // 11. 프로젝트 좋아요, 댓글 업데이트 - redis
   async updateFromRedis(updateInfo: Partial<ProjectData>): Promise<ProjectData | null> {
-    const { _id, likes, comments } = updateInfo
-    const update: any = { $set: { likes, comments }};
+    const { _id, likes, comments } = updateInfo;
+    const update: any = { $set: { likes, comments } };
     const option = { returnOriginal: false };
     const updatedResult = await Project.findByIdAndUpdate(_id, update, option);
     return updatedResult;

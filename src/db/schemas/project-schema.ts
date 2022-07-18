@@ -53,7 +53,7 @@ const ProjectSchema = new Schema(
     comments: [
       new Schema(
         {
-          name: String,
+          commentId: String,
         },
         {
           _id: false,

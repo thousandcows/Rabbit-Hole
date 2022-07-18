@@ -118,7 +118,7 @@ class ProjectService {
 
   // 6. 게시글 좋아요
   async likeProject(userId: string, projectId: string): Promise<ProjectData | any> {
-    const update = { $push: { likes: { userId } }};
+    const update = { $push: { likes: { userId } } };
     const result = await this.projectModel.likeProject(projectId, update);
     const updatedRedis = await putLikes('project', projectId, userId);
     return updatedRedis;
@@ -178,6 +178,7 @@ class ProjectService {
 
   // 12. 데이터베이스 업데이트: 좋아요, 댓글
   async updateDatabase(projectList: any): Promise<void> {
+    // eslint-disable-next-line no-restricted-syntax
     for await (const project of projectList) {
       const { _id, likes, comments } = project;
       const updateInfo = { _id, likes, comments };

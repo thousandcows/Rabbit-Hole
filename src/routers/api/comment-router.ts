@@ -8,7 +8,7 @@ import { validation } from '../../utils/validation';
 const commentRouter = Router();
 
 // 댓글 조회
-commentRouter.get('/:articleId', loginRequired, async (req: Request, res: Response, next:NextFunction) => {
+commentRouter.get('/:articleId', async (req: Request, res: Response, next:NextFunction) => {
   try {
     const { articleId } = req.params;
     const { page, perPage } = req.query;
@@ -29,7 +29,7 @@ commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Respons
     const commentInfo = req.body;
 
     const userId = validation.isLogin(req.currentUserId);
-    
+
     const newComment = await commentService.addComment(userId, articleId, commentInfo);
     res.status(201).json(newComment);
   } catch (error) {
