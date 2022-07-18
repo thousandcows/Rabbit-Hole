@@ -148,7 +148,7 @@ async function pullComments(commentType: string, articleId: string, commentId: s
 }
 
 // client-side caching 기능: 좋아요, 댓글 수
-function cache(req: Request, res: Response, next: NextFunction) {
+async function cache(req: Request, res: Response, next: NextFunction) {
   // 1. clinet의 요청을 cache가 중간에서 받는다
   // 2. req를 분석한다 => type, sortFilter, page, perPage
   // 2. 데이터 목록을 pagination 한다
@@ -157,16 +157,35 @@ function cache(req: Request, res: Response, next: NextFunction) {
 
 // bulk insert 기능
 async function updateDatabase(): Promise<any> {
-  // 1. node-scheduler가 job을 설정해서 호출한다
-  // 2. 메모리에 있는 모든 데이터를 get한다
+  // 1. 메모리에 있는 모든 데이터를 get한다
+  const articleList = [];
+  const projectList = [];
+  const commentList = [];
+
   for await (const key of client.scanIterator()) {
-    console.log('key', key);
-    // const value = await client.json.get(key);
-    // if (value) {
-    //   console.log(value);
-    // }
+    const prefix = key.split(':')[0]
+    if (prefix === 'question' || prefix === 'free' || prefix === 'study') {
+      const value = await client.json.get(key)
+      articleList.push(value);
+    } else if (prefix === 'project') {
+      const value = await client.json.get(key)
+      projectList.push(value);
+    } else {
+      const value = await client.json.get(key)
+      commentList.push(value);
+    }
   }
   // 3. 모두 DB에 업데이트한다
+  if (articleList) {
+    await articleService.updateDatabase(articleList);
+  }
+  if (projectList) {
+    await projectService.updateDatabase(projectList);
+  }
+  if (commentList) {
+    await commentService.updateDatabase(commentList);
+  }
+  
 }
 
 export {
