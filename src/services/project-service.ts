@@ -118,8 +118,6 @@ class ProjectService {
 
   // 6. 게시글 좋아요
   async likeProject(userId: string, projectId: string): Promise<ProjectData | any> {
-    const update = { $push: { likes: { userId } } };
-    const result = await this.projectModel.likeProject(projectId, update);
     const updatedRedis = await putLikes('project', projectId, userId);
     return updatedRedis;
   }

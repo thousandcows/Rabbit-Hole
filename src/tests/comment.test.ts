@@ -8,6 +8,8 @@ import * as db from './utils/db';
 import { app } from '../server';
 import { commentModel } from '../db/models/comment-model';
 
+const redis = require('redis-mock');
+
 let token: string;
 let articleId: string;
 let commentId: string;
@@ -48,19 +50,24 @@ const adoptionMock = {
 beforeAll(async () => {
   db.connect();
   // 테스트 시작 전 테스트db에 유저정보 저장
+  const client = redis.createClient();
   const user = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';
   const article = await request(app).post('/api/articles/').send(articleMock).set('Authorization', `Bearer ${token}`);
   articleId = article.body._id;
   userId = user.body._id;
 });
-afterAll(() => db.close());
+afterAll(() => {
+  db.close();
+  redis.quit();
+});
 
 describe('comment-router 댓글 API 테스트', () => {
   test('댓글 작성', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post(`/api/comments/${articleId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
     commentId = res.body._id;
+    console.log(res.body);
     expect(res.statusCode).toBe(201);
   });
 

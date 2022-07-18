@@ -109,9 +109,6 @@ class ArticleService {
 
   // 6. 게시글 좋아요 => bulk Insert용으로 바뀌어야 함
   async likeArticle(userId: string, articleId: string): Promise<any | null> {
-    // validation 추가: 중복 like 금지
-    const update = { $push: { likes: { userId } } };
-    await this.articleModel.likeArticle(articleId, update);
     const updatedRedis = await putLikes('question', articleId, userId);
     return updatedRedis;
   }
