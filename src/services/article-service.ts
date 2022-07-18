@@ -166,6 +166,15 @@ class ArticleService {
     const result = await this.articleModel.commentArticle(commentId, articleId);
     return result;
   }
+
+  // 12. 데이터베이스 업데이트: 좋아요, 댓글
+  async updateDatabase(articleList: any): Promise<void> {
+    for await (const article of articleList) {
+      const { _id, likes, comments } = article;
+      const updateInfo = { _id, likes, comments };
+      await this.articleModel.updateFromRedis(updateInfo);
+    }
+  }
 }
 
 export const articleService = new ArticleService(articleModel);
