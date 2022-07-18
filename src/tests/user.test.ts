@@ -60,7 +60,6 @@ describe('user-router 유저 API 테스트', () => {
   test('마이페이지 성공', async () => {
     jest.setTimeout(30000);
     const res = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
-
     expect(res.statusCode).toBe(200);
   });
   test('마이페이지 실패', async () => {

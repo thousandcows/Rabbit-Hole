@@ -56,7 +56,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인 토큰, userId, userName, 만료시간 600
-      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&carrots=${userData.carrots}&expire=600`;
+      const loginFrontUrl = `http://localhost:3000/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&carrots=${userData.carrots}&expire=600&role=${userData.role}`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
