@@ -11,7 +11,7 @@ const adminRouter = Router();
 
 // 1. 유저 관리 기능
 // 1-1. 전체 유저 조회 기능
-adminRouter.get('/users', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/users', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, perPage } = req.query;
     const searchCondition = {
@@ -55,7 +55,7 @@ adminRouter.put('/users/:userId', async (req: Request, res: Response, next: Next
   }
 });
 // 1-3. 유저 삭제 기능
-adminRouter.delete('/users/:userId', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/users/:userId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const deleteResult = await userService.deleteUser(userId);
@@ -66,7 +66,7 @@ adminRouter.delete('/users/:userId', adminRequired, async (req: Request, res: Re
 });
 // 2. 게시글 관리 기능
 // 2-1. 전체 게시글 조회
-adminRouter.get('/articles', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       articleType, filter, page, perPage,
@@ -85,7 +85,7 @@ adminRouter.get('/articles', adminRequired, async (req: Request, res: Response, 
   }
 });
 // 2-2. 게시글 삭제 기능
-adminRouter.delete('/articles/:articleId', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/articles/:articleId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
     const result = await articleService.deleteArticleForAdmin(articleId);
@@ -96,7 +96,7 @@ adminRouter.delete('/articles/:articleId', adminRequired, async (req: Request, r
 });
 // 3. 댓글 관리 기능
 // 3-1 전체 댓글 조회
-adminRouter.get('/comments', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/comments', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { commentType, page, perPage } = req.query;
     const searchCondition = {
@@ -111,7 +111,7 @@ adminRouter.get('/comments', adminRequired, async (req: Request, res: Response, 
   }
 });
 // 3-2. 댓글 삭제 기능
-adminRouter.delete('/comments', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/comments', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { commentId } = req.params;
     const deletedComment = await commentService.deleteCommentForAdmin(commentId);
@@ -122,7 +122,7 @@ adminRouter.delete('/comments', adminRequired, async (req: Request, res: Respons
 });
 // 4. 프로젝트 관리 기능
 // 4-1. 프로젝트 조회 기능
-adminRouter.get('/projects', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/projects', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       filter, page, perPage,
@@ -140,7 +140,7 @@ adminRouter.get('/projects', adminRequired, async (req: Request, res: Response, 
   }
 });
 // 4-2. 프로젝트 삭제 기능
-adminRouter.delete('/projects', adminRequired, async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/projects', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
     const result = await projectService.deleteProjectForAdmin(projectId);
