@@ -150,6 +150,15 @@ export class CommentModel {
     const commentList = await Comment.find({});
     return commentList;
   }
+
+  // 댓글 좋아요, 댓글 업데이트 - redis
+  async updateFromRedis(updateInfo: Partial<CommentData>): Promise<CommentData | null> {
+    const { _id, likes } = updateInfo
+    const update: any = { $set: { likes }};
+    const option = { returnOriginal: false };
+    const updatedResult = await Comment.findByIdAndUpdate(_id, update, option);
+    return updatedResult;
+  }
 }
 
 export const commentModel = new CommentModel();

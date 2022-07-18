@@ -162,6 +162,15 @@ class CommentService {
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
     return deletedComment;
   }
+
+  // 데이터베이스 업데이트: 좋아요, 댓글
+  async updateDatabase(commentList: any): Promise<void> {
+    for await (const comment of commentList) {
+      const { _id, likes } = comment;
+      const updateInfo = { _id, likes };
+      await this.commentModel.updateFromRedis(updateInfo);
+    }
+  }
 }
 
 export const commentService = new CommentService(commentModel);
