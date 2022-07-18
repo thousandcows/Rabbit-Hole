@@ -88,7 +88,9 @@ articleRouter.put('/:articleId/heart', loginRequired, async (req: Request, res: 
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;
     const result = await articleService.likeArticle(userId, articleId);
-    res.status(200).json(result);
+    if (result) {
+      res.status(200).json({ result: 'success' });
+    }
   } catch (error) {
     next(error);
   }

@@ -143,8 +143,6 @@ class CommentService {
 
   // 댓글 좋아요
   async likeComment(userId:string, commentId: string): Promise<CommentData | any> {
-    const update = { $push: { likes: { userId } } };
-    await this.commentModel.likeComment(commentId, update);
     const updatedRedis = await putLikes('comment', commentId, userId);
     return updatedRedis;
   }

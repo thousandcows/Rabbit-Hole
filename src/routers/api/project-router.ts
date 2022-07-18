@@ -99,7 +99,9 @@ projectRouter.put('/:projectId/heart', loginRequired, async (req: Request, res: 
     const userId = validation.isLogin(req.currentUserId);
     const { projectId } = req.params;
     const result = await projectService.likeProject(userId, projectId);
-    res.status(200).json(result);
+    if (result) {
+      res.status(200).json({ result: 'success' });
+    }
   } catch (error) {
     next(error);
   }
