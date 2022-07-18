@@ -15,6 +15,10 @@ interface LikeInfo {
     [key: string]: string
 }
 
+interface CommentInfo {
+  [key: string]: string
+}
+
 export interface ArticleInfo {
     articleType: string,
     author: string,
@@ -23,6 +27,7 @@ export interface ArticleInfo {
     content: string,
     carrots?: number,
     tags?: TagInfo[],
+    comments?: CommentInfo[],
 }
 
 export interface ArticleData extends Document<Types.ObjectId> {
@@ -35,6 +40,7 @@ export interface ArticleData extends Document<Types.ObjectId> {
     views: number,
     carrots: number,
     tags: TagInfo[],
+    comments: CommentInfo[],
 }
 
 export class ArticleModel {
@@ -215,6 +221,30 @@ export class ArticleModel {
       projectList = [];
     }
     return [projectList, totalPage];
+  }
+
+  // 10. 게시글 댓글 추가
+  async commentArticle(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const id = { _id: articleId };
+    const update: any = { $push: { comments: { commentId } } };
+    const option = { returnOriginal: false };
+    const updatedResult = await Article.findByIdAndUpdate(id, update, option);
+    return updatedResult;
+  }
+  
+  // 11. 게시글 업로드 - redis
+  async findAll(): Promise<ArticleData[] | null> {
+    const articleList = await Article.find({});
+    return articleList;
+  }
+
+  // 12. 게시글 좋아요, 댓글 업데이트 - redis
+  async updateFromRedis(updateInfo: Partial<ArticleData>): Promise<ArticleData | null> {
+    const { _id, likes, comments } = updateInfo
+    const update: any = { $set: { likes, comments }};
+    const option = { returnOriginal: false };
+    const updatedResult = await Article.findByIdAndUpdate(_id, update, option);
+    return updatedResult;
   }
 }
 

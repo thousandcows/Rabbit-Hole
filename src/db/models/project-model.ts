@@ -12,6 +12,10 @@ interface LikeInfo {
     [key: string]: string
 }
 
+interface CommentInfo {
+  [key: string]: string
+}
+
 export interface ProjectInfo {
     title: string,
     author: string,
@@ -21,6 +25,7 @@ export interface ProjectInfo {
     thumbnail: string,
     likes?: LikeInfo[],
     tags?: TagInfo[],
+    comments?: CommentInfo[],
 }
 
 export interface ProjectData extends Document<Types.ObjectId> {
@@ -33,6 +38,7 @@ export interface ProjectData extends Document<Types.ObjectId> {
     views: number,
     likes: LikeInfo[],
     tags: TagInfo[],
+    comments: CommentInfo[],
 }
 
 export class ProjectModel {
@@ -203,6 +209,33 @@ export class ProjectModel {
       projectList = [];
     }
     return [projectList, totalPage];
+  }
+
+  // 9. 프로젝트 댓글 추가
+  async commentProject(updateInfo: any): Promise<ProjectData | null> {
+    const {
+      commentId, projectId,
+    } = updateInfo;
+    const id = { _id: projectId };
+    const update: any = { $push: { comments: { commentId } } };
+    const option = { returnOriginal: false };
+    const updatedResult = await Project.findByIdAndUpdate(id, update, option);
+    return updatedResult;
+  }
+
+  // 10. 프로젝트 전체 조회 - redis
+  async findAll(): Promise<ProjectData[] | null > {
+    const projectList = await Project.find({});
+    return projectList;
+  }
+
+  // 11. 프로젝트 좋아요, 댓글 업데이트 - redis
+  async updateFromRedis(updateInfo: Partial<ProjectData>): Promise<ProjectData | null> {
+    const { _id, likes, comments } = updateInfo
+    const update: any = { $set: { likes, comments }};
+    const option = { returnOriginal: false };
+    const updatedResult = await Project.findByIdAndUpdate(_id, update, option);
+    return updatedResult;
   }
 }
 

@@ -128,7 +128,8 @@ export class CommentModel {
   }
 
   // 댓글 전체 조회
-  async getAllComments(commentType: string, page: number, perPage: number): Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
+  async getAllComments(commentType: string, page: number, perPage: number)
+  : Promise<[commentList: CommentData[] | null, totalPage:number | null]> {
     const type = { commentType };
     let total = await Comment.countDocuments(type);
     let commentList = await Comment
@@ -142,6 +143,21 @@ export class CommentModel {
       commentList = [];
     }
     return [commentList, totalPage];
+  }
+
+  // 댓글 전체 조회 - redis
+  async findAll(): Promise<CommentData[] | null > {
+    const commentList = await Comment.find({});
+    return commentList;
+  }
+
+  // 댓글 좋아요, 댓글 업데이트 - redis
+  async updateFromRedis(updateInfo: Partial<CommentData>): Promise<CommentData | null> {
+    const { _id, likes } = updateInfo
+    const update: any = { $set: { likes }};
+    const option = { returnOriginal: false };
+    const updatedResult = await Comment.findByIdAndUpdate(_id, update, option);
+    return updatedResult;
   }
 }
 
