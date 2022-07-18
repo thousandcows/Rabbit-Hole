@@ -25,7 +25,7 @@ const CommentSchema = new Schema(
     likes: [
       new Schema(
         {
-          userId: String,
+          commentId: String,
         },
         {
           _id: false,
