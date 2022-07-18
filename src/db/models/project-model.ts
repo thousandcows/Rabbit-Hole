@@ -23,6 +23,9 @@ export interface ProjectInfo {
     tags?: TagInfo[],
 }
 
+interface commentsInfo {
+  [key:string]:string
+}
 export interface ProjectData extends Document<Types.ObjectId> {
     title: string,
     author: string,
@@ -33,6 +36,7 @@ export interface ProjectData extends Document<Types.ObjectId> {
     views: number,
     likes: LikeInfo[],
     tags: TagInfo[],
+    comments: commentsInfo[]
 }
 
 export class ProjectModel {

@@ -14,7 +14,7 @@ interface tagsType {
 }
 
 let token: string;
-let articleId: string;
+let projectId: string;
 let commentId: string;
 let userId: string;
 
@@ -36,6 +36,11 @@ const my = {
   githubProfileUrl: '프로필',
 };
 
+const commentMock = {
+  commentType: 'project',
+  content: '댓글 작성',
+};
+
 const updateMock = {
   shortDescription: '업데이트',
   description: '업데이트',
@@ -51,32 +56,36 @@ beforeAll(async () => {
 afterAll(() => db.close());
 
 describe('project-router 프로젝트 게시판 API 테스트', () => {
-  test.only('프로젝트 게시글 작성', async () => {
+  test('프로젝트 게시글 작성', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post('/api/projects')
       .field(projectMock)
       .field('tags', JSON.stringify(tags))
       .attach('thumbnail', path.join(__dirname, '/garbage.png'))
       .set('Authorization', `Bearer ${token}`);
+    projectId = res.body._id;
     expect(res.statusCode).toBe(201);
   });
-//   test('회원가입 실패', async () => {
-//     jest.setTimeout(30000);
-//     const res = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
-//     expect(res.statusCode).toBe(409);
-//   });
-//   test('마이페이지 - 게시글 조회 성공', async () => {
-//     jest.setTimeout(30000);
-//     const myinfo = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
-//     const res = await request(app).get(`/api/users/${myinfo.body._id}/articles`).set('Authorization', `Bearer ${token}`);
-//     expect(res.statusCode).toBe(200);
-//   });
-//   test('마이페이지 - 프로젝트 조회 성공', async () => {
-//     jest.setTimeout(30000);
-//     const myinfo = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
-//     const res = await request(app).get(`/api/users/${myinfo.body._id}/projects`).set('Authorization', `Bearer ${token}`);
-//     expect(res.statusCode).toBe(200);
-//   });
+  test('전체 게시글 조회', async () => {
+    jest.setTimeout(30000);
+    const res = await request(app).get('/api/projects').query({ page: 1, perPage: 1 });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.projectList.length).toBe(1);
+    expect(res.body.totalPage).toBe(1);
+  });
+  test('게시글 조회', async () => {
+    jest.setTimeout(30000);
+    const comRes = await request(app).post(`/api/comments/${projectId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
+    commentId = comRes.body._id;
+    const res = await request(app).get(`/api/projects/${projectId}`);
+    expect(res.body.projectInfo.comments.length).toBe(1);
+  });
+  // test('게시글 수정', async () => {
+  //   jest.setTimeout(30000);
+  //   const myinfo = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
+  //   const res = await request(app).get(`/api/users/${myinfo.body._id}/projects`).set('Authorization', `Bearer ${token}`);
+  //   expect(res.statusCode).toBe(200);
+  // });
 //   test('회원정보 수정', async () => {
 //     jest.setTimeout(30000);
 //     const res = await request(app).put('/api/users').send(updateMock).set('Authorization', `Bearer ${token}`);

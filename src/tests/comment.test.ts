@@ -80,6 +80,7 @@ describe('comment-router 댓글 API 테스트', () => {
     const res = await request(app).put(`/api/comments/${commentId}/adoption`).send(adoptionMock).set('Authorization', `Bearer ${token}`);
     expect(res.body.isAdopted).toBe(true);
   });
+
   test('댓글 하나 삭제', async () => {
     try {
       jest.setTimeout(30000);

@@ -141,7 +141,7 @@ class CommentService {
 
   // 댓글 좋아요
   async likeComment(userId:string, commentId: string): Promise<CommentData> {
-    const update = { $push: { likes: userId } };
+    const update = { $push: { likes: { userId } } };
     const updatedComment = await this.commentModel.likeComment(commentId, update);
     return updatedComment;
   }
