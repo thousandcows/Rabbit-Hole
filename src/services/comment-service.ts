@@ -5,7 +5,9 @@ import {
 import { validation } from '../utils/validation';
 import { userService } from './user-service';
 import { articleService } from './article-service';
-import { projectService } from './project-service';
+import {
+  putLikes, putComments, pullComments, uploadNewComment, deleteCommentFromRedis,
+} from '../middlewares/redis';
 
 interface searchCondition {
   articleId: string;
@@ -24,21 +26,18 @@ class CommentService {
     userId: string,
     articleId: string,
     commentInfo: CommentInfo,
-  ): Promise<CommentData> {
+  ): Promise<CommentData | any> {
     validation.addComment(commentInfo);
+
     const user = await userService.getUserById(userId);
     const createCommentInfo = {
       ...commentInfo, author: user.name, authorId: userId, articleId,
     };
 
     const createdNewComments = await this.commentModel.create(createCommentInfo);
-
-    const { _id, commentType } = createdNewComments;
-    if (commentType === 'project') {
-      await projectService.commentProject(String(_id), articleId);
-    } else {
-      await articleService.commentArticle(String(_id), articleId);
-    }
+    const { commentType, _id } = createdNewComments;
+    await uploadNewComment(createdNewComments);
+    await putComments(commentType, articleId, String(_id));
     return createdNewComments;
   }
 
@@ -136,14 +135,18 @@ class CommentService {
       throw error;
     }
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
+    const { commentType, articleId } = deletedComment;
+    await deleteCommentFromRedis(commentId);
+    await pullComments(commentType, articleId, commentId);
     return deletedComment;
   }
 
   // 댓글 좋아요
-  async likeComment(userId:string, commentId: string): Promise<CommentData> {
+  async likeComment(userId:string, commentId: string): Promise<CommentData | any> {
     const update = { $push: { likes: { userId } } };
-    const updatedComment = await this.commentModel.likeComment(commentId, update);
-    return updatedComment;
+    await this.commentModel.likeComment(commentId, update);
+    const updatedRedis = await putLikes('comment', commentId, userId);
+    return updatedRedis;
   }
 
   // 전체 댓글 조회
@@ -160,6 +163,16 @@ class CommentService {
   async deleteCommentForAdmin(commentId: string): Promise<CommentData> {
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
     return deletedComment;
+  }
+
+  // 데이터베이스 업데이트: 좋아요, 댓글
+  async updateDatabase(commentList: any): Promise<void> {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const comment of commentList) {
+      const { _id, likes } = comment;
+      const updateInfo = { _id, likes };
+      await this.commentModel.updateFromRedis(updateInfo);
+    }
   }
 }
 

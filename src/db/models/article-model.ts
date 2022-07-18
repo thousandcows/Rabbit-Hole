@@ -231,6 +231,21 @@ export class ArticleModel {
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
+  
+  // 11. 게시글 업로드 - redis
+  async findAll(): Promise<ArticleData[] | null> {
+    const articleList = await Article.find({});
+    return articleList;
+  }
+
+  // 12. 게시글 좋아요, 댓글 업데이트 - redis
+  async updateFromRedis(updateInfo: Partial<ArticleData>): Promise<ArticleData | null> {
+    const { _id, likes, comments } = updateInfo
+    const update: any = { $set: { likes, comments }};
+    const option = { returnOriginal: false };
+    const updatedResult = await Article.findByIdAndUpdate(_id, update, option);
+    return updatedResult;
+  }
 }
 
 export const articleModel = new ArticleModel();
