@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
@@ -6,17 +7,27 @@ import { uploadFile } from './utils/s3';
 const sharp = require('sharp');
 
 interface ChatInfo {
-  roomType: string,
-  username: string,
-  message: string,
+  senderId: string,
+  profile: string,
+  name: string,
+  track: string,
+  trackCardinalNumber: number,
+  chat: string,
   time: string,
   image: string,
+  roomType: string,
+}
+
+interface user {
+  name: string,
+  track: string,
+  trackCardinalNumber: number,
+  avatar: string
 }
 
 interface clientList {
-  [key: string]: string,
+  [key: string]: user
 }
-
 function webSocket(server: http.Server) {
   const io = new Server(server, {
     cors: {
@@ -26,137 +37,269 @@ function webSocket(server: http.Server) {
   });
   const connectedClientList: clientList = {};
   // socket 연결 중
-  io.sockets.on('connect', (socket: any) => {
-    // 새 접속자 입장
-    socket.on('newUser', async (newUser: string) => { // 접속자 정보 어떻게 받을지 논의
+
+  // namespace 구분, 각자 고유의 room, event 등을 가진다.
+  const siteSocket = io.of('/site');
+  const chatSocket = io.of('/chat');
+
+  // io.sockets.on => chatSocket.on으로 변경
+  chatSocket.on('connect', (socket: any) => {
+    // 모든 이벤트 감시
+    socket.onAny((event: any) => {
+      console.log(event);
+    });
+
+    socket.on('newUser', async (clientId: string, newUser: user) => {
       // 새 접속자 리스트에 추가
-      connectedClientList[newUser] = newUser;
-      const { clientsCount } = io.sockets.server.engine;
+      connectedClientList[clientId] = newUser;
+    });
+
+    // 룸 리스트 업데이트
+    socket.on('fetchRoom', () => {
+      const rooms = chatSocket.adapter.rooms.keys();
+      const arr = [];
+      for (const item of rooms) {
+        // roomName은 항상 (Room-이름) 형식으로 작성(default room과 구분)
+        // 프론트에서는 split('-')[1]로 구분해서 표시함
+        if (item.split('-')[0] === 'Room') {
+          const participants: user[] = [];
+          const room = chatSocket.adapter.rooms.get(item);
+          room?.forEach((participant) => {
+            if (connectedClientList[participant]) {
+              participants.push(connectedClientList[participant]);
+            }
+          });
+          arr.push({ roomName: item, participants });
+        }
+      }
+      chatSocket.emit('showRoomList', arr);
+    });
+
+    // 룸 접속
+    socket.on('joinRoom', (clientId: string, roomName: string) => {
+      socket.join(roomName);
+      const participants: user[] = [];
+      const room = chatSocket.adapter.rooms.get(roomName);
+      room?.forEach((participant) => {
+        if (connectedClientList[participant]) {
+          participants.push(connectedClientList[participant]);
+        }
+      });
+
       // 현재 시간
       const today = new Date(); // 현재 시간
       const hours = today.getHours(); // 시
       const minutes = today.getMinutes(); // 분
       const now = `${hours}:${minutes}`;
+
       // user에게 채팅방에 입장했음을 알림
-      socket.emit('updateForNewUser', {
-        message: `${newUser}(나)님이 입장했습니다.`,
-        clientList: connectedClientList,
-        clientsCount,
+      chatSocket.to(clientId).emit('updateForNewUser', {
+        message: `${connectedClientList[clientId].name}(나)님이 입장했습니다.`,
+        clientList: participants,
         time: now,
       });
-      // 전체 접속자에게 user가 채팅방에 입장했음을 알림
-      socket.broadcast.emit('updateForEveryone', {
-        message: `${newUser}가 도착했습니다.`,
-        clientList: connectedClientList,
-        clientsCount,
+
+      // room 내 전체 접속자에게 user가 채팅방에 입장했음을 알림
+      chatSocket.to(roomName).emit('updateForEveryone', {
+        message: `${connectedClientList[clientId].name}님이 입장했습니다.`,
+        clientList: participants,
         time: now,
       });
-      // 최근 20개 채팅 내역을 불러옴
-      const chatList = await chatService.findAllChats();
-      for (let i = 0; i < 20; i += 1) {
-        const newChat = chatList[i];
-        if (newChat.image === 'no image') {
-          socket.emit('chat-load', newChat);
-        } else {
-          socket.emit('image-load', newChat);
-        }
-      }
     });
+
+    // 채팅방 퇴장
+    socket.on('leaveRoom', (clientId: string, roomName: string) => {
+      socket.join(roomName);
+      const participants: user[] = [];
+      const room = chatSocket.adapter.rooms.get(roomName);
+      // 현재 시간
+      const today = new Date(); // 현재 시간
+      const hours = today.getHours(); // 시
+      const minutes = today.getMinutes(); // 분
+      const now = `${hours}:${minutes}`;
+      room?.forEach((participant) => {
+        if (connectedClientList[participant]) {
+          participants.push(connectedClientList[participant]);
+        }
+      });
+      chatSocket.to(roomName).emit('updateLeaveEveryone', {
+        message: `${connectedClientList[clientId].name}님이 퇴장했습니다.`,
+        clientList: participants,
+        time: now,
+      });
+      socket.leave(roomName);
+    });
+
     // 메시지 전송 발생
-    socket.on('chat message', (data: any) => {
-      // user 화면에 메시지 송출
-      socket.emit('chat message', `나: ${data.msg}`);
-      // 다른 접속자 화면에 메시지 송출
-      socket.broadcast.emit('chat message', `${data.name}: ${data.msg}`);
+    socket.on('chatMessage', (roomName: string, data: any) => {
+      // 채팅방 전체에 전송
+      chatSocket.to(roomName).emit('responseMessage', data);
       // 현재 시간
       const today = new Date(); // 현재 시간
       const hours = today.getHours(); // 시
       const minutes = today.getMinutes(); // 분
       const now = `${hours}:${minutes}`;
       const chatInfo: ChatInfo = {
-        roomType: 'main',
-        username: `${data.name}`,
-        message: `${data.msg}`,
+        ...data,
+        roomType: roomName,
         time: now,
         image: 'no image',
       };
       chatService.addChat(chatInfo);
     });
-    // 이미지 전송 발생
-    socket.on('upload-image', async (message: any) => {
-      // 이미지 타입 확인
-      const fileType = message.type.split('/')[0];
-      if (fileType !== 'image') {
-        const error = new Error('올바른 이미지 형식이 아닙니다');
-        error.name = 'NotAcceptable';
-        throw error;
-      }
-      // 이미지 크기 확인
-      const fileSize = message.data.byteLength;
-      if (fileSize >= 1024 * 1024) {
-        const error = new Error('파일 크기는 10MB 이하여야 합니다');
-        error.name = 'NotAcceptable';
-        throw error;
-      }
-      // 이미지 사이즈 조정
-      const data = await sharp(message.data).metadata();
-      const newFile = await sharp(message.data)
-        .resize({
-          width: Math.trunc(data.width * 0.75),
-          height: Math.trunc(data.height * 0.75),
-          fit: sharp.fit.inside,
-          withoutEnlargement: true,
-        })
-        .toBuffer();
-      // 이미지 s3에 업로드
-      const fileToUpload = {
-        body: newFile,
-        filename: message.name,
-        type: message.type,
-      };
-      const uploadResult = await uploadFile(fileToUpload);
-      if (!uploadResult) {
-        const error = new Error('이미지를 s3에 업로드하는데 실패했습니다. 다시 시도해주세요');
-        error.name = 'NotFound';
-        throw error;
-      }
-      // 이미지 객체 url DB에 저장
-      const chatInfo: ChatInfo = {
-        roomType: 'main',
-        username: 'username', // 추후 수정 필요함
-        message: 'image', // 추후 수정 필요함
-        time: new Date().getHours().toString(),
-        image: uploadResult.Location,
-      };
-      const saveResult = await chatService.addChat(chatInfo);
-      if (!saveResult) {
-        const error = new Error('이미지를 DB에 저장하는데 실패했습니다. 다시 시도해주세요');
-        error.name = 'NotFound';
-        throw error;
-      }
-      // 이미지 채팅창 송출
-      socket.emit('image-uploaded', message);
-      socket.broadcast.emit('image-uploaded', message);
-    });
-    // socket 연결 종료
-    io.sockets.on('disconnect', () => {
-    // 접속자 목록에서 삭제
-      delete connectedClientList.newUser;
-      // 전체 접속자에게 알림
-      const { clientsCount } = io.sockets.server.engine;
-      // 현재 시간
-      const today = new Date(); // 현재 시간
-      const hours = today.getHours(); // 시
-      const minutes = today.getMinutes(); // 분
-      const now = `${hours}:${minutes}`;
-      socket.broadcast.emit('updateForEveryone', {
-        message: '가 퇴장했습니다.',
-        clientList: connectedClientList,
-        clientsCount,
-        time: now,
-      });
-    });
   });
 }
-
 export default webSocket;
+
+/* eslint-disable no-restricted-syntax */
+// import * as http from 'http';
+// import { Server } from 'socket.io';
+// import { chatService } from './services/chat-service';
+// import { uploadFile } from './utils/s3';
+
+// const sharp = require('sharp');
+
+// interface ChatInfo {
+//   senderId: string,
+//   profile: string,
+//   name: string,
+//   track: string,
+//   trackCardinalNumber: number,
+//   chat: string,
+//   time: string,
+//   image: string,
+//   roomType: string,
+// }
+
+// interface user {
+//   name: string,
+//   track: string,
+//   trackCardinalNumber: number,
+//   avatar: string
+// }
+
+// interface clientList {
+//   [key: string]: user
+// }
+// function webSocket(server: http.Server) {
+//   const io = new Server(server, {
+//     cors: {
+//       origin: process.env.TEST_URL,
+//       methods: ['GET', 'POST'],
+//     },
+//   });
+//   const connectedClientList: clientList = {};
+//   // socket 연결 중
+
+//   // namespace 구분, 각자 고유의 room, event 등을 가진다.
+//   const siteSocket = io.of('/site');
+//   const chatSocket = io.of('/chat');
+
+//   // io.sockets.on => chatSocket.on으로 변경
+//   chatSocket.on('connect', (socket: any) => {
+//     // 모든 이벤트 감시
+//     socket.onAny((event: any) => {
+//       console.log(event);
+//     });
+
+//     socket.on('newUser', async (clientId: string, newUser: user) => {
+//       // 새 접속자 리스트에 추가
+//       connectedClientList[clientId] = newUser;
+//     });
+
+//     // 룸 리스트 업데이트
+//     socket.on('fetchRoom', () => {
+//       const rooms = chatSocket.adapter.rooms.keys();
+//       const arr = [];
+//       for (const item of rooms) {
+//         // roomName은 항상 (Room-이름) 형식으로 작성(default room과 구분)
+//         // 프론트에서는 split('-')[1]로 구분해서 표시함
+//         if (item.split('-')[0] === 'Room') {
+//           const participants: user[] = [];
+//           const room = chatSocket.adapter.rooms.get(item);
+//           room?.forEach((participant) => {
+//             if (connectedClientList[participant]) {
+//               participants.push(connectedClientList[participant]);
+//             }
+//           });
+//           arr.push({ roomName: item, participants });
+//         }
+//       }
+//       socket.emit('showRoomList', arr);
+//     });
+
+//     // 룸 접속
+//     socket.on('joinRoom', (clientId: string, roomName: string) => {
+//       socket.join(roomName);
+//       const participants: user[] = [];
+//       const room = chatSocket.adapter.rooms.get(roomName);
+//       room?.forEach((participant) => {
+//         if (connectedClientList[participant]) {
+//           participants.push(connectedClientList[participant]);
+//         }
+//       });
+
+//       // 현재 시간
+//       const today = new Date(); // 현재 시간
+//       const hours = today.getHours(); // 시
+//       const minutes = today.getMinutes(); // 분
+//       const now = `${hours}:${minutes}`;
+
+//       // user에게 채팅방에 입장했음을 알림
+//       chatSocket.to(clientId).emit('updateForNewUser', {
+//         message: `${connectedClientList[clientId].name}(나)님이 입장했습니다.`,
+//         clientList: participants,
+//         time: now,
+//       });
+
+//       // room 내 전체 접속자에게 user가 채팅방에 입장했음을 알림
+//       chatSocket.to(roomName).emit('updateForEveryone', {
+//         message: `${connectedClientList[clientId].name}님이 입장했습니다.`,
+//         clientList: participants,
+//         time: now,
+//       });
+//     });
+
+//     // 채팅방 퇴장
+//     socket.on('leaveRoom', (clientId: string, roomName: string) => {
+//       socket.join(roomName);
+//       const participants: user[] = [];
+//       const room = chatSocket.adapter.rooms.get(roomName);
+//       // 현재 시간
+//       const today = new Date(); // 현재 시간
+//       const hours = today.getHours(); // 시
+//       const minutes = today.getMinutes(); // 분
+//       const now = `${hours}:${minutes}`;
+//       room?.forEach((participant) => {
+//         if (connectedClientList[participant]) {
+//           participants.push(connectedClientList[participant]);
+//         }
+//       });
+//       chatSocket.to(roomName).emit('updateLeaveEveryone', {
+//         message: `${connectedClientList[clientId].name}님이 퇴장했습니다.`,
+//         clientList: participants,
+//         time: now,
+//       });
+//       socket.leave(roomName);
+//     });
+
+//     // 메시지 전송 발생
+//     socket.on('chatMessage', (roomName: string, data: any) => {
+//       // 채팅방 전체에 전송
+//       chatSocket.to(roomName).emit('responseMessage', data);
+//       // 현재 시간
+//       const today = new Date(); // 현재 시간
+//       const hours = today.getHours(); // 시
+//       const minutes = today.getMinutes(); // 분
+//       const now = `${hours}:${minutes}`;
+//       const chatInfo: ChatInfo = {
+//         ...data,
+//         roomType: roomName,
+//         time: now,
+//         image: 'no image',
+//       };
+//       chatService.addChat(chatInfo);
+//     });
+//   });
+// }
+// export default webSocket;
