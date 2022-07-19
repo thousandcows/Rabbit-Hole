@@ -148,7 +148,7 @@ export class ProjectModel {
 
     let total = await Project.countDocuments({ author: new RegExp(author) });
     let projectList = await Project
-      .find({ author: new RegExp(author) })
+      .find({ author: new RegExp(author, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
@@ -174,7 +174,7 @@ export class ProjectModel {
     }
     let total = await Project.countDocuments({ title: new RegExp(title) });
     let projectList = await Project
-      .find({ title: new RegExp(title) })
+      .find({ title: new RegExp(title, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
