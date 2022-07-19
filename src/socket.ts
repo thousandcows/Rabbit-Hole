@@ -13,13 +13,6 @@ interface ChatInfo {
   image: string,
   roomType: string,
 }
-interface ChatData {
-  roomType: string,
-  username: string,
-  message: string,
-  time: string,
-  image: string,
-}
 interface User {
   name: string,
   track: string,
@@ -140,10 +133,9 @@ function webSocket(server: http.Server) {
       const hours = today.getHours(); // 시
       const minutes = today.getMinutes(); // 분
       const now = `${hours}:${minutes}`;
-      const chatInfo: ChatData = {
+      const chatInfo: ChatInfo = {
+        ...data,
         roomType: roomName,
-        username: data.name,
-        message: data.chat,
         time: now,
         image: 'no image',
       };
