@@ -111,7 +111,7 @@ adminRouter.get('/comments', async (req: Request, res: Response, next: NextFunct
   }
 });
 // 3-2. 댓글 삭제 기능
-adminRouter.delete('/comments', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/comments/:commentId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { commentId } = req.params;
     const deletedComment = await commentService.deleteCommentForAdmin(commentId);
@@ -140,7 +140,7 @@ adminRouter.get('/projects', async (req: Request, res: Response, next: NextFunct
   }
 });
 // 4-2. 프로젝트 삭제 기능
-adminRouter.delete('/projects', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/projects/:projectId', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
     const result = await projectService.deleteProjectForAdmin(projectId);
