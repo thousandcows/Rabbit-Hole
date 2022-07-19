@@ -69,7 +69,6 @@ beforeAll(async () => {
   const user = await request(app).post('/api/users/register').field(userInfo).attach('authImage', path.join(__dirname, '/garbage.png'));
   userToken = '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';
   userId = user.body._id;
-
 });
 afterAll(() => {
   db.close();
