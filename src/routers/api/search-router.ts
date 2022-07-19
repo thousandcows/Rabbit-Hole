@@ -68,9 +68,9 @@ searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunc
         page: Number(page),
         perPage: Number(perPage),
       };
-      const [articleList, totalPage] = await projectService
+      const [projectList, totalPage] = await projectService
         .searchProjectsByTitle(titleSearchCondition);
-      res.status(200).json({ articleList, totalPage });
+      res.status(200).json({ projectList, totalPage });
     }
   } catch (error) {
     next(error);
