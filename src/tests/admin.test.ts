@@ -72,7 +72,7 @@ afterAll(() => {
   db.close();
 });
 
-describe('관리자 기능 테스트', async () => {
+describe('관리자 기능 테스트', () => {
   // 전체 유저 조회
   test('전체 유저 조회', async () => {
     jest.setTimeout(30000);
@@ -113,7 +113,7 @@ describe('관리자 기능 테스트', async () => {
   });
   test('전체 프로젝트 조회', async () => {
     jest.setTimeout(30000);
-    const res = await request(app).get('/api/admin/projects').query({ page: 1, perPage: 1 });
+    const res = await request(app).get('/api/admin/projects').query({ page: 1, perPage: 1 }).set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
     expect(res.body.projectList.length).toBe(1);
     expect(res.body.totalPage).toBe(1);
@@ -122,7 +122,7 @@ describe('관리자 기능 테스트', async () => {
     jest.setTimeout(30000);
     const res = await request(app).delete(`/api/admin/projects/${projectId}`).set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
-});
+  });
   test('댓글 삭제', async () => {
       jest.setTimeout(30000);
       const res = await request(app).delete(`/api/admin/comments/${commentId}`).set('Authorization', `Bearer ${token}`);
