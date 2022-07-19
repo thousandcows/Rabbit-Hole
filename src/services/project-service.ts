@@ -35,6 +35,7 @@ interface TagInfo {
   }
 
   interface updateInfo {
+      author:string;
       projectId: string;
       title: string;
       shortDescription: string;

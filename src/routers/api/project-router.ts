@@ -71,15 +71,16 @@ projectRouter.put('/:projectId', loginRequired, upload.single('thumbnail'), asyn
   try {
     const image: any = req.file;
     if (image) {
-      req.body.tags = JSON.parse(req.body.tags);
+      if (req.body.tags) req.body.tags = JSON.parse(req.body.tags);
       const userId = validation.isLogin(req.currentUserId);
       const thumbnail = image.location;
       const { projectId } = req.params;
       const {
-        title, shortDescription, description, tags,
+        author, title, shortDescription, description, tags,
       } = req.body;
+
       const updatedArticle = await projectService.updateProject(userId, {
-        projectId, title, shortDescription, description, thumbnail, tags,
+        author, projectId, title, shortDescription, description, thumbnail, tags,
       });
       res.status(200).json(updatedArticle);
     } else {
