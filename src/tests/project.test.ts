@@ -11,6 +11,8 @@ import { userModel } from '../db/models/user-model';
 
 const redis = require('redis-mock');
 
+jest.mock('redis', () => jest.requireActual('redis-mock'));
+const client = redis.createClient();
 interface tagsType {
     [key: string]: string;
 }
@@ -37,28 +39,25 @@ const my = {
   githubEmail: 'chss3339@gmail.com',
   githubProfileUrl: '프로필',
 };
-
-const commentMock = {
-  commentType: 'project',
-  content: '댓글 작성',
-};
-
 const updateMock = {
-  shortDescription: '업데이트',
-  description: '업데이트',
+  author: '신윤수',
+  title: '업데이트프로젝트',
+  shortDescription: '업데이트프로젝트',
+  description: '업데이트프로젝트',
 };
 
 beforeAll(async () => {
   db.connect();
-  const client = redis.createClient();
+
   // 테스트 시작 전 테스트db에 유저정보 저장
   const user = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';
   userId = user.body._id;
 });
-afterAll(() => {
+afterAll((done) => {
   db.close();
-  redis.quit();
+  jest.clearAllMocks();
+  client.flushall(done);
 });
 
 describe('project-router 프로젝트 게시판 API 테스트', () => {
@@ -70,7 +69,6 @@ describe('project-router 프로젝트 게시판 API 테스트', () => {
       .attach('thumbnail', path.join(__dirname, '/garbage.png'))
       .set('Authorization', `Bearer ${token}`);
     projectId = res.body._id;
-    console.log(res.body);
     expect(res.statusCode).toBe(201);
   });
   test('전체 게시글 조회', async () => {
@@ -82,32 +80,23 @@ describe('project-router 프로젝트 게시판 API 테스트', () => {
   });
   test('게시글 조회', async () => {
     jest.setTimeout(30000);
-    const comRes = await request(app).post(`/api/comments/${projectId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
-    commentId = comRes.body._id;
     const res = await request(app).get(`/api/projects/${projectId}`);
-    console.log(res.body);
-    expect(res.body.projectInfo.comments.length).toBe(1);
+    expect(res.statusCode).toBe(200);
   });
-  // test('게시글 수정', async () => {
-  //   jest.setTimeout(30000);
-  //   const myinfo = await request(app).get('/api/users/mypage').set('Authorization', `Bearer ${token}`);
-  //   const res = await request(app).get(`/api/users/${myinfo.body._id}/projects`).set('Authorization', `Bearer ${token}`);
-  //   expect(res.statusCode).toBe(200);
-  // });
-//   test('회원정보 수정', async () => {
-//     jest.setTimeout(30000);
-//     const res = await request(app).put('/api/users').send(updateMock).set('Authorization', `Bearer ${token}`);
-//     expect(res.body.track).toBe('AI트랙');
-//     expect(res.body.trackCardinalNumber).toBe(5);
-//   });
-//   test('이메일로 회원 조회', async () => {
-//     jest.setTimeout(30000);
-//     const res = await request(app).get('/api/users/chss3339@gmail.com').set('Authorization', `Bearer ${token}`);
-//     expect(res.statusCode).toBe(200);
-//   });
-//   test('회원탈퇴', async () => {
-//     jest.setTimeout(30000);
-//     const res = await request(app).delete('/api/users').set('Authorization', `Bearer ${token}`);
-//     expect(res.statusCode).toBe(200);
-//   });
+  test('게시글 수정', async () => {
+    jest.setTimeout(30000);
+    const res = await request(app).put(`/api/projects/${projectId}`)
+      .field(updateMock)
+      .field('tags', JSON.stringify(tags))
+      .attach('thumbnail', path.join(__dirname, '/garbage.png'))
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.body.title).toBe('업데이트프로젝트');
+    expect(res.body.shortDescription).toBe('업데이트프로젝트');
+    expect(res.body.description).toBe('업데이트프로젝트');
+  });
+  test('게시글 삭제', async () => {
+    jest.setTimeout(30000);
+    const res = await request(app).delete(`/api/projects/${projectId}`).set('Authorization', `Bearer ${token}`);
+    expect(res.body._id).toBe(projectId);
+  });
 });
