@@ -151,7 +151,7 @@ export class ArticleModel {
 
     let total = await Article.countDocuments({ articleType, author: new RegExp(author) });
     let articleList = await Article
-      .find({ articleType, author: new RegExp(author) })
+      .find({ articleType, author: new RegExp(author, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
@@ -180,7 +180,7 @@ export class ArticleModel {
 
     let total = await Article.countDocuments({ articleType, title: new RegExp(title) });
     let articleList = await Article
-      .find({ articleType, title: new RegExp(title) })
+      .find({ articleType, title: new RegExp(title, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
