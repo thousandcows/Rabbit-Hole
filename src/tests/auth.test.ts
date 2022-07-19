@@ -32,10 +32,13 @@ describe('auth-router 깃허브 API 테스트', () => {
     const res = await request(app).get('/api/auth/github/login');
     expect(res.headers.location).toContain('https://github.com/login/oauth/authorize');
   });
-//   test('깃허브 로그인 callback url', async () => {
-//     jest.setTimeout(30000);
-//     const res = await request(app).get('/api/auth/github/login');
-//     const callbackUrl = res.headers.location;
-//     Object.assign(location, { host: 'www.newhost.com', pathname: 'file.txt' });
-//   });
+  test('깃허브 로그인 callback url', async () => {
+    jest.setTimeout(30000);
+    const res = await request(app).get('/api/auth/github/login');
+
+    const callbackUrl = res.headers.location;
+    console.log('콜백', callbackUrl);
+    const call = await request(app).get(callbackUrl);
+    console.log(call.body);
+  });
 });

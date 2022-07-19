@@ -9,7 +9,7 @@ import { upload } from '../../utils/multer-s3';
 const userRouter = Router();
 
 // 마이페이지
-userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+userRouter.get('/mypage', loginRequired, async (req:any, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const myInfo = await userService.getUserById(userId);
@@ -20,7 +20,7 @@ userRouter.get('/mypage', loginRequired, async (req:Request, res:Response, next:
 });
 
 // 마이페이지 - 게시글 조회
-userRouter.get('/:userId/articles', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/:userId/articles', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { page, perPage } = req.query;
@@ -33,7 +33,7 @@ userRouter.get('/:userId/articles', loginRequired, async (req: Request, res: Res
 });
 
 // 마이페이지 - 프로젝트 조회
-userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/:userId/projects', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { page, perPage } = req.query;
@@ -46,7 +46,7 @@ userRouter.get('/:userId/projects', loginRequired, async (req: Request, res: Res
 });
 
 // 회원가입
-userRouter.post('/register', upload.single('authImage'), async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/register', upload.single('authImage'), async (req: any, res: Response, next: NextFunction) => {
   try {
     const img: any = req.file;
     // 회원 이미지 업로드 확인
@@ -78,7 +78,7 @@ userRouter.post('/register', upload.single('authImage'), async (req: Request, re
 });
 
 // 이메일로 회원 조회
-userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.get('/:githubEmail', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const { githubEmail } = req.params;
 
@@ -91,7 +91,7 @@ userRouter.get('/:githubEmail', loginRequired, async (req: Request, res: Respons
 });
 
 // 회원정보 수정
-userRouter.put('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.put('/', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const update = req.body;
@@ -105,7 +105,7 @@ userRouter.put('/', loginRequired, async (req: Request, res: Response, next: Nex
 });
 
 // 회원탈퇴
-userRouter.delete('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete('/', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const deleteResult = await userService.deleteUser(userId);

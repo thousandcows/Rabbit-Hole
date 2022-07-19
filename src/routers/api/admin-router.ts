@@ -11,7 +11,7 @@ const adminRouter = Router();
 
 // 1. 유저 관리 기능
 // 1-1. 전체 유저 조회 기능
-adminRouter.get('/users', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/users', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { page, perPage } = req.query;
     const searchCondition = {
@@ -25,7 +25,7 @@ adminRouter.get('/users', async (req: Request, res: Response, next: NextFunction
   }
 });
 // 1-2. 유저 승인 기능
-adminRouter.put('/users/:userId', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const { role } = req.body;
@@ -55,7 +55,7 @@ adminRouter.put('/users/:userId', async (req: Request, res: Response, next: Next
   }
 });
 // 1-3. 유저 삭제 기능
-adminRouter.delete('/users/:userId', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/users/:userId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const deleteResult = await userService.deleteUser(userId);
@@ -66,7 +66,7 @@ adminRouter.delete('/users/:userId', async (req: Request, res: Response, next: N
 });
 // 2. 게시글 관리 기능
 // 2-1. 전체 게시글 조회
-adminRouter.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/articles', async (req: any, res: Response, next: NextFunction) => {
   try {
     const {
       articleType, filter, page, perPage,
@@ -85,7 +85,7 @@ adminRouter.get('/articles', async (req: Request, res: Response, next: NextFunct
   }
 });
 // 2-2. 게시글 삭제 기능
-adminRouter.delete('/articles/:articleId', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.delete('/articles/:articleId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
     const result = await articleService.deleteArticleForAdmin(articleId);
@@ -96,7 +96,7 @@ adminRouter.delete('/articles/:articleId', async (req: Request, res: Response, n
 });
 // 3. 댓글 관리 기능
 // 3-1 전체 댓글 조회
-adminRouter.get('/comments', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/comments', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { commentType, page, perPage } = req.query;
     const searchCondition = {
@@ -122,7 +122,7 @@ adminRouter.delete('/comments/:commentId', async (req: Request, res: Response, n
 });
 // 4. 프로젝트 관리 기능
 // 4-1. 프로젝트 조회 기능
-adminRouter.get('/projects', async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/projects', async (req: any, res: Response, next: NextFunction) => {
   try {
     const {
       filter, page, perPage,

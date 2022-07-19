@@ -15,7 +15,7 @@ interface UserEmail{
 const authRouter = Router();
 
 // 깃허브 로그인 callback url
-authRouter.get('/github/callback', async (req: Request, res:Response, next:NextFunction) => {
+authRouter.get('/github/callback', async (req: any, res:Response, next:NextFunction) => {
   try {
     // 요청 코드
     const { code } = req.query;
@@ -69,7 +69,7 @@ authRouter.get('/github/callback', async (req: Request, res:Response, next:NextF
 });
 
 // 깃허브 로그인 url
-authRouter.get('/github/login', async (req: Request, res: Response, next: NextFunction) => {
+authRouter.get('/github/login', async (req: any, res: Response, next: NextFunction) => {
   try {
     const accessTokenUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=${process.env.GITHUB_REDIRECT_URI}&scope=user`;
     res.redirect(accessTokenUrl);

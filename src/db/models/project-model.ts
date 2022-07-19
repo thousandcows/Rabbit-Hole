@@ -92,12 +92,12 @@ export class ProjectModel {
   // 4. 게시글 수정
   async updateProject(updateInfo: any): Promise<ProjectData | null> {
     const {
-      projectId, title, shortDescription, description, thumbnail, tags,
+      author, projectId, title, shortDescription, description, thumbnail, tags,
     } = updateInfo;
     const id = { _id: projectId };
     const update = {
       $set: {
-        title, shortDescription, description, thumbnail, tags,
+        author, title, shortDescription, description, thumbnail, tags,
       },
     };
     const option = { returnOriginal: false };

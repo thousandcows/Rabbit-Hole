@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services/user-service';
 
-async function adminRequired(req: Request, res: Response, next: NextFunction) {
+async function adminRequired(req: any, res: Response, next: NextFunction) {
   const adminId = req.currentUserId;
   if (adminId) {
     const adminInfo = await userService.getUserById(adminId);
