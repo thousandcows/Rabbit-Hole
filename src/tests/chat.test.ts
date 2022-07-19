@@ -6,7 +6,6 @@ import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
 import { app } from '../server';
-import { Types, Document } from 'mongoose';
 import { chatService } from '../services';
 
 let token: string;
@@ -32,18 +31,6 @@ const chatMock = {
   chat: 'I like socket.io',
   time: '20:33',
   image: 'no image',
-}
-
-interface ChatData extends Document<Types.ObjectId> {
-  senderId: string,
-  profile: string,
-  name: string,
-  track: string,
-  trackCardinalNumber: number,
-  chat: string,
-  time?: string,
-  image: string,
-  roomType: string,
 }
 
 beforeAll(async () => {
