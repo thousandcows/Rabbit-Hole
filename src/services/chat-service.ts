@@ -1,18 +1,5 @@
 import { Types, Document } from 'mongoose';
 import { chatModel, ChatModel } from '../db/models/chat-model';
-
-interface ChatInfo {
-  senderId: string,
-  profile: string,
-  name: string,
-  track: string,
-  trackCardinalNumber: number,
-  chat: string,
-  time: string,
-  image: string,
-  roomType: string,
-}
-
 interface ChatData extends Document<Types.ObjectId> {
   senderId: string,
   profile: string,
@@ -25,6 +12,17 @@ interface ChatData extends Document<Types.ObjectId> {
   roomType: string,
 }
 
+interface ChatInfo {
+  senderId: string,
+  profile: string,
+  name: string,
+  track: string,
+  trackCardinalNumber: number,
+  chat: string,
+  time: string,
+  image: string,
+  roomType: string,
+}
 class ChatService {
   chatModel: ChatModel;
 
