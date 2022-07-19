@@ -5,9 +5,7 @@
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
-import { articleService } from '../services';
 import { app } from '../server';
-import { articleModel } from '../db/models/article-model';
 
 interface tagsType {
     [key: string]: string;
