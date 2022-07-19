@@ -70,24 +70,23 @@ projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunct
 projectRouter.put('/:projectId', loginRequired, upload.single('thumbnail'), async (req: any, res: Response, next: NextFunction) => {
   try {
     const image: any = req.file;
+    const { projectId } = req.params;
+    let thumbnail: string = '';
     if (image) {
-      if (req.body.tags) req.body.tags = JSON.parse(req.body.tags);
-      const userId = validation.isLogin(req.currentUserId);
-      const thumbnail = image.location;
-      const { projectId } = req.params;
-      const {
-        author, title, shortDescription, description, tags,
-      } = req.body;
-
-      const updatedArticle = await projectService.updateProject(userId, {
-        author, projectId, title, shortDescription, description, thumbnail, tags,
-      });
-      res.status(200).json(updatedArticle);
+      thumbnail = image.location;
     } else {
-      const error = new Error('이미지 업로드에 실패하였습니다');
-      error.name = 'NotFound';
-      throw error;
+      const project = await projectService.findProjectOne(projectId);
+      if (project) thumbnail = project.thumbnail;
     }
+    if (req.body.tags) req.body.tags = JSON.parse(req.body.tags);
+    const userId = validation.isLogin(req.currentUserId);
+    const {
+      author, title, shortDescription, description, tags,
+    } = req.body;
+    const updatedArticle = await projectService.updateProject(userId, {
+      author, projectId, title, shortDescription, description, thumbnail, tags,
+    });
+    res.status(200).json(updatedArticle);
   } catch (error) {
     next(error);
   }
