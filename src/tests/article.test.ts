@@ -5,9 +5,8 @@
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
-import { articleService } from '../services';
 import { app } from '../server';
-import { articleModel } from '../db/models/article-model';
+import { articleService } from '../services';
 
 interface tagsType {
     [key: string]: string;
@@ -15,18 +14,17 @@ interface tagsType {
 
 let token: string;
 let articleId: string;
-let commentId: string;
 let userId: string;
+let commentId: string;
 
 const articleMock = {
-  articleType: 'question',
+  articleType: 'free',
   author: 'milcam',
   title: 'i love redis',
   content: 'i have no energy',
   carrots: 100,
+  tags: [{ name: 'cow' }]
 };
-
-const tags: tagsType[] = [{ name: 'cow' }];
 
 const userInfo = {
   name: 'jest1',
@@ -65,36 +63,34 @@ describe('article-router 게시판 API 테스트', () => {
   test('새 게시글 작성', async () => {
     jest.setTimeout(30000);
     const res = await request(app).post('/api/articles')
-      .field(articleMock)
-      .field('tags', JSON.stringify(tags))
+      .send(articleMock)
       .set('Authorization', `Bearer ${token}`);
     articleId = res.body._id;
     expect(res.statusCode).toBe(201);
   });
   test('전체 게시글 조회', async () => {
     jest.setTimeout(30000);
-    const res = await request(app).post('/api/articles').query({ articleType: 'question', page: 1, perPage: 10 });
+    const res = await request(app).get('/api/articles').query({ articleType: 'question', filter: 'date', page: 1, perPage: 10 });
     expect(res.statusCode).toBe(200);
-    expect(res.body.articleList.length).toBe(10);
+    expect(res.body.articleList.length).toBe(1);
     expect(res.body.totalPage).toBe(1);
   });
   test('상세 페이지 조회', async () => {
     jest.setTimeout(30000);
-    const commentRes = await request(app).post(`/api/comments/${articleId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
+    const commentRes = await request(app).get(`/api/articles/${articleId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
     commentId = commentRes.body._id;
     const res = await request(app).get(`/api/articles/${articleId}`);
-    expect(res.body.articleInfo.comments.length).toBe(1);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.articleInfo.comments.length).toBe(0);
   });
   test('게시글 수정', async () => {
     jest.setTimeout(30000);
     const res = await request(app).put(`/api/articles/${articleId}`).send(updateMock).set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
   });
-  // 5. 게시글 삭제
   test('게시글 삭제', async () => {
     jest.setTimeout(30000);
     const res = await request(app).delete(`/api/articles/${articleId}`).set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toBe(200);
   });
-  // 6. 게시글 좋아요
 });
