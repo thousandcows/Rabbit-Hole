@@ -30,7 +30,6 @@ describe('auth-router 깃허브 API 테스트', () => {
   test('깃허브 로그인 url', async () => {
     jest.setTimeout(30000);
     const res = await request(app).get('/api/auth/github/login');
-    console.log(res.headers.location);
     expect(res.headers.location).toContain('https://github.com/login/oauth/authorize');
   });
 //   test('깃허브 로그인 callback url', async () => {

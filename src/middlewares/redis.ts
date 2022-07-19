@@ -99,7 +99,7 @@ async function putLikes(type: string, articleId: string, userId: string) {
   // 1. 받은 데이터를 put한다.
   const key = `${type}:${articleId}`;
   const field = '.likes';
-  const update = { userId }
+  const update = { userId };
   // 해당 게시글에 userId가 있는지 확인한다
   const index = await client.json.arrIndex(key, field, { userId });
   let result: any;
@@ -163,15 +163,15 @@ async function updateDatabase(): Promise<any> {
   const commentList = [];
 
   for await (const key of client.scanIterator()) {
-    const prefix = key.split(':')[0]
+    const prefix = key.split(':')[0];
     if (prefix === 'question' || prefix === 'free' || prefix === 'study') {
-      const value = await client.json.get(key)
+      const value = await client.json.get(key);
       articleList.push(value);
     } else if (prefix === 'project') {
-      const value = await client.json.get(key)
+      const value = await client.json.get(key);
       projectList.push(value);
     } else {
-      const value = await client.json.get(key)
+      const value = await client.json.get(key);
       commentList.push(value);
     }
   }
@@ -185,19 +185,18 @@ async function updateDatabase(): Promise<any> {
   if (commentList) {
     await commentService.updateDatabase(commentList);
   }
-  
 }
 
 export {
-  client, 
-  fillDatabase, 
-  putLikes, 
-  putComments, 
-  updateDatabase, 
-  cache, 
-  uploadNewArticle, 
+  client,
+  fillDatabase,
+  putLikes,
+  putComments,
+  updateDatabase,
+  cache,
+  uploadNewArticle,
   uploadNewProject,
-  deleteArticleFromRedis, 
+  deleteArticleFromRedis,
   deleteProjectFromRedis,
   pullComments,
   uploadNewComment,

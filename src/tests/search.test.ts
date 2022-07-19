@@ -191,7 +191,6 @@ describe('project-router 프로젝트 게시판 API 테스트', () => {
           page: 1,
           perPage: 2,
         });
-      console.log(res.body);
       expect(res.body.projectList[0].views).toBeGreaterThan(res.body.projectList[1].views);
       expect(res.body.totalPage).toBe(1);
     });
