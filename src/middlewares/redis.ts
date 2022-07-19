@@ -148,7 +148,7 @@ async function pullComments(commentType: string, articleId: string, commentId: s
 }
 
 // client-side caching 기능: 좋아요, 댓글 수
-async function cache(req: Request, res: Response, next: NextFunction) {
+async function cache(req: any, res: Response, next: NextFunction) {
   // 1. clinet의 요청을 cache가 중간에서 받는다
   // 2. req를 분석한다 => type, sortFilter, page, perPage
   // 2. 데이터 목록을 pagination 한다

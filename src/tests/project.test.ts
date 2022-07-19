@@ -46,9 +46,44 @@ const updateMock = {
   description: '업데이트프로젝트',
 };
 
+const keyvalue = `{
+  “_id”: “62cfc1d83798b73fe5bd9cff”,
+  “title”: “제목”,
+  “author”: “이지은2”,
+  “authorId”: “62c8691b1673e09fbcfa4298”,
+  “shortDescription”: “짧은설명”,
+  “description”: “설명”,
+  “thumbnail”: “https://rabbit-hole-image.s3.ap-northeast-2.amazonaws.com/ff39c13d32b21c4fdc757cb00e4e813f",
+  “views”: 622,
+  “tags”: [
+  {
+  “name”: “오잉13”
+  }
+  ],
+  “likes”: [],
+  “createdAt”: “2022-07-14T07:12:24.550Z”,
+  “updatedAt”: “2022-07-19T11:12:06.265Z”,
+  “__v”: 0,
+  “comments”: [
+  {
+  “commentId”: “62d55d6e52e8ad7f392c7549”
+  },
+  {
+  “commentId”: “62d55d8052e8ad7f392c768b”
+  },
+  {
+  “commentId”: “62d560d952e8ad7f392cabe4”
+  }
+  ]
+  }`;
 beforeAll(async () => {
   db.connect();
-
+  client.set('project:62cfc1d83798b73fe5bd9cff', `${keyvalue}`, () => {
+    client.get('project:62cfc1d83798b73fe5bd9cff', (err:any, redisValue: any) => {
+      console.log('비포', redisValue);
+      expect(redisValue).toBe(keyvalue);
+    });
+  });
   // 테스트 시작 전 테스트db에 유저정보 저장
   const user = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';

@@ -5,7 +5,7 @@ import { chatService } from '../../services';
 
 const chatRouter = Router();
 
-chatRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+chatRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
   try {
     const page = Number(req.query.page);
     const perPage = Number(req.query.perPage);

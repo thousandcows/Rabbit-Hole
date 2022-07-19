@@ -10,7 +10,7 @@ interface UserEmail{
   visibility: any;
 }
 
-async function loginRequired(req: Request, res: Response, next: NextFunction) {
+async function loginRequired(req: any, res: Response, next: NextFunction) {
   // request 헤더로부터 authorization bearer 토큰을 받음.
 
   const wholeToken = req.headers.authorization?.split(' ');
