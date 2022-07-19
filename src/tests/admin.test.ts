@@ -4,7 +4,6 @@ import * as db from './utils/db';
 import { app } from '../server';
 
 let token: string;
-let adminId: string;
 let userId: string;
 let userToken: string;
 let articleId: string;
@@ -63,9 +62,8 @@ const projectMock = {
 
 beforeAll(async () => {
   db.connect();
-  const admin = await request(app).post('/api/users/register').field(adminInfo).attach('authImage', path.join(__dirname, '/garbage.png'));
+  await request(app).post('/api/users/register').field(adminInfo).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';
-  adminId = admin.body._id;
   const user = await request(app).post('/api/users/register').field(userInfo).attach('authImage', path.join(__dirname, '/garbage.png'));
   userToken = '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';
   userId = user.body._id;
