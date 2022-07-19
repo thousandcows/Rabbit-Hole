@@ -8,7 +8,6 @@ import { apiRouter } from './routers';
 import { errorHandler } from './middlewares';
 import { updateDatabase, client, fillDatabase } from './middlewares/redis';
 
-
 const app = express();
 
 app.use(cors());

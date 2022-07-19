@@ -67,7 +67,6 @@ describe('comment-router 댓글 API 테스트', () => {
     jest.setTimeout(30000);
     const res = await request(app).post(`/api/comments/${articleId}`).send(commentMock).set('Authorization', `Bearer ${token}`);
     commentId = res.body._id;
-    console.log(res.body);
     expect(res.statusCode).toBe(201);
   });
 
