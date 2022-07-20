@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares/login-required';
 import { projectService } from '../../services';
@@ -108,9 +108,7 @@ projectRouter.put('/:projectId/heart', loginRequired, async (req: any, res: Resp
     const userId = validation.isLogin(req.currentUserId);
     const { projectId } = req.params;
     const result = await projectService.likeProject(userId, projectId);
-    if (result) {
-      res.status(200).json({ result: 'success' });
-    }
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
