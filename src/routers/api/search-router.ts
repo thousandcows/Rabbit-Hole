@@ -55,9 +55,9 @@ searchRouter.get('/projects', async (req: any, res: Response, next: NextFunction
         page: Number(page),
         perPage: Number(perPage),
       };
-      const [articleList, totalPage] = await projectService
+      const [projectList, totalPage] = await projectService
         .searchProjectsByAuthor(authorSearchCondition);
-      res.status(200).json({ articleList, totalPage });
+      res.status(200).json({ projectList, totalPage });
     } else if (req.query.title) {
       const {
         title, filter, page, perPage,
