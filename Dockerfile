@@ -10,5 +10,5 @@ RUN pm2 install typescript
 RUN npm install -g ts-node
 COPY . .
 
-EXPOSE 4005
+EXPOSE 4000
 CMD ["pm2-runtime", "start", "ecosystem.config.js", "pm2", "logs"]
