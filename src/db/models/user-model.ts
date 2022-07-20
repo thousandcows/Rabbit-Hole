@@ -45,9 +45,9 @@ export class UserModel {
   async findAll(searchCondition: any)
   : Promise<[userList: UserData[] | null, totalPage: number | null]> {
     const { role, page, perPage } = searchCondition;
-    let total = await User.countDocuments({ role: role });
+    let total = await User.countDocuments({ role });
     let userList = await User
-      .find({ role: role })
+      .find({ role })
       .skip(perPage * (page - 1))
       .limit(perPage);
     const totalPage = Math.ceil(total / perPage);
