@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      script: 'npm start',
+      script: 'ts-node ./src/server.ts',
       name: 'app',
       autorestart: true,
       exec_mode: 'fork',

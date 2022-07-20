@@ -5,7 +5,9 @@ COPY package*.json ./
 
 RUN npm install
 RUN npm i -g pm2
-
+RUN npm i -g typescript
+RUN pm2 install typescript
+RUN npm install -g ts-node
 COPY . .
 
 EXPOSE 4005
