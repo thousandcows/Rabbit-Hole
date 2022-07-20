@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares/login-required';
 import { articleService } from '../../services';
@@ -87,10 +87,9 @@ articleRouter.put('/:articleId/heart', loginRequired, async (req: any, res: Resp
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;
-    const result = await articleService.likeArticle(userId, articleId);
-    if (result) {
-      res.status(200).json({ result: 'success' });
-    }
+    const { articleType } = req.body;
+    const result = await articleService.likeArticle(articleType, userId, articleId);
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }

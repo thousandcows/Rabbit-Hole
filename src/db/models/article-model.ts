@@ -124,14 +124,17 @@ export class ArticleModel {
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(articleId: string, update: any): Promise<ArticleData | null> {
+  async likeArticle(articleId: string, userId: any): Promise<ArticleData | null> {
+    let update: any = { $push: { likes: { userId } } };
+    const checkArticle = await Article.findById(articleId)
+    const likeArray: any = checkArticle?.likes;
+    for (let i = 0; i < likeArray.length; i += 1){
+      if (likeArray[i].userId === userId) {
+        update = { $pull: { likes: { userId } } };
+      }
+    }
     const option = { returnOriginal: false };
     const result = await Article.findByIdAndUpdate(articleId, update, option);
-    if (!result) {
-      const error = new Error('게시글 좋아요에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -229,21 +232,6 @@ export class ArticleModel {
     const update: any = { $push: { comments: { commentId } } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
-    return updatedResult;
-  }
-
-  // 11. 게시글 업로드 - redis
-  async findAll(): Promise<ArticleData[] | null> {
-    const articleList = await Article.find({});
-    return articleList;
-  }
-
-  // 12. 게시글 좋아요, 댓글 업데이트 - redis
-  async updateFromRedis(updateInfo: Partial<ArticleData>): Promise<ArticleData | null> {
-    const { _id, likes, comments } = updateInfo;
-    const update: any = { $set: { likes, comments } };
-    const option = { returnOriginal: false };
-    const updatedResult = await Article.findByIdAndUpdate(_id, update, option);
     return updatedResult;
   }
 }

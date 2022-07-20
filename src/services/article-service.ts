@@ -4,7 +4,6 @@ import {
 import { commentModel, CommentData } from '../db/models/comment-model';
 import { userService } from './user-service';
 import { articleValidation } from '../utils/validation-article';
-import { putLikes, uploadNewArticle, deleteArticleFromRedis } from '../middlewares/redis';
 
 interface searchCondition {
   articleType: string;
@@ -47,7 +46,6 @@ class ArticleService {
     if (articleInfo.carrots) {
       await userService.manageCarrots(userId, { $inc: { carrots: -articleInfo.carrots } });
     }
-    await uploadNewArticle(result);
     return result;
   }
 
@@ -100,17 +98,13 @@ class ArticleService {
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(articleId);
-    // redis에서 삭제
-    if (result) {
-      await deleteArticleFromRedis(result.articleType, articleId);
-    }
     return result;
   }
 
-  // 6. 게시글 좋아요 => bulk Insert용으로 바뀌어야 함
-  async likeArticle(userId: string, articleId: string): Promise<any | null> {
-    const updatedRedis = await putLikes('question', articleId, userId);
-    return updatedRedis;
+  // 6. 게시글 좋아요
+  async likeArticle(articleType: string, userId: string, articleId: string): Promise<any | null> {
+    const result = await articleModel.likeArticle(articleId, userId);
+    return result;
   }
 
   // 7. 게시글 검색 - 작성자
@@ -162,16 +156,6 @@ class ArticleService {
   async commentArticle(commentId: string, articleId: string): Promise<ArticleData | null> {
     const result = await this.articleModel.commentArticle(commentId, articleId);
     return result;
-  }
-
-  // 12. 데이터베이스 업데이트: 좋아요, 댓글
-  async updateDatabase(articleList: any): Promise<void> {
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const article of articleList) {
-      const { _id, likes, comments } = article;
-      const updateInfo = { _id, likes, comments };
-      await this.articleModel.updateFromRedis(updateInfo);
-    }
   }
 }
 
