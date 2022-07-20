@@ -9,8 +9,8 @@ async function adminRequired(req: any, res: Response, next: NextFunction) {
       next();
     } else {
       const error = new Error('관리자 권한이 없습니다.');
-      error.name = 'Forbidden';
-      throw error;
+      error.name = 'Unauthorized';
+      next(error);
     }
   }
 }
