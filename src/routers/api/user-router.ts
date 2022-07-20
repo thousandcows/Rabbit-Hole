@@ -90,6 +90,19 @@ userRouter.get('/:githubEmail', loginRequired, async (req: any, res: Response, n
   }
 });
 
+// userId로 회원 조회
+userRouter.get('/:userId', loginRequired, async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.params;
+
+    const userData = await userService.getUserById(userId);
+
+    res.status(200).json(userData);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 회원정보 수정
 userRouter.put('/', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
