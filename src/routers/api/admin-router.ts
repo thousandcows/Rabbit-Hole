@@ -13,8 +13,9 @@ const adminRouter = Router();
 // 1-1. 전체 유저 조회 기능
 adminRouter.get('/users', async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { page, perPage } = req.query;
+    const { role, page, perPage } = req.query;
     const searchCondition = {
+      role: role,
       page: Number(page),
       perPage: Number(perPage),
     };
