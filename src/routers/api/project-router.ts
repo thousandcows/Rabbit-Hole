@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares/login-required';
 import { projectService } from '../../services';
@@ -9,7 +9,7 @@ import { upload } from '../../utils/multer-s3';
 const projectRouter = Router();
 
 // 1. 새 게시글 작성
-projectRouter.post('/', loginRequired, upload.single('thumbnail'), async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.post('/', loginRequired, upload.single('thumbnail'), async (req: any, res: Response, next: NextFunction) => {
   try {
     const image: any = req.file;
     if (image) {
@@ -34,7 +34,7 @@ projectRouter.post('/', loginRequired, upload.single('thumbnail'), async (req: R
   }
 });
 // 2. 전체 게시글 조회
-projectRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
   try {
     const {
       filter, page, perPage,
@@ -52,7 +52,7 @@ projectRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 // 3. 게시글 조회
-projectRouter.get('/:projectId', async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
     const { page, perPage } = req.query;
@@ -67,15 +67,24 @@ projectRouter.get('/:projectId', async (req: Request, res: Response, next: NextF
   }
 });
 // 4. 게시글 제목, 내용 수정
-projectRouter.put('/:projectId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.put('/:projectId', loginRequired, upload.single('thumbnail'), async (req: any, res: Response, next: NextFunction) => {
   try {
-    const userId = validation.isLogin(req.currentUserId);
+    const image: any = req.file;
     const { projectId } = req.params;
+    let thumbnail: string = '';
+    if (image) {
+      thumbnail = image.location;
+    } else {
+      const project = await projectService.findProjectOne(projectId);
+      if (project) thumbnail = project.thumbnail;
+    }
+    if (req.body.tags) req.body.tags = JSON.parse(req.body.tags);
+    const userId = validation.isLogin(req.currentUserId);
     const {
-      title, shortDescription, description, thumbnail, tags,
+      author, title, shortDescription, description, tags,
     } = req.body;
     const updatedArticle = await projectService.updateProject(userId, {
-      projectId, title, shortDescription, description, thumbnail, tags,
+      author, projectId, title, shortDescription, description, thumbnail, tags,
     });
     res.status(200).json(updatedArticle);
   } catch (error) {
@@ -83,7 +92,7 @@ projectRouter.put('/:projectId', loginRequired, async (req: Request, res: Respon
   }
 });
 // 5. 게시글 삭제
-projectRouter.delete('/:projectId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.delete('/:projectId', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { projectId } = req.params;
@@ -94,7 +103,7 @@ projectRouter.delete('/:projectId', loginRequired, async (req: Request, res: Res
   }
 });
 // 6. 게시글 좋아요
-projectRouter.put('/:projectId/heart', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+projectRouter.put('/:projectId/heart', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { projectId } = req.params;

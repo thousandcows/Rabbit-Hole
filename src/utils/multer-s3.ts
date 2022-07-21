@@ -25,7 +25,7 @@ const storage = multerS3({
   contentType: multerS3.AUTO_CONTENT_TYPE,
 });
 
-const fileFilter = (req: Request, file: any, cb: any) => {
+const fileFilter = (req: any, file: any, cb: any) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/gif' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
@@ -38,7 +38,7 @@ const fileFilter = (req: Request, file: any, cb: any) => {
 const upload = multer({
   storage,
   limits: {
-    fileSize: 1024 * 1024,
+    fileSize: 1024 * 1024 * 10,
   },
   fileFilter,
 });

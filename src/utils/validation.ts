@@ -19,6 +19,12 @@ class Validation {
       error.name = 'NotFound';
       throw error;
     }
+
+    if (name.length > 10) {
+      const error = new Error('이름을 10자 이내로 입력해 주세요.');
+      error.name = 'BadRequest';
+      throw error;
+    }
   }
 
   addComment(commentInfo: CommentInfo): void {

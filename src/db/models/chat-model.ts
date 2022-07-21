@@ -3,18 +3,27 @@ import { Types, Document } from 'mongoose';
 import { Chat } from '../index';
 
 interface ChatInfo {
-  roomType: string;
-  username: string;
-  message: string;
-  time?: string;
-  image: string;
+  senderId: string,
+  profile: string,
+  name: string,
+  track: string,
+  trackCardinalNumber: number,
+  chat: string,
+  time: string,
+  image: string,
+  roomType: string,
 }
+
 interface ChatData extends Document<Types.ObjectId> {
-  roomType: string;
-  username: string;
-  message: string;
-  time?: string;
-  image: string;
+  senderId: string,
+  profile: string,
+  name: string,
+  track: string,
+  trackCardinalNumber: number,
+  chat: string,
+  time?: string,
+  image: string,
+  roomType: string,
 }
 export class ChatModel {
   // 1. 새 메시지 추가

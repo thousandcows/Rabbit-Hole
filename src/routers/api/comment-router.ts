@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares';
 import { commentService } from '../../services';
@@ -8,7 +8,7 @@ import { validation } from '../../utils/validation';
 const commentRouter = Router();
 
 // 댓글 조회
-commentRouter.get('/:articleId', loginRequired, async (req: Request, res: Response, next:NextFunction) => {
+commentRouter.get('/:articleId', async (req: any, res: Response, next:NextFunction) => {
   try {
     const { articleId } = req.params;
     const { page, perPage } = req.query;
@@ -23,13 +23,13 @@ commentRouter.get('/:articleId', loginRequired, async (req: Request, res: Respon
 });
 
 // 댓글 작성
-commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+commentRouter.post('/:articleId', loginRequired, async (req:any, res:Response, next:NextFunction) => {
   try {
     const { articleId } = req.params;
     const commentInfo = req.body;
 
     const userId = validation.isLogin(req.currentUserId);
-    
+
     const newComment = await commentService.addComment(userId, articleId, commentInfo);
     res.status(201).json(newComment);
   } catch (error) {
@@ -38,7 +38,7 @@ commentRouter.post('/:articleId', loginRequired, async (req:Request, res:Respons
 });
 
 // 댓글 수정
-commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response, next:NextFunction) => {
+commentRouter.put('/:commentId', loginRequired, async (req:any, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
 
@@ -56,7 +56,7 @@ commentRouter.put('/:commentId', loginRequired, async (req:Request, res:Response
 commentRouter.put(
   '/:commentId/adoption',
   loginRequired,
-  async (req:Request, res:Response, next:NextFunction) => {
+  async (req:any, res:Response, next:NextFunction) => {
     try {
       const userId = validation.isLogin(req.currentUserId);
 
@@ -72,7 +72,7 @@ commentRouter.put(
 );
 
 // 댓글 하나 삭제
-commentRouter.delete('/:commentId', loginRequired, async (req: Request, res:Response, next:NextFunction) => {
+commentRouter.delete('/:commentId', loginRequired, async (req: any, res:Response, next:NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { commentId } = req.params;
@@ -88,14 +88,14 @@ commentRouter.delete('/:commentId', loginRequired, async (req: Request, res:Resp
 commentRouter.put(
   '/:commentId/heart',
   loginRequired,
-  async (req:Request, res:Response, next:NextFunction) => {
+  async (req:any, res:Response, next:NextFunction) => {
     try {
       const userId = validation.isLogin(req.currentUserId);
 
       const { commentId } = req.params;
 
-      const updatedComment = await commentService.likeComment(userId, commentId);
-      res.status(200).json(updatedComment);
+      const result = await commentService.likeComment(userId, commentId);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }

@@ -34,6 +34,7 @@ interface TagInfo {
   }
 
   interface updateInfo {
+      author:string;
       projectId: string;
       title: string;
       shortDescription: string;
@@ -50,11 +51,10 @@ class ProjectService {
   }
 
   // 1. 새 게시글 작성
-  async createProject(userId: string, projectInfo: ProjectInfo): Promise<ProjectData> {
+  async createProject(userId: string, projectInfo: ProjectInfo): Promise<ProjectData | any> {
     // 기본 validation
     await projectValidation.createProject(projectInfo);
     const result = await this.projectModel.createProject(projectInfo);
-
     return result;
   }
 
@@ -108,13 +108,13 @@ class ProjectService {
     // 삭제할 댓글 전용 collection으로 이동
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(projectId);
+    // redis에서 삭제
     return result;
   }
 
   // 6. 게시글 좋아요
-  async likeProject(userId: string, projectId: string): Promise<ProjectData | null> {
-    const update = { $push: { likes: userId } };
-    const result = await this.projectModel.likeProject(projectId, update);
+  async likeProject(userId: string, projectId: string): Promise<ProjectData | any> {
+    const result = await this.projectModel.likeProject(projectId, userId);
     return result;
   }
 
@@ -167,6 +167,12 @@ class ProjectService {
   async commentProject(commentId: string, projectId: string): Promise<ProjectData | null> {
     const updateInfo = { commentId, projectId };
     const result = await this.projectModel.commentProject(updateInfo);
+    return result;
+  }
+
+  // 12. 프로젝트 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ProjectData | null> {
+    const result = await this.projectModel.pullComment(commentId, articleId);
     return result;
   }
 }

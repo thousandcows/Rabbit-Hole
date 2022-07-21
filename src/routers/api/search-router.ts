@@ -6,7 +6,7 @@ import { articleService, projectService } from '../../services';
 const searchRouter = Router();
 
 // 1. 게시글 검색
-searchRouter.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
+searchRouter.get('/articles', async (req: any, res: Response, next: NextFunction) => {
   try {
     if (req.query.author && req.query.articleType) {
       const {
@@ -43,7 +43,7 @@ searchRouter.get('/articles', async (req: Request, res: Response, next: NextFunc
 });
 
 // 1. 프로젝트 게시글 검색
-searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunction) => {
+searchRouter.get('/projects', async (req: any, res: Response, next: NextFunction) => {
   try {
     if (req.query.author) {
       const {
@@ -55,9 +55,9 @@ searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunc
         page: Number(page),
         perPage: Number(perPage),
       };
-      const [articleList, totalPage] = await projectService
+      const [projectList, totalPage] = await projectService
         .searchProjectsByAuthor(authorSearchCondition);
-      res.status(200).json({ articleList, totalPage });
+      res.status(200).json({ projectList, totalPage });
     } else if (req.query.title) {
       const {
         title, filter, page, perPage,
@@ -68,9 +68,9 @@ searchRouter.get('/projects', async (req: Request, res: Response, next: NextFunc
         page: Number(page),
         perPage: Number(perPage),
       };
-      const [articleList, totalPage] = await projectService
+      const [projectList, totalPage] = await projectService
         .searchProjectsByTitle(titleSearchCondition);
-      res.status(200).json({ articleList, totalPage });
+      res.status(200).json({ projectList, totalPage });
     }
   } catch (error) {
     next(error);

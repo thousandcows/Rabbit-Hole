@@ -24,20 +24,19 @@ class CommentService {
     userId: string,
     articleId: string,
     commentInfo: CommentInfo,
-  ): Promise<CommentData> {
+  ): Promise<CommentData | any> {
     validation.addComment(commentInfo);
+
     const user = await userService.getUserById(userId);
     const createCommentInfo = {
       ...commentInfo, author: user.name, authorId: userId, articleId,
     };
 
     const createdNewComments = await this.commentModel.create(createCommentInfo);
-
-    const { _id, commentType } = createdNewComments;
-    if (commentType === 'project') {
-      await projectService.commentProject(String(_id), articleId);
+    if (createdNewComments?.commentType === 'project') {
+      await projectService.commentProject(String(createdNewComments?._id), articleId);
     } else {
-      await articleService.commentArticle(String(_id), articleId);
+      await articleService.commentArticle(String(createdNewComments?._id), articleId);
     }
     return createdNewComments;
   }
@@ -63,7 +62,7 @@ class CommentService {
     userId: string,
     commentId: string,
     update: Partial<CommentInfo>,
-  ): Promise<CommentData> {
+  ): Promise<CommentData | null> {
     const comment = await this.commentModel.findById(commentId);
     if (comment.authorId !== userId) {
       const error = new Error('본인이 작성한 댓글만 수정할 수 있습니다.');
@@ -79,7 +78,7 @@ class CommentService {
     userId: string,
     commentId: string,
     update: Partial<CommentInfo>,
-  ): Promise<CommentData> {
+  ): Promise<CommentData | null> {
     // 이 댓글
     const comment = await this.commentModel.findById(commentId);
     const article = await articleService.findArticleOne(comment.articleId);
@@ -111,7 +110,7 @@ class CommentService {
 
     // 당근을 답변자에게 전달
 
-    const commenterId = updatedComment.authorId;
+    const commenterId = updatedComment?.authorId;
     if (commenterId) {
       const carrotUpdate = { $inc: { carrots: article?.carrots } };
       await userService.manageCarrots(commenterId, carrotUpdate);
@@ -122,13 +121,13 @@ class CommentService {
   // 게시글 삭제할때 댓글도 같이 삭제
   async deleteCommentsByArticleId(
     articleId: string,
-  ): Promise<CommentData[]> {
+  ): Promise<CommentData[] | null> {
     const deletedComments = await this.commentModel.deleteByArticleId(articleId);
     return deletedComments;
   }
 
   // 댓글 하나 삭제
-  async deleteCommentsById(userId:string, commentId: string): Promise<CommentData> {
+  async deleteCommentsById(userId:string, commentId: string): Promise<CommentData | null> {
     const comment = await this.commentModel.findById(commentId);
     if (comment.authorId !== userId) {
       const error = new Error('본인이 작성한 댓글만 삭제할 수 있습니다.');
@@ -136,14 +135,20 @@ class CommentService {
       throw error;
     }
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
+    // 해당 게시글 또는 프로젝트에 반영
+    const commentType = deletedComment?.commentType;
+    if (commentType === 'project') {
+      await projectService.pullComment(commentId, String(deletedComment?.articleId));
+    } else {
+      await articleService.pullComment(commentId, String(deletedComment?.articleId));
+    }
     return deletedComment;
   }
 
   // 댓글 좋아요
-  async likeComment(userId:string, commentId: string): Promise<CommentData> {
-    const update = { $push: { likes: userId } };
-    const updatedComment = await this.commentModel.likeComment(commentId, update);
-    return updatedComment;
+  async likeComment(userId:string, commentId: string): Promise<CommentData | any> {
+    const result = await this.commentModel.likeComment(commentId, userId);
+    return result;
   }
 
   // 전체 댓글 조회
@@ -157,7 +162,7 @@ class CommentService {
   }
 
   // 댓글 삭제 - 관리자
-  async deleteCommentForAdmin(commentId: string): Promise<CommentData> {
+  async deleteCommentForAdmin(commentId: string): Promise<CommentData | null> {
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
     return deletedComment;
   }

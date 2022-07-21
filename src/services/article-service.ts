@@ -37,7 +37,7 @@ class ArticleService {
   }
 
   // 1. 새 게시글 작성
-  async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData> {
+  async createArticle(userId: string, articleInfo: ArticleInfo): Promise<ArticleData | any> {
     // 기본 validation
     await articleValidation.createArticle(articleInfo);
     const result = await this.articleModel.createArticle(articleInfo);
@@ -102,9 +102,8 @@ class ArticleService {
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(userId: string, articleId: string): Promise<ArticleData | null> {
-    const update: any = { $push: { likes: { userId } } };
-    const result = await this.articleModel.likeArticle(articleId, update);
+  async likeArticle(articleType: string, userId: string, articleId: string): Promise<any | null> {
+    const result = await articleModel.likeArticle(articleId, userId);
     return result;
   }
 
@@ -156,6 +155,12 @@ class ArticleService {
   // 11. 게시글 댓글 추가
   async commentArticle(commentId: string, articleId: string): Promise<ArticleData | null> {
     const result = await this.articleModel.commentArticle(commentId, articleId);
+    return result;
+  }
+
+  // 12. 게시글 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const result = await this.articleModel.pullComment(commentId, articleId);
     return result;
   }
 }

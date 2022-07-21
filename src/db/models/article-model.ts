@@ -47,11 +47,6 @@ export class ArticleModel {
   // 1. 새 게시글 작성
   async createArticle(articleInfo: ArticleInfo): Promise<ArticleData> {
     const result = await Article.create(articleInfo);
-    if (!result) {
-      const error = new Error('게시글 작성에 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -86,11 +81,6 @@ export class ArticleModel {
     const update = { $inc: { views: 1 } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('게시글 조회에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -103,11 +93,6 @@ export class ArticleModel {
     const update = { $set: { title, content, tags } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('게시글 업데이트에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -115,23 +100,21 @@ export class ArticleModel {
   async deleteArticle(articleId: string): Promise<ArticleData | null> {
     // 게시글 삭제
     const result = await Article.findByIdAndDelete(articleId);
-    if (!result) {
-      const error = new Error('게시글 삭제에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
   // 6. 게시글 좋아요
-  async likeArticle(articleId: string, update: any): Promise<ArticleData | null> {
+  async likeArticle(articleId: string, userId: any): Promise<ArticleData | null> {
+    let update: any = { $push: { likes: { userId } } };
+    const checkArticle = await Article.findById(articleId)
+    const likeArray: any = checkArticle?.likes;
+    for (let i = 0; i < likeArray.length; i += 1){
+      if (likeArray[i].userId === userId) {
+        update = { $pull: { likes: { userId } } };
+      }
+    }
     const option = { returnOriginal: false };
     const result = await Article.findByIdAndUpdate(articleId, update, option);
-    if (!result) {
-      const error = new Error('게시글 좋아요에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -151,7 +134,7 @@ export class ArticleModel {
 
     let total = await Article.countDocuments({ articleType, author: new RegExp(author) });
     let articleList = await Article
-      .find({ articleType, author: new RegExp(author) })
+      .find({ articleType, author: new RegExp(author, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
@@ -180,7 +163,7 @@ export class ArticleModel {
 
     let total = await Article.countDocuments({ articleType, title: new RegExp(title) });
     let articleList = await Article
-      .find({ articleType, title: new RegExp(title) })
+      .find({ articleType, title: new RegExp(title, 'i') })
       .sort(sortFilter)
       .skip(perPage * (page - 1))
       .limit(perPage);
@@ -228,7 +211,15 @@ export class ArticleModel {
     const id = { _id: articleId };
     const update: any = { $push: { comments: { commentId } } };
     const option = { returnOriginal: false };
-    console.log(typeof update);
+    const updatedResult = await Article.findByIdAndUpdate(id, update, option);
+    return updatedResult;
+  }
+
+  // 11. 게시글 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const id = { _id: articleId };
+    const update: any = { $pull: { comments: { commentId } } };
+    const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }

@@ -2,10 +2,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-undef */
-import fs from 'fs';
 import path from 'path';
 import request from 'supertest';
 import * as db from './utils/db';
+import { userService } from '../services';
 import { app } from '../server';
 
 let token: string;
@@ -25,13 +25,20 @@ beforeAll(async () => {
   const result = await request(app).post('/api/users/register').field(my).attach('authImage', path.join(__dirname, '/garbage.png'));
   token = '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';
 });
-afterAll(() => db.close());
 
-describe('Report Function', () => {
-  test.only('이미지 업로드', async () => {
+describe('auth-router 깃허브 API 테스트', () => {
+  test('깃허브 로그인 url', async () => {
     jest.setTimeout(30000);
-    const res = await request(app).post('/api/images').attach('image', path.join(__dirname, '/garbage.png')).set('Authorization', `Bearer ${token}`);
+    const res = await request(app).get('/api/auth/github/login');
+    expect(res.headers.location).toContain('https://github.com/login/oauth/authorize');
+  });
+  test('깃허브 로그인 callback url', async () => {
+    jest.setTimeout(30000);
+    const res = await request(app).get('/api/auth/github/login');
 
-    expect(res.statusCode).toBe(201);
+    const callbackUrl = res.headers.location;
+    console.log('콜백', callbackUrl);
+    const call = await request(app).get(callbackUrl);
+    console.log(call.body);
   });
 });

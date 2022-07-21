@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares/login-required';
 import { articleService } from '../../services';
@@ -8,7 +8,7 @@ import { validation } from '../../utils/validation';
 const articleRouter = Router();
 
 // 1. 새 게시글 작성
-articleRouter.post('/', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.post('/', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const {
@@ -24,7 +24,7 @@ articleRouter.post('/', loginRequired, async (req: Request, res: Response, next:
   }
 });
 // 2. 전체 게시글 조회
-articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
   try {
     const {
       articleType, filter, page, perPage,
@@ -43,7 +43,7 @@ articleRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 // 3. 게시글 조회
-articleRouter.get('/:articleId', async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.get('/:articleId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
     const { page, perPage } = req.query;
@@ -58,7 +58,7 @@ articleRouter.get('/:articleId', async (req: Request, res: Response, next: NextF
   }
 });
 // 4. 게시글 제목, 내용 수정
-articleRouter.put('/:articleId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.put('/:articleId', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;
@@ -72,7 +72,7 @@ articleRouter.put('/:articleId', loginRequired, async (req: Request, res: Respon
   }
 });
 // 5. 게시글 삭제
-articleRouter.delete('/:articleId', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.delete('/:articleId', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;
@@ -83,11 +83,12 @@ articleRouter.delete('/:articleId', loginRequired, async (req: Request, res: Res
   }
 });
 // 6. 게시글 좋아요
-articleRouter.put('/:articleId/heart', loginRequired, async (req: Request, res: Response, next: NextFunction) => {
+articleRouter.put('/:articleId/heart', loginRequired, async (req: any, res: Response, next: NextFunction) => {
   try {
     const userId = validation.isLogin(req.currentUserId);
     const { articleId } = req.params;
-    const result = await articleService.likeArticle(userId, articleId);
+    const { articleType } = req.body;
+    const result = await articleService.likeArticle(articleType, userId, articleId);
     res.status(200).json(result);
   } catch (error) {
     next(error);

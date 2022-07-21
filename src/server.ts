@@ -22,10 +22,9 @@ app.use(morgan(':method :url :status :response-time ms - :res[content-length] :d
 app.use('/api', apiRouter);
 app.use(errorHandler);
 if (process.env.NODE_ENV !== 'test') {
+  // 서버 연결
   const server = app.listen(PORT, () => console.log(`server is running ${PORT}`));
   webSocket(server);
 }
-
-// socket
 
 export { app };

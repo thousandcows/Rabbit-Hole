@@ -54,6 +54,7 @@ export class CommentModel {
     return comments;
   }
 
+  // 댓글 id로 조회
   async findById(commentId: string): Promise<CommentData> {
     const comment = await Comment.findOne({ _id: commentId });
     if (!comment) {
@@ -65,65 +66,44 @@ export class CommentModel {
   }
 
   // 댓글 작성
-  async create(commentInfo: CommentInfo): Promise<CommentData> {
+  async create(commentInfo: CommentInfo): Promise<CommentData | null> {
     const createdNewComment = await Comment.create(commentInfo);
-
-    if (!createdNewComment) {
-      const error = new Error('댓글 작성을 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
-
     return createdNewComment;
   }
 
   // 댓글 수정, 채택
-  async update(commentId: string, update: Partial<CommentInfo>): Promise<CommentData> {
+  async update(commentId: string, update: Partial<CommentInfo>): Promise<CommentData | null> {
     const filter = { _id: commentId };
     const option = { returnOriginal: false };
-
     const updatedComment = await Comment.findOneAndUpdate(filter, update, option);
-    if (!updatedComment) {
-      const error = new Error('댓글 수정을 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
-
     return updatedComment;
   }
 
   // 게시글 삭제할때 댓글도 같이 삭제
-  async deleteByArticleId(articleId: string): Promise<CommentData[]> {
+  async deleteByArticleId(articleId: string): Promise<CommentData[] | null> {
     const deletedComments = await Comment.find({ _id: articleId });
     await Comment.deleteMany({ _id: articleId });
-    if (!deletedComments) {
-      const error = new Error('게시글에 작성된 댓글을 삭제하지 못했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return deletedComments;
   }
 
   // 댓글 하나 삭제
-  async deleteByCommentId(commentId: string): Promise<CommentData> {
+  async deleteByCommentId(commentId: string): Promise<CommentData | null> {
     const deletedComment = await Comment.findOneAndDelete({ _id: commentId });
-    if (!deletedComment) {
-      const error = new Error('댓글을 삭제하지 못했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return deletedComment;
   }
 
   // 댓글 좋아요
-  async likeComment(commentId: string, update: any): Promise<CommentData> {
+  async likeComment(commentId: string, userId: any): Promise<CommentData | null> {
+    let update: any = { $push: { likes: { userId } } };
+    const checkComment = await Comment.findById(commentId)
+    const likeArray: any = checkComment?.likes;
+    for (let i = 0; i < likeArray.length; i += 1){
+      if (likeArray[i].userId === userId) {
+        update = { $pull: { likes: { userId } } };
+      }
+    }
     const option = { returnOriginal: false };
     const updatedComment = await Comment.findByIdAndUpdate(commentId, update, option);
-    if (!updatedComment) {
-      const error = new Error('좋아요에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedComment;
   }
 
