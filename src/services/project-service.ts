@@ -3,7 +3,6 @@ import {
 } from '../db/models/project-model';
 import { commentModel, CommentData } from '../db/models/comment-model';
 import { projectValidation } from '../utils/validation-project';
-import { uploadNewProject, putLikes, deleteProjectFromRedis } from '../middlewares/redis';
 
 interface TagInfo {
     [key: string]: string
@@ -56,7 +55,6 @@ class ProjectService {
     // 기본 validation
     await projectValidation.createProject(projectInfo);
     const result = await this.projectModel.createProject(projectInfo);
-    await uploadNewProject(result);
     return result;
   }
 
@@ -111,16 +109,13 @@ class ProjectService {
     // 관련 댓글 삭제
     await commentModel.deleteByArticleId(projectId);
     // redis에서 삭제
-    if (result) {
-      await deleteProjectFromRedis(projectId);
-    }
     return result;
   }
 
   // 6. 게시글 좋아요
   async likeProject(userId: string, projectId: string): Promise<ProjectData | any> {
-    const updatedRedis = await putLikes('project', projectId, userId);
-    return updatedRedis;
+    const result = await this.projectModel.likeProject(projectId, userId);
+    return result;
   }
 
   // 7. 게시글 검색 - 작성자
@@ -175,14 +170,10 @@ class ProjectService {
     return result;
   }
 
-  // 12. 데이터베이스 업데이트: 좋아요, 댓글
-  async updateDatabase(projectList: any): Promise<void> {
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const project of projectList) {
-      const { _id, likes, comments } = project;
-      const updateInfo = { _id, likes, comments };
-      await this.projectModel.updateFromRedis(updateInfo);
-    }
+  // 12. 프로젝트 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ProjectData | null> {
+    const result = await this.projectModel.pullComment(commentId, articleId);
+    return result;
   }
 }
 

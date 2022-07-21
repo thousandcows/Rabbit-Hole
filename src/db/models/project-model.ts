@@ -44,11 +44,6 @@ export class ProjectModel {
   // 1. 새 게시글 작성
   async createProject(projectInfo: ProjectInfo): Promise<ProjectData> {
     const result = await Project.create(projectInfo);
-    if (!result) {
-      const error = new Error('게시글 작성에 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -81,11 +76,6 @@ export class ProjectModel {
     const update = { $inc: { views: 1 } };
     const option = { returnOriginal: false };
     const updatedResult = await Project.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('프로젝트 조회에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -102,11 +92,6 @@ export class ProjectModel {
     };
     const option = { returnOriginal: false };
     const updatedResult = await Project.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('게시글 업데이트에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -114,23 +99,21 @@ export class ProjectModel {
   async deleteProject(projectId: string): Promise<ProjectData | null> {
     // 게시글 삭제
     const result = await Project.findByIdAndDelete(projectId);
-    if (!result) {
-      const error = new Error('게시글 삭제에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
   // 6. 게시글 좋아요
-  async likeProject(projectId: string, update: any): Promise<ProjectData | null> {
+  async likeProject(projectId: string, userId: string): Promise<ProjectData | null> {
+    let update: any = { $push: { likes: { userId } } };
+    const checkProject = await Project.findById(projectId);
+    const likeArray: any = checkProject?.likes;
+    for (let i = 0; i < likeArray.length; i += 1){
+      if (likeArray[i].userId === userId) {
+        update = { $pull: { likes: { userId } } };
+      }
+    }
     const option = { returnOriginal: false };
     const result = await Project.findByIdAndUpdate(projectId, update, option);
-    if (!result) {
-      const error = new Error('게시글 좋아요에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -222,18 +205,12 @@ export class ProjectModel {
     return updatedResult;
   }
 
-  // 10. 프로젝트 전체 조회 - redis
-  async findAll(): Promise<ProjectData[] | null > {
-    const projectList = await Project.find({});
-    return projectList;
-  }
-
-  // 11. 프로젝트 좋아요, 댓글 업데이트 - redis
-  async updateFromRedis(updateInfo: Partial<ProjectData>): Promise<ProjectData | null> {
-    const { _id, likes, comments } = updateInfo;
-    const update: any = { $set: { likes, comments } };
+  // 11. 프로젝트 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ProjectData | null> {
+    const id = { _id: articleId };
+    const update: any = { $pull: { comments: { commentId } } };
     const option = { returnOriginal: false };
-    const updatedResult = await Project.findByIdAndUpdate(_id, update, option);
+    const updatedResult = await Project.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
 }

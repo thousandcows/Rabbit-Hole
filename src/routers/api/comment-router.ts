@@ -1,5 +1,5 @@
 import {
-  Router, Request, Response, NextFunction,
+  Router, Response, NextFunction,
 } from 'express';
 import { loginRequired } from '../../middlewares';
 import { commentService } from '../../services';
@@ -95,9 +95,7 @@ commentRouter.put(
       const { commentId } = req.params;
 
       const result = await commentService.likeComment(userId, commentId);
-      if (result) {
-        res.status(200).json({ result: 'success' });
-      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
