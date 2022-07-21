@@ -28,6 +28,7 @@ function webSocket(server: http.Server) {
     cors: {
       origin: process.env.TEST_URL,
       methods: ['GET', 'POST'],
+      credentials: true
     },
   });
   const connectedClientList: clientList = {};

@@ -8,7 +8,15 @@ import { errorHandler } from './middlewares';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+	origin : [
+	  "http://localhost:5001",
+	  "http://34.64.196.203:5001",
+          "http://10.178.0.56:5001",
+	  "http://kdt-sw2-seoul-team08.elicecoding.com"
+	],
+	credentials: true
+}));
 
 // Content-Type: application/json 형태의 데이터를 인식하고 핸들링할 수 있게 함.
 app.use(express.json());
