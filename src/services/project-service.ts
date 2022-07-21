@@ -169,6 +169,12 @@ class ProjectService {
     const result = await this.projectModel.commentProject(updateInfo);
     return result;
   }
+
+  // 12. 프로젝트 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ProjectData | null> {
+    const result = await this.projectModel.pullComment(commentId, articleId);
+    return result;
+  }
 }
 
 export const projectService = new ProjectService(projectModel);

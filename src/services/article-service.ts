@@ -157,6 +157,12 @@ class ArticleService {
     const result = await this.articleModel.commentArticle(commentId, articleId);
     return result;
   }
+
+  // 12. 게시글 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ArticleData | null> {
+    const result = await this.articleModel.pullComment(commentId, articleId);
+    return result;
+  }
 }
 
 export const articleService = new ArticleService(articleModel);

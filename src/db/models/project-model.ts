@@ -204,6 +204,15 @@ export class ProjectModel {
     const updatedResult = await Project.findByIdAndUpdate(id, update, option);
     return updatedResult;
   }
+
+  // 11. 프로젝트 댓글 삭제
+  async pullComment(commentId: string, articleId: string): Promise<ProjectData | null> {
+    const id = { _id: articleId };
+    const update: any = { $pull: { comments: { commentId } } };
+    const option = { returnOriginal: false };
+    const updatedResult = await Project.findByIdAndUpdate(id, update, option);
+    return updatedResult;
+  }
 }
 
 export const projectModel = new ProjectModel();

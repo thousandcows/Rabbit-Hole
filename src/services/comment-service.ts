@@ -135,6 +135,13 @@ class CommentService {
       throw error;
     }
     const deletedComment = await this.commentModel.deleteByCommentId(commentId);
+    // 해당 게시글 또는 프로젝트에 반영
+    const commentType = deletedComment?.commentType;
+    if (commentType === 'project') {
+      await projectService.pullComment(commentId, String(deletedComment?.articleId));
+    } else {
+      await articleService.pullComment(commentId, String(deletedComment?.articleId));
+    }
     return deletedComment;
   }
 

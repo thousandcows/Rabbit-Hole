@@ -34,7 +34,7 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
     // nodeMailer 옵션
     const mailOptions = {
       from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
-      to: updatedUser.githubEmail,
+      to: updatedUser?.githubEmail,
       subject: '회원가입이 완료되었습니다',
       text: '축하합니다. 회원가입이 완료되었습니다.',
     };

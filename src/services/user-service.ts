@@ -43,17 +43,17 @@ class UserService {
     return updatedUser;
   }
 
-  async deleteUser(_id: string): Promise<UserData> {
+  async deleteUser(_id: string): Promise<UserData | null> {
     const deletedUser = await this.userModel.deleteById(_id);
     return deletedUser;
   }
 
-  async addAuthImage(imageInfo: ImageInfo): Promise<any> {
+  async addAuthImage(imageInfo: ImageInfo): Promise<any | null> {
     const imageUrl = await uploadFile(imageInfo);
     return imageUrl;
   }
 
-  async manageCarrots(_id: string, update: any): Promise<UserData> {
+  async manageCarrots(_id: string, update: any): Promise<UserData | null> {
     const updatedUser = await this.userModel.manageCarrots(_id, update);
     return updatedUser;
   }
@@ -66,7 +66,7 @@ class UserService {
   }
 
   // 유저 승인 - 관리자
-  async authorizeUser(_id: string, update: string): Promise<UserData> {
+  async authorizeUser(_id: string, update: string): Promise<UserData | null> {
     const updatedUser = await this.userModel.authorizeUser(_id, update);
     return updatedUser;
   }
