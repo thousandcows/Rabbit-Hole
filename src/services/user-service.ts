@@ -50,11 +50,6 @@ class UserService {
 
   async addAuthImage(imageInfo: ImageInfo): Promise<any> {
     const imageUrl = await uploadFile(imageInfo);
-    if (!imageUrl) {
-      const error = new Error('이미지 업로드에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return imageUrl;
   }
 

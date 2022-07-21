@@ -47,11 +47,6 @@ export class ArticleModel {
   // 1. 새 게시글 작성
   async createArticle(articleInfo: ArticleInfo): Promise<ArticleData> {
     const result = await Article.create(articleInfo);
-    if (!result) {
-      const error = new Error('게시글 작성에 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 
@@ -86,11 +81,6 @@ export class ArticleModel {
     const update = { $inc: { views: 1 } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('게시글 조회에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -103,11 +93,6 @@ export class ArticleModel {
     const update = { $set: { title, content, tags } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
-    if (!updatedResult) {
-      const error = new Error('게시글 업데이트에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedResult;
   }
 
@@ -115,11 +100,6 @@ export class ArticleModel {
   async deleteArticle(articleId: string): Promise<ArticleData | null> {
     // 게시글 삭제
     const result = await Article.findByIdAndDelete(articleId);
-    if (!result) {
-      const error = new Error('게시글 삭제에 실패했습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return result;
   }
 

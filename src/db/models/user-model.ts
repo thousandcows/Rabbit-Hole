@@ -85,49 +85,29 @@ export class UserModel {
     return updatedUser;
   }
 
-  async deleteByEmail(githubEmail: string): Promise<UserData> {
+  async deleteByEmail(githubEmail: string): Promise<UserData | null> {
     const deletedUser = await User.findOneAndDelete({ githubEmail });
-    if (!deletedUser) {
-      const error = new Error(`${githubEmail} 사용자의 삭제에 실패하였습니다`);
-      error.name = 'NotFound';
-      throw error;
-    }
     return deletedUser;
   }
 
-  async deleteById(_id: string): Promise<UserData> {
+  async deleteById(_id: string): Promise<UserData | null> {
     const deletedUser = await User.findOneAndDelete({ _id });
-    if (!deletedUser) {
-      const error = new Error('사용자의 삭제에 실패하였습니다');
-      error.name = 'NotFound';
-      throw error;
-    }
     return deletedUser;
   }
 
-  async manageCarrots(_id: string, update: any): Promise<UserData> {
+  async manageCarrots(_id: string, update: any): Promise<UserData | null> {
     const filter = { _id };
     const option = { returnOriginal: false };
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
-    if (!updatedUser) {
-      const error = new Error('업데이트에 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedUser;
   }
 
   // 유저 승인 - 관리자
-  async authorizeUser(_id: string, role: string): Promise<UserData> {
+  async authorizeUser(_id: string, role: string): Promise<UserData | null> {
     const filter = { _id };
     const option = { returnOriginal: false };
     const update = { $set: { role } };
     const updatedUser = await User.findOneAndUpdate(filter, update, option);
-    if (!updatedUser) {
-      const error = new Error('업데이트에 실패하였습니다.');
-      error.name = 'NotFound';
-      throw error;
-    }
     return updatedUser;
   }
 }
