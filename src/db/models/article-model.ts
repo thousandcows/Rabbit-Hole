@@ -78,7 +78,7 @@ export class ArticleModel {
   async findArticle(articleId: string): Promise<ArticleData | null> {
     // 게시글 조회 수 1 증가 => 정보 반환
     const id = { _id: articleId };
-    const updatedResult = await Article.findByIdAndUpdate(id);
+    const updatedResult = await Article.findById(id);
     return updatedResult;
   }
 
