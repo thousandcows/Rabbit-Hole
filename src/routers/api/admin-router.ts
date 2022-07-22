@@ -15,7 +15,7 @@ adminRouter.get('/users', async (req: any, res: Response, next: NextFunction) =>
   try {
     const { role, page, perPage } = req.query;
     const searchCondition = {
-      role: role,
+      role,
       page: Number(page),
       perPage: Number(perPage),
     };

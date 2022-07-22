@@ -95,9 +95,9 @@ export class CommentModel {
   // 댓글 좋아요
   async likeComment(commentId: string, userId: any): Promise<CommentData | null> {
     let update: any = { $push: { likes: { userId } } };
-    const checkComment = await Comment.findById(commentId)
+    const checkComment = await Comment.findById(commentId);
     const likeArray: any = checkComment?.likes;
-    for (let i = 0; i < likeArray.length; i += 1){
+    for (let i = 0; i < likeArray.length; i += 1) {
       if (likeArray[i].userId === userId) {
         update = { $pull: { likes: { userId } } };
       }

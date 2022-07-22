@@ -1,5 +1,6 @@
 import { Types, Document } from 'mongoose';
 import { chatModel, ChatModel } from '../db/models/chat-model';
+
 interface ChatData extends Document<Types.ObjectId> {
   senderId: string,
   profile: string,

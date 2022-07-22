@@ -2,6 +2,7 @@
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { chatService } from './services/chat-service';
+
 interface ChatInfo {
   senderId: string,
   profile: string,
@@ -28,7 +29,7 @@ function webSocket(server: http.Server) {
     cors: {
       origin: process.env.TEST_URL,
       methods: ['GET', 'POST'],
-      credentials: true
+      credentials: true,
     },
   });
   const connectedClientList: clientList = {};

@@ -35,8 +35,8 @@ const userInfo = {
 };
 
 const updateMock = {
-  role: 'racer'
-}
+  role: 'racer',
+};
 
 const articleMock = {
   articleType: 'question',
