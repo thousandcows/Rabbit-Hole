@@ -37,16 +37,7 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
       from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
       to: updatedUser.githubEmail,
       subject: '회원가입이 완료되었습니다',
-      html: `<!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-          <title>Static Template</title>
-        </head>
-        <body>
-          <div
+      html: `<div
             style="
               display: flex;
               justify-content: center;
@@ -72,9 +63,7 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
           </div>
           <div style="font-size: 20px; text-align: center;">
             열심히 활동해 주실거죠? 😘😘😘😘😘
-          </div>
-        </body>
-      </html>`,
+          </div>`,
     };
     // 메일 전송
     await transPort.sendMail(mailOptions, (error) => {
