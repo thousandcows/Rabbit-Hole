@@ -23,7 +23,7 @@ const articleMock = {
   title: 'i love redis',
   content: 'i have no energy',
   carrots: 100,
-  tags: [{ name: 'cow' }]
+  tags: [{ name: 'cow' }],
 };
 
 const userInfo = {
@@ -70,7 +70,9 @@ describe('article-router 게시판 API 테스트', () => {
   });
   test('전체 게시글 조회', async () => {
     jest.setTimeout(30000);
-    const res = await request(app).get('/api/articles').query({ articleType: 'question', filter: 'date', page: 1, perPage: 10 });
+    const res = await request(app).get('/api/articles').query({
+      articleType: 'question', filter: 'date', page: 1, perPage: 10,
+    });
     expect(res.statusCode).toBe(200);
     expect(res.body.articleList.length).toBe(1);
     expect(res.body.totalPage).toBe(1);

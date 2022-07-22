@@ -31,7 +31,7 @@ const chatMock = {
   chat: 'I like socket.io',
   time: '20:33',
   image: 'no image',
-}
+};
 
 beforeAll(async () => {
   db.connect();

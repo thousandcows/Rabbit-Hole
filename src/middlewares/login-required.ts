@@ -50,7 +50,6 @@ async function loginRequired(req: any, res: Response, next: NextFunction) {
         throw error;
       }
       req.currentUserId = String(user._id);
-
       next();
     } catch (error) {
       next(error);

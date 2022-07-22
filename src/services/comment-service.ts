@@ -90,6 +90,13 @@ class CommentService {
       throw error;
     }
 
+    // 본인이 작성한 답변 채택 금지
+    if (comment.authorId === userId) {
+      const error = new Error('본인이 작성한 답변은 채택할 수 없습니다.');
+      error.name = 'Forbidden';
+      throw error;
+    }
+
     // 채택 중복 방지
     const [commentList] = await this.commentModel.findByArticleId(comment.articleId);
     if (!commentList) {

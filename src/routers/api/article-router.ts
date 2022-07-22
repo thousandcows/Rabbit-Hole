@@ -42,8 +42,19 @@ articleRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 });
-// 3. 게시글 조회
-articleRouter.get('/:articleId', async (req: any, res: Response, next: NextFunction) => {
+// 3-1. 게시글 조회 - view 반환
+articleRouter.get('/:articleId/views', async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { articleId } = req.params;
+    const { views } = await articleService.findArticle(articleId);
+    res.status(200).json(views);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 3-2. 게시글 조회 - 게시글 아이디 - 원본
+articleRouter.get('/:articleId/', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
     const { page, perPage } = req.query;
@@ -51,7 +62,7 @@ articleRouter.get('/:articleId', async (req: any, res: Response, next: NextFunct
     const [
       articleInfo,
       commentList,
-      commentTotalPage] = await articleService.findArticle(commentSearchCondition);
+      commentTotalPage] = await articleService.findArticleViews(commentSearchCondition);
     res.status(200).json({ articleInfo, commentList, commentTotalPage });
   } catch (error) {
     next(error);

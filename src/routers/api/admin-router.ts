@@ -15,7 +15,7 @@ adminRouter.get('/users', async (req: any, res: Response, next: NextFunction) =>
   try {
     const { role, page, perPage } = req.query;
     const searchCondition = {
-      role: role,
+      role,
       page: Number(page),
       perPage: Number(perPage),
     };
@@ -30,13 +30,51 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
   try {
     const { userId } = req.params;
     const { role } = req.body;
+    console.log(userId, role);
     const updatedUser = await userService.authorizeUser(userId, role);
     // nodeMailer 옵션
     const mailOptions = {
       from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
-      to: updatedUser?.githubEmail,
+      to: updatedUser.githubEmail,
       subject: '회원가입이 완료되었습니다',
-      text: '축하합니다. 회원가입이 완료되었습니다.',
+      html: `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+          <title>Static Template</title>
+        </head>
+        <body>
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              width: 100%;
+              margin-top: 20px;
+            "
+          >
+            <img
+              width="100%"
+              style="border-radius: 40px;"
+              src="https://elice.io/static/home-a888ef6be756e8004497603c45aa6fb3.png"
+            />
+          </div>
+          <br />
+          <div style="font-size: 24px; text-align: center; margin: 20px 0;">
+            환영합니다:) 👏👏👏👏👏
+          </div>
+          <div style="font-size: 20px; text-align: center;">
+            엘리스 레이서들을 위한 커뮤니티 Rabbit-Hole입니다!
+          </div>
+          <div style="font-size: 20px; text-align: center; margin: 20px 0;">
+            ${updatedUser.name}님은 Guest에서 Racer로 인증이 완료되었습니다.
+          </div>
+          <div style="font-size: 20px; text-align: center;">
+            열심히 활동해 주실거죠? 😘😘😘😘😘
+          </div>
+        </body>
+      </html>`,
     };
     // 메일 전송
     await transPort.sendMail(mailOptions, (error) => {

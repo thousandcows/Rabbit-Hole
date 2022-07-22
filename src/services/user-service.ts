@@ -66,8 +66,13 @@ class UserService {
   }
 
   // 유저 승인 - 관리자
-  async authorizeUser(_id: string, update: string): Promise<UserData | null> {
+  async authorizeUser(_id: string, update: string): Promise<UserData> {
     const updatedUser = await this.userModel.authorizeUser(_id, update);
+    if (!updatedUser) {
+      const error = Error('해당 유저가 존재하지 않습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
     return updatedUser;
   }
 }

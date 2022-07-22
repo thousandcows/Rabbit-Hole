@@ -74,14 +74,27 @@ export class ArticleModel {
     return [articleList, totalPage];
   }
 
-  // 3. 게시글 조회 - 게시글 아이디
-  async findArticle(articleId: string): Promise<ArticleData | null> {
+  // 3-1. 게시글 조회 - view 반환
+  async findArticle(articleId: string): Promise<ArticleData> {
     // 게시글 조회 수 1 증가 => 정보 반환
     const id = { _id: articleId };
     const update = { $inc: { views: 1 } };
     const option = { returnOriginal: false };
     const updatedResult = await Article.findByIdAndUpdate(id, update, option);
+    if (!updatedResult) {
+      const error = Error('게시글이 존재하지 않습니다.');
+      error.name = 'NotFound';
+      throw error;
+    }
     return updatedResult;
+  }
+
+  // 3-2. 게시글 조회 - 게시글 아이디 - 원본
+  async findArticleViews(articleId: string): Promise<ArticleData | null> {
+    // 게시글 조회 수 1 증가 => 정보 반환
+    const id = { _id: articleId };
+    const result = await Article.findById(id);
+    return result;
   }
 
   // 4. 게시글 제목, 내용 수정
@@ -106,9 +119,9 @@ export class ArticleModel {
   // 6. 게시글 좋아요
   async likeArticle(articleId: string, userId: any): Promise<ArticleData | null> {
     let update: any = { $push: { likes: { userId } } };
-    const checkArticle = await Article.findById(articleId)
+    const checkArticle = await Article.findById(articleId);
     const likeArray: any = checkArticle?.likes;
-    for (let i = 0; i < likeArray.length; i += 1){
+    for (let i = 0; i < likeArray.length; i += 1) {
       if (likeArray[i].userId === userId) {
         update = { $pull: { likes: { userId } } };
       }
