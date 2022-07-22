@@ -32,6 +32,7 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
     const { role } = req.body;
     console.log(userId, role);
     const updatedUser = await userService.authorizeUser(userId, role);
+    console.log('업데이트유저', updatedUser);
     // nodeMailer 옵션
     const mailOptions = {
       from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
@@ -66,6 +67,7 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
       //     </div>`,
       text: '하이',
     };
+    console.log('메일옵션', mailOptions);
     // 메일 전송
     await transPort.sendMail(mailOptions, (error) => {
       if (error) {
