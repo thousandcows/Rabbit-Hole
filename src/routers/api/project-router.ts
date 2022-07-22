@@ -51,8 +51,8 @@ projectRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 });
-// 3. 게시글 조회
-projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunction) => {
+// 3-1. 게시글 조회 - 게시글 아이디 - 조회수 변화없음
+projectRouter.get('/:projectId/const', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
     const { page, perPage } = req.query;
@@ -66,6 +66,23 @@ projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunct
     next(error);
   }
 });
+
+// 3-2. 게시글 조회 - 게시글 아이디 - 조회수 증가
+projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { projectId } = req.params;
+    const { page, perPage } = req.query;
+    const commentSearchCondition = { projectId, page: Number(page), perPage: Number(perPage) };
+    const [
+      projectInfo,
+      commentList,
+      commentTotalPage] = await projectService.findProjectViews(commentSearchCondition);
+    res.status(200).json({ projectInfo, commentList, commentTotalPage });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // 4. 게시글 제목, 내용 수정
 projectRouter.put('/:projectId', loginRequired, upload.single('thumbnail'), async (req: any, res: Response, next: NextFunction) => {
   try {

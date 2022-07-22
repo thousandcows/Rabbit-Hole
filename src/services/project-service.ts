@@ -76,7 +76,7 @@ class ProjectService {
     return article;
   }
 
-  // 3. 게시글 조회 - 게시글 아이디
+  // 3-1. 게시글 조회 - 게시글 아이디 - 조회수 변화없음
   async findProject(commentSearchCondition: commentSearchCondition)
     : Promise<[
       projectInfo: ProjectData | null,
@@ -85,6 +85,20 @@ class ProjectService {
     const { projectId, page, perPage } = commentSearchCondition;
     // 게시글 정보
     const projectInfo = await this.projectModel.findProject(projectId);
+    // 게시글에 있는 댓글 정보
+    const [commentList, totalPage] = await commentModel.findByArticleId(projectId, page, perPage);
+    return [projectInfo, commentList, totalPage];
+  }
+
+  // 3-2. 게시글 조회 - 게시글 아이디 - 조회수 증가
+  async findProjectViews(commentSearchCondition: commentSearchCondition)
+    : Promise<[
+      projectInfo: ProjectData | null,
+      commentList: CommentData[] | null,
+      totalPage: number]> {
+    const { projectId, page, perPage } = commentSearchCondition;
+    // 게시글 정보
+    const projectInfo = await this.projectModel.findProjectViews(projectId);
     // 게시글에 있는 댓글 정보
     const [commentList, totalPage] = await commentModel.findByArticleId(projectId, page, perPage);
     return [projectInfo, commentList, totalPage];
