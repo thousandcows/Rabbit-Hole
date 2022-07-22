@@ -37,33 +37,34 @@ adminRouter.put('/users/:userId', async (req: any, res: Response, next: NextFunc
       from: `rabbit-hole <${process.env.NODEMAILER_USER}>`,
       to: updatedUser.githubEmail,
       subject: '회원가입이 완료되었습니다',
-      html: `<div
-            style="
-              display: flex;
-              justify-content: center;
-              width: 100%;
-              margin-top: 20px;
-            "
-          >
-            <img
-              width="100%"
-              style="border-radius: 40px;"
-              src="https://elice.io/static/home-a888ef6be756e8004497603c45aa6fb3.png"
-            />
-          </div>
-          <br />
-          <div style="font-size: 24px; text-align: center; margin: 20px 0;">
-            환영합니다:) 👏👏👏👏👏
-          </div>
-          <div style="font-size: 20px; text-align: center;">
-            엘리스 레이서들을 위한 커뮤니티 Rabbit-Hole입니다!
-          </div>
-          <div style="font-size: 20px; text-align: center; margin: 20px 0;">
-            ${updatedUser.name}님은 Guest에서 Racer로 인증이 완료되었습니다.
-          </div>
-          <div style="font-size: 20px; text-align: center;">
-            열심히 활동해 주실거죠? 😘😘😘😘😘
-          </div>`,
+      // html: `<div
+      //       style="
+      //         display: flex;
+      //         justify-content: center;
+      //         width: 100%;
+      //         margin-top: 20px;
+      //       "
+      //     >
+      //       <img
+      //         width="100%"
+      //         style="border-radius: 40px;"
+      //         src="https://elice.io/static/home-a888ef6be756e8004497603c45aa6fb3.png"
+      //       />
+      //     </div>
+      //     <br />
+      //     <div style="font-size: 24px; text-align: center; margin: 20px 0;">
+      //       환영합니다:) 👏👏👏👏👏
+      //     </div>
+      //     <div style="font-size: 20px; text-align: center;">
+      //       엘리스 레이서들을 위한 커뮤니티 Rabbit-Hole입니다!
+      //     </div>
+      //     <div style="font-size: 20px; text-align: center; margin: 20px 0;">
+      //       ${updatedUser.name}님은 Guest에서 Racer로 인증이 완료되었습니다.
+      //     </div>
+      //     <div style="font-size: 20px; text-align: center;">
+      //       열심히 활동해 주실거죠? 😘😘😘😘😘
+      //     </div>`,
+      text: '하이',
     };
     // 메일 전송
     await transPort.sendMail(mailOptions, (error) => {
