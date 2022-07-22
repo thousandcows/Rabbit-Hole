@@ -78,11 +78,12 @@ class ProjectService {
 
   // 3-1. 게시글 조회 - view 반환
   async findProject(projectId: string)
-    : Promise<ProjectData> {
+    : Promise<Partial<ProjectData>> {
     // 게시글 정보
     const projectInfo = await this.projectModel.findProject(projectId);
     // 게시글에 있는 댓글 정보
-    return projectInfo;
+    const { views } = projectInfo;
+    return { views };
   }
 
   // 3-2. 게시글 조회 - 게시글 아이디 - 원본

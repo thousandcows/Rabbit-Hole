@@ -46,8 +46,7 @@ articleRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
 articleRouter.get('/:articleId/views', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { articleId } = req.params;
-    const articleInfo = await articleService.findArticle(articleId);
-    const { views } = articleInfo;
+    const { views } = await articleService.findArticle(articleId);
     res.status(200).json(views);
   } catch (error) {
     next(error);

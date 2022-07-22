@@ -55,8 +55,7 @@ projectRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
 projectRouter.get('/:projectId/views', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
-    const projectInfo = await projectService.findProject(projectId);
-    const { views } = projectInfo;
+    const { views } = await projectService.findProject(projectId);
     res.status(200).json(views);
   } catch (error) {
     next(error);
