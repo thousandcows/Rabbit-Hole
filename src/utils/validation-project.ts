@@ -68,8 +68,8 @@ class ProjectValidation {
       const error = new Error('소개 내용을 입력해 주세요.');
       error.name = 'BadRequest';
       throw error;
-    } else if (shortDescription.length > 30) {
-      const error = new Error('글 내용은 5000자 이내로 입력해 주세요.');
+    } else if (shortDescription.length > 100) {
+      const error = new Error('소개 내용을 100자 이내로 입력해 주세요.');
       error.name = 'BadRequest';
       throw error;
     } else if (!description) {

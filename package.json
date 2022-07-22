@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon --watch src --exec ts-node src/server.ts",
     "lint": "eslint --fix \"**/*.{js,jsx,ts,tsx}\"",
-    "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --forceExit"
+    "test": "cross-env NODE_ENV=test jest --setupFiles dotenv/config --forceExit",
+    "coverage": "jest --coverage"
   },
   "engines": {
     "node": "16.14.0"
