@@ -51,23 +51,19 @@ projectRouter.get('/', async (req: any, res: Response, next: NextFunction) => {
     next(error);
   }
 });
-// 3-1. 게시글 조회 - 게시글 아이디 - 조회수 변화없음
-projectRouter.get('/:projectId/const', async (req: any, res: Response, next: NextFunction) => {
+// 3-1. 게시글 조회 - view 반환
+projectRouter.get('/:projectId/views', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;
-    const { page, perPage } = req.query;
-    const commentSearchCondition = { projectId, page: Number(page), perPage: Number(perPage) };
-    const [
-      projectInfo,
-      commentList,
-      commentTotalPage] = await projectService.findProject(commentSearchCondition);
-    res.status(200).json({ projectInfo, commentList, commentTotalPage });
+    const projectInfo = await projectService.findProject(projectId);
+    const { views } = projectInfo;
+    res.status(200).json(views);
   } catch (error) {
     next(error);
   }
 });
 
-// 3-2. 게시글 조회 - 게시글 아이디 - 조회수 증가
+// 3-2. 게시글 조회 - 게시글 아이디 - 원본
 projectRouter.get('/:projectId', async (req: any, res: Response, next: NextFunction) => {
   try {
     const { projectId } = req.params;

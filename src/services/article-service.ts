@@ -67,21 +67,16 @@ class ArticleService {
     return article;
   }
 
-  // 3-1. 게시글 조회 - 게시글 아이디 - 조회수 변화없음
-  async findArticle(commentSearchCondition: commentSearchCondition)
-  : Promise<[
-    articleInfo: ArticleData | null,
-    commentList: CommentData[] | null,
-    totalPage: number]> {
-    const { articleId, page, perPage } = commentSearchCondition;
+  // 3-1. 게시글 조회 - view 반환
+  async findArticle(articleId: string)
+  : Promise<ArticleData> {
     // 게시글 정보
     const articleInfo = await this.articleModel.findArticle(articleId);
     // 게시글에 있는 댓글 정보
-    const [commentList, totalPage] = await commentModel.findByArticleId(articleId, page, perPage);
-    return [articleInfo, commentList, totalPage];
+    return articleInfo;
   }
 
-  // 3-2. 게시글 조회 - 게시글 아이디 - 조회수 증가
+  // 3-2. 게시글 조회 - 게시글 아이디 - 원본
   async findArticleViews(commentSearchCondition: commentSearchCondition)
     : Promise<[
       articleInfo: ArticleData | null,
