@@ -1,0 +1,14 @@
+version: '3'
+services:
+  server:
+    build: ./
+    env_file:
+      - ./.env
+    expose:
+      - '4000'
+    restart: "unless-stopped"
+  client:
+    image: kimju1755/rabbithole-client
+    ports:
+     - '80:80'
+    restart: 'unless-stopped'
