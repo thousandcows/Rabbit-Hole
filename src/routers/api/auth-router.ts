@@ -56,11 +56,11 @@ authRouter.get('/github/callback', async (req: any, res:Response, next:NextFunct
     const userData = await userService.getUserByEmail(userInfo.githubEmail);
     if (userData) {
       // 로그인 토큰, userId, userName, 만료시간 600
-      const loginFrontUrl = `http://kdt-sw2-seoul-team08.elicecoding.com/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&carrots=${userData.carrots}&expire=86400&role=${userData.role}`;
+      const loginFrontUrl = `${process.env.HOME_URL}/github/login?token=${accessToken}&userId=${userData._id}&userName=${userData.name}&carrots=${userData.carrots}&expire=86400&role=${userData.role}`;
       res.redirect(loginFrontUrl);
     } else {
       // 회원가입
-      const registerFrontUrl = `http://kdt-sw2-seoul-team08.elicecoding.com/github/register?token=${accessToken}&githubProfileUrl=${userInfo.githubProfileUrl}&githubEmail=${userInfo.githubEmail}&githubAvatar=${userInfo.githubAvatar}`;
+      const registerFrontUrl = `${process.env.HOME_URL}/github/register?token=${accessToken}&githubProfileUrl=${userInfo.githubProfileUrl}&githubEmail=${userInfo.githubEmail}&githubAvatar=${userInfo.githubAvatar}`;
       res.redirect(registerFrontUrl);
     }
   } catch (error) {

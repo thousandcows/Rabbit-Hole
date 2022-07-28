@@ -1,0 +1,35 @@
+
+version: '3'
+services:
+  server:
+    build: ./
+    env_file:
+      - ./.env
+    expose:
+      - '4000'
+    restart: "unless-stopped"
+  client:
+    # image: kimju1755/rabbithole-client-cert (인증용)
+    image: kimju1755/rabbithole-client
+    ports:
+     - '80:80'
+     - '443:443'
+    restart: always
+    volumes:
+    - ./certbot/etc:/etc/letsencrypt
+    - ./certbot/var:/var/lib/letsencrypt
+    - ./www:/var/www/certbot
+
+  # certbot:(인증용)
+  #   depends_on:
+  #     - client
+  #   image: certbot/certbot:latest
+  #   container_name: certbot
+  #   volumes:
+  #     - ./certbot/etc:/etc/letsencrypt
+  #     - ./certbot/var:/var/lib/letsencrypt
+  #     - ./www:/var/www/certbot
+  #   command: certonly --webroot --webroot-path=/var/www/certbot --email gomi.dev1755@gmail.com --a$
+
+
+
