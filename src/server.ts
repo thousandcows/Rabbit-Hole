@@ -14,6 +14,8 @@ app.use(cors({
     'http://34.64.196.203:5001',
     'http://10.178.0.56:5001',
     'http://kdt-sw2-seoul-team08.elicecoding.com',
+    'http://rabbit-hole.kr',
+    'https://rabbit-hole.kr',
   ],
   credentials: true,
 }));
