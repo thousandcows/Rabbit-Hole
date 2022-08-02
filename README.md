@@ -4,7 +4,7 @@
 # 🐇 Rabbit-Hole: 엘리스 레이서 커뮤니티 서비스 
 > 엘리스 레이서 지망생 및 수강생의 정보 공유 및 네트워킹을 위한 커뮤니티 서비스입니다.
 <br />
-> https://rabbit-hole.kr
+https://rabbit-hole.kr
 <br />
 
 ##  :book: 프로젝트 소개
